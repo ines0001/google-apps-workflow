@@ -8,8 +8,11 @@ FICHIERS DECLARATION :
 
 /*
 Necessaire pour le déploiement de la version
+<<<<<<< HEAD
 28/07/15: positionner à true afin de produire une nouvelle version
 Menu Fichier/Gérer les versions depuis le projet google script apps...vvv
+=======
+>>>>>>> fc9b7e4ae1bbdbec5426b1cc2ff0c471f36a4bdf
 */
 var __PROD__  = false;
 
