@@ -46,6 +46,12 @@
 
   <?!=HtmlService.createHtmlOutputFromFile('Alert').getContent(); ?>
   <?!=HtmlService.createHtmlOutputFromFile('contact').getContent(); ?>
+  <div>
+    <div id="success" class="jumbotron alert alert-success" role="alert" style="display:none"></div>
+    <div id="error" class="jumbotron alert alert-warning" role="alert" style="display:none"></div>
+  </div>
+    
+    
   
   <div class="row-fluid">
    <div class="col-xs-12 ">
@@ -366,17 +372,23 @@ $('#techno').on('change', function (e) {
     // Collecte des données
    
     google.script.run
-       .withSuccessHandler(function(values){$('#welldone #identifier').html(values.id);
-                                        $('#welldone #manager').html(values.manager);
-                                        $('#welldone #unit').html(values.unit);
-                                        //$('#wait').modal('hide');
-                                        $('#form_page2').hide();$('#welldone').show();
-                                       
-                                       })
-       .withFailureHandler(function(e){//$('#wait').modal('hide');
-                                       $('#alert #error').html(e);
-                                       $('#alert').modal('show');
-                                       console.log(e);})
+       .withSuccessHandler(function(values){
+       
+         var message=''
+         message+='<p> Votre demande a bien été enregistré sous la référence '
+         if(values.drive) message+='<a href="'+values.drive+'" target="#" style="color:inherit;"><b>'+values.id+'</b></a>'
+         else message+='<b>'+values.id+'</b>'
+         message+='</p>'
+         message+=' <p> Un mail sera très prochainement envoyé à <u>'+values.manager+'</u>, manager de Unit <span>'+values.unit+'</span></p>'
+         message+='<p>Merci</p>'
+         $('#form_page2').hide();
+         $('#success').html(message).show();
+         
+         })
+       .withFailureHandler(function(e){
+         $('#error').html(e).show();
+         
+         })
        .save_form( $("#form_page1").serializeArray(),
                    $("#form_page2 #mail").val(),
                    $("#form_page2 #drive_id_files").html());

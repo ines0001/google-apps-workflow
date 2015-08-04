@@ -229,11 +229,12 @@
 /*/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
   Mise en forme de la colonne Statut
 /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/*/
-  var i_statut,i_url,i_log,i_datetime=[];
+  var i_statut,i_url,i_log,i_datetime=[],i_reference;
   for(var i=0;i<data.getNumberOfColumns();i++){
       if(data.getColumnLabel(i)=='Statut') i_statut = i;
       if(data.getColumnLabel(i)=='url') i_url = i;
       if(data.getColumnLabel(i)=='log') i_log = i;
+      if(data.getColumnLabel(i)=='Identifiant') i_reference = i;
       if(data. getColumnType(i)=='datetime') i_datetime.push(i);
       if(data.getColumnLabel(i).match('Emission')) options.sortColumn = i;
       
@@ -263,11 +264,15 @@
 /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\*/
   data.addColumn('string', 'Actions');
    for(var i=0;i<data.getNumberOfRows();i++){
-     var link = data.getValue(i,i_url) , histo = data.getValue(i,i_log)
+     var link = data.getValue(i,i_url) , histo = data.getValue(i,i_log), ref=data.getValue(i,i_reference)
      var html_msg = "<label >"
      
-     if( link) html_msg += "<a class='text-warning cssCellAction' href='"+link+"' target='_blank'><span class='glyphicon glyphicon-paperclip' aria-hidden='true'></span></a>"
-     if( histo ) html_msg += "<a class='cssCellAction' href='#' data-url='"+histo+"' data-toggle='tooltip' data-placement='bottom' title='Information!'><span class='glyphicon glyphicon-info-sign' aria-hidden='true'></span></a>"
+     html_msg += "<a class='cssCellAction' target='_blank' href='<?=ScriptApp.getService().getUrl()?>?page=response&ref="+ref+"'  data-toggle='tooltip' data-placement='bottom' title='Attribuer un RP ou Relancer'><img src='https://raw.githubusercontent.com/eremysqli/sqli/master/images/check30.png' style='width:24px;padding-rigth:1px'></a>"
+     html_msg += "<a class='cssCellAction' target='_blank' href='<?=ScriptApp.getService().getUrl()?>?page=decision&result=go&ref="+ref+"'  data-toggle='tooltip' data-placement='bottom' title='GO'><img src='https://raw.githubusercontent.com/eremysqli/sqli/master/images/social16.png' style='width:24px;padding-rigth:1px'></a>"
+     html_msg += "<a class='cssCellAction' target='_blank' href='<?=ScriptApp.getService().getUrl()?>?page=decision&ref="+ref+"'  data-toggle='tooltip' data-placement='bottom' title='NO GO'><img src='https://raw.githubusercontent.com/eremysqli/sqli/master/images/forbidden22.png' style='width:24px;padding-rigth:1px'></a>"
+     
+     if( histo ) html_msg += "<a class='cssCellAction' href='#' data-url='"+histo+"' data-toggle='tooltip' data-placement='bottom' title='Détail'><img src='https://raw.githubusercontent.com/eremysqli/sqli/master/images/information15.png' style='width:24px;padding-rigth:1px'></a>"
+     if( link) html_msg += "<a class='text-warning cssCellAction' href='"+link+"' target='_blank'><img src='https://raw.githubusercontent.com/eremysqli/sqli/master/images/clip27.png' style='width:24px;padding-rigth:1px'></a>"
      
      html_msg+="</label>"
      data.setValue(i,data.getNumberOfColumns()-1, html_msg )
@@ -303,7 +308,7 @@ Si aucun élément dans la table alors afficher aucun dossier
 /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\*/ 
   var view = new google.visualization.DataView(data);
   //view.hideColumns([data.getNumberOfColumns()-2]);
-  view.hideColumns([i_url,i_log]);
+  view.hideColumns([i_url,i_log,i_reference]);
 
 
   
@@ -441,8 +446,8 @@ function handleQueryTable2(response) {
      var link = data.getValue(i,i_url) , histo = data.getValue(i,i_log)
      var html_msg = "<label >"
      
-     if( link) html_msg += "<a class='text-warning cssCellAction' href='"+link+"' target='_blank'><span class='glyphicon glyphicon-paperclip' aria-hidden='true'></span></a>"
-     if( histo ) html_msg += "<a class='cssCellAction' href='#' data-url='"+histo+"' data-toggle='tooltip' data-placement='bottom' title='Information!'><span class='glyphicon glyphicon-info-sign' aria-hidden='true'></span></a>"
+     if( histo ) html_msg += "<a class='cssCellAction' href='#' data-url='"+histo+"' data-toggle='tooltip' data-placement='bottom' title='Détail'><img src='https://raw.githubusercontent.com/eremysqli/sqli/master/images/information15.png' style='width:24px;padding-rigth:1px'></a>"
+     if( link) html_msg += "<a class='text-warning cssCellAction' href='"+link+"' target='_blank'><img src='https://raw.githubusercontent.com/eremysqli/sqli/master/images/clip27.png' style='width:24px;padding-rigth:1px'></a>"
      
      html_msg+="</label>"
      data.setValue(i,data.getNumberOfColumns()-1, html_msg )
@@ -607,8 +612,8 @@ function handleQueryTable3(response) {
      var link = data.getValue(i,i_url) , histo = data.getValue(i,i_log)
      var html_msg = "<label >"
      
-     if( link) html_msg += "<a class='text-warning cssCellAction' href='"+link+"' target='_blank'><span class='glyphicon glyphicon-paperclip' aria-hidden='true'></span></a>"
-     if( histo ) html_msg += "<a class='cssCellAction' href='#' data-url='"+histo+"' data-toggle='tooltip' data-placement='bottom' title='Information!'><span class='glyphicon glyphicon-info-sign' aria-hidden='true'></span></a>"
+     if( histo ) html_msg += "<a class='cssCellAction' href='#' data-url='"+histo+"' data-toggle='tooltip' data-placement='bottom' title='Détail'><img src='https://raw.githubusercontent.com/eremysqli/sqli/master/images/information15.png' style='width:24px;padding-rigth:1px'></a>"
+     if( link) html_msg += "<a class='text-warning cssCellAction' href='"+link+"' target='_blank'><img src='https://raw.githubusercontent.com/eremysqli/sqli/master/images/clip27.png' style='width:24px;padding-rigth:1px'></a>"
      
      html_msg+="</label>"
      data.setValue(i,data.getNumberOfColumns()-1, html_msg )
@@ -736,7 +741,7 @@ function addtimeline( o, inverse){
       case 'NOGO':bull='<li class="timeline-inverted">';bull+='<div class="timeline-badge danger">';
       bull+='<i class="glyphicon glyphicon-thumbs-down"></i></div>';break;
       
-      default: bull+='<div class="timeline-badge primary">';bull+='<i class="glyphicon glyphicon-check"></i></div>';
+      default: bull='<li class="timeline-inverted">';bull+='<div class="timeline-badge primary">';bull+='<i class="glyphicon glyphicon-info-sign"></i></div>';
     
     
     }

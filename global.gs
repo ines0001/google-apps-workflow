@@ -72,7 +72,7 @@ var COLUMN_NOTIFICATION_NOGO_TO ='Diffusion nogo (to)'; // Liste de diffusion  a
          
 /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\*/
 var COLUMN_SHEET_MANAGER = 7;
-var COLUMN_SHHET_REMISE = 8;
+
 var COLUMN_SHEET_DATE_GONOGO = 13;
 var COLUMN_SHEET_RP = 12;
 var COLUMN_SHEET_RU = 11;
@@ -84,7 +84,7 @@ var COLUMN_SHEET_COMMENT = COLUMN_SHEET_STATE+2;
 
 var COLUMN_SHEET_VISA = COLUMN_SHEET_STATE+3;
 var COLUMN_SHEET_DAR_PLAN = COLUMN_SHEET_STATE+7;
-var COLUMN_SHEET_REMISE = 6;
+var COLUMN_SHEET_REMISE = 8;
 var COLUMN_SHEET_UNIT = 4;
 
 var COLUMN_SHEET_MESSAGE = 40;

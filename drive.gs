@@ -202,6 +202,15 @@ function make_copy_template(client, folder, editors){
   Copy_DriveAPI(source,destination);
   
   
+  var objet = new SHEET_AO();
+  var row = objet.Info_A(ref);
+  var objet_log= new OLogger(row.log);
+  
+  objet.sheet.getRange(row.rowNumber,COLUMN_SHEET_LOG).setValue(objet_log.pushSession('Génération arborescence AVV','INFO',{
+                                                                                       Dossier_AVV:'<a target="_blank" href="'+destination.getUrl()+'">'+destination.getName()+'</a>',
+                                                                                       Partage:editors,}))
+              
+  
   return destination.getId();
 }
 
