@@ -106,7 +106,7 @@ function make_copy_cdc2template(ref,Id_dest){
    return Copy_DriveAPI(source, destination);  // return number copy files
 }
 
-function make_copy_template(client, folder, editors){
+function make_copy_template(client, folder, editors,ref){
   
   if(__DEBUG__) {Logger.log('make_copy_template %s,%s,%s',client,folder,editors);}
   var scriptProperties = PropertiesService.getScriptProperties();
@@ -201,6 +201,15 @@ function make_copy_template(client, folder, editors){
  
   Copy_DriveAPI(source,destination);
   
+  
+  var objet = new SHEET_AO();
+  var row = objet.Info_A(ref);
+  var objet_log= new OLogger(row.log);
+  
+  objet.sheet.getRange(row.rowNumber,COLUMN_SHEET_LOG).setValue(objet_log.pushSession('Génération arborescence AVV','INFO',{
+                                                                                       Dossier_AVV:'<a target="_blank" href="'+destination.getUrl()+'">'+destination.getName()+'</a>',
+                                                                                       Partage:editors,}))
+              
   
   return destination.getId();
 }

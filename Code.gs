@@ -485,7 +485,7 @@ function save_form(form,mail,filesID){
                    mail,
                    true);
   
- return {id:ref,manager:GetManager(form.find('unit')),unit:form.find('unit')};
+ return {id:ref,manager:GetManager(form.find('unit')),unit:form.find('unit'),drive:url_drive,};
  
  }catch(e){treatmentException_(e)} 
  
@@ -729,7 +729,10 @@ function onValidateDecision(form){
       objet.sheet.getRange(row.rowNumber,COLUMN_SHEET_STATE).setValue(state.go);
       objet.sheet.getRange(row.rowNumber,COLUMN_SHEET_VISA).setValue(form.visa);
       objet.sheet.getRange(row.rowNumber,COLUMN_SHEET_DAR_PLAN).setValue(form.dar);
-      objet.sheet_form.getRange(row_b.rowNumber,COLUMN_SHEET_REMISE).setValue(form.remise);
+      /*
+      MANTIS_053
+      */
+      objet.sheet.getRange(row.rowNumber,COLUMN_SHEET_REMISE).setValue(form.remise);
       objet.sheet.getRange(row.rowNumber,COLUMN_SHEET_COMMENT).setValue(form.commentaire);
       objet.sheet.getRange(row.rowNumber,COLUMN_SHEET_LOG).setValue(objet_log.pushSession('Décision GO',state.go,{client:form.client,
                                                                                                            dossier:form.dossier,
