@@ -106,7 +106,7 @@ function make_copy_cdc2template(ref,Id_dest){
    return Copy_DriveAPI(source, destination);  // return number copy files
 }
 
-function make_copy_template(client, folder, editors){
+function make_copy_template(client, folder, editors,ref){
   
   if(__DEBUG__) {Logger.log('make_copy_template %s,%s,%s',client,folder,editors);}
   var scriptProperties = PropertiesService.getScriptProperties();
