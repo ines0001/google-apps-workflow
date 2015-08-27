@@ -205,10 +205,7 @@ function testing(){
 
   try{
     
-    // 0BxTfS7jXR_FYSDRFQ1Z2OXk4cEk
-    var fileID = '0BxTfS7jXR_FYSDRFQ1Z2OXk4cEk';
-
-    saveFiles(fileID.split(","),'testing','CR_GONOGO');
+    Logger.log(isAdmin())
     
  
     
@@ -919,6 +916,22 @@ return cleanArray(SpreadsheetApp.openById(CLSID).getSheetByName(SHEET_PARAMS)
 }catch(e){treatmentException_(e)}   
 }
 
+
+/**
+ * IsAdmin : detect if the current user is admin
+ * Params key : list of admins
+ * return : true if a current user in the list
+ *
+**/
+function isAdmin() {
+  var ret=false,users = Get_ADMIN(), current_user = Session.getActiveUser().getEmail();
+
+  ret= users.split(',').lastIndexOf(current_user)!=-1;
+  Logger.log('Logging page, current user:%s, is admin:%s',current_user,ret)
+  
+  return ret;
+
+}
 
 
 /**

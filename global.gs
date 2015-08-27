@@ -54,7 +54,8 @@ var COLUMN_STATE ='Statut';
 var COLUMN_RP  ='RP';
 var COLUMN_CC  ='Diffusion';
 var COLUMN_CONTACT  ='Contact';
-var COLUMN_ADMIN  ='Admin';
+var COLUMN_EMAIL_ADMIN  ='Admin Email Notification';
+var COLUMN_ADMIN = 'Admin';
 var COLUMN_FORMULES = 'Formules';
 var COLUMN_ARBITRAGE = 'Arbitrage UNIT';
 var COLUMN_DASHBOARD_SQL = 'Dashboard Requete';
@@ -121,12 +122,13 @@ var EMAIL_CC=(function () {var params = SpreadsheetApp.openById(CLSID).getSheetB
                            return null;})();
 function GetEMAIL_CC(){return EMAIL_CC;}
 function GetEMAIL_CONTACT(){return enumParams(COLUMN_CONTACT).join();}
-function GetEMAIL_ADMIN(){return enumParams(COLUMN_ADMIN).join();}
+function GetEMAIL_ADMIN(){return enumParams(COLUMN_EMAIL_ADMIN).join();}
 function GetEMAIL_NOTIFICATION(){return enumParams(COLUMN_NOTIFICATION).join();}
 function GetEMAIL_DIFFUSION_GO_CC(){return enumParams(COLUMN_NOTIFICATION_GO_CC).join();}
 function GetEMAIL_DIFFUSION_NOGO_CC(){return enumParams(COLUMN_NOTIFICATION_NOGO_CC).join();}
 
 function GetEMAIL_DIFFUSION_NOGO_TO(){return enumParams(COLUMN_NOTIFICATION_NOGO_TO).join();}
+function Get_ADMIN(){return enumParams(COLUMN_ADMIN).join();}
 
 
 
@@ -226,14 +228,16 @@ SHEET_AO.prototype = {
   
 
 function global_testing() {
+  try{
   var sheet_objet = new SHEET_AO();
   var ref = 'I1433242948271';
   
   var out = sheet_objet.Info_A(ref);
   var out_json;
-  Logger.log('out: %s',JSON.stringify(out,null,'\t'));
+  //Logger.log('out: %s',JSON.stringify(out,null,'\t'));
   //sheet_objet.Info_B(ref);
-  Logger.log(GetEMAIL_ADMIN());
+  Logger.log(Get_ADMIN());
+  }catch(e){treatmentException_(e)} 
   
   
 }

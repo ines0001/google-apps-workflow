@@ -64,7 +64,7 @@
     <p class="navbar-brand navbar-nav">
       <span class="pp9-police pp9-border-plein">P</span><span class="pp9-police pp9-border-plein">P</span><span class="pp9-police pp9-border-creux">9</span><span class="pp9-police">{WEB}</span>
     </p>
-    <p class="navbar-brand navbar-nav"><span class="glyphicon glyphicon-user" aria-hidden="true"></span>&nbsp;<?=Session.getActiveUser().getEmail()?></p>
+    <p class="navbar-brand navbar-nav"><span id="symbol_admin"><span class="glyphicon glyphicon-user" aria-hidden="true"></span></span>&nbsp;<?=Session.getActiveUser().getEmail()?>&nbsp;<span id="connecting"></span></p>
     <!-- Collect the nav links, forms, and other content for toggling -->
     
     <div class="collapse navbar-collapse " id="bs-example-navbar-collapse-1">
@@ -78,14 +78,14 @@
 
 
     <?!=HtmlService.createHtmlOutputFromFile('history-modal').getContent(); ?>
-    
+   
     <div class="container-fluid">
     
       <!-- Page Heading -->
       <div class="row">
       
         <div class="col-lg-12">
-          <a class="btn btn-primary  pull-right" href="<?=ScriptApp.getService().getUrl() + '?page=new' ?>" target="_blank" data-toggle="tooltip" data-placement="bottom" title="Pour créer une nouvelle demande, cliquer sur ce lien" role="button">Nouvelle demande&nbsp;<span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span></a>
+          <a class="btn btn-primary  pull-right" href="<?=ScriptApp.getService().getUrl() + '?page=new' ?>" target="_blank" data-toggle="tooltip" data-placement="bottom" title="Pour créer une nouvelle demande, cliquer sur ce lien" role="button"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>&nbsp;Nouvelle demande</a>
         
         
         </div>
@@ -94,9 +94,9 @@
       <!--?!=HtmlService.createHtmlOutputFromFile('dashboard-bloc-indicators').getContent(); ?-->
       
       <ul class="nav nav-tabs nav-pills nav-justified" role="tablist">
-        <li role="presentation" class="active"><a href="#table_synthese_en_cours" aria-controls="table_synthese_en_cours" role="tab" data-toggle="tab"><h4>DOSSIERS EN ATTENTE</h4></a></li>
-        <li role="presentation"><a href="#table_synthese_go" aria-controls="table_synthese_go" role="tab" data-toggle="tab"><h4><span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span>&nbsp;DOSSIERS GO</h4></a></li>
-        <li role="presentation"><a href="#table_synthese_nogo" aria-controls="table_synthese_nogo" role="tab" data-toggle="tab"><h4><span class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span>&nbsp;DOSSIERS NO GO</h4></a></li>
+        <li role="presentation" class="active"><a href="#table_synthese_en_cours" aria-controls="table_synthese_en_cours" role="tab" data-toggle="tab"><h4>DOSSIERS EN ATTENTE&nbsp;<span id="num_attente"></span></h4></a></li>
+        <li role="presentation"><a href="#table_synthese_go" aria-controls="table_synthese_go" role="tab" data-toggle="tab"><h4><span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span>&nbsp;DOSSIERS GO&nbsp;<span id="num_go"></span></h4></a></li>
+        <li role="presentation"><a href="#table_synthese_nogo" aria-controls="table_synthese_nogo" role="tab" data-toggle="tab"><h4><span class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span>&nbsp;DOSSIERS NO GO&nbsp;<span id="num_nogo"></span></h4></a></li>
         
       </ul>
       <!-- Tab panes -->
@@ -137,40 +137,56 @@
     
     
   
-  
   function drawTable() {
      var opts = {sendMethod: 'auto'}, set_query, query;
      
      
      google.script.run
-                .withSuccessHandler(function(values){ 
-                   console.log(values);
-                   set_query = encodeURIComponent(values[0].replace(/@user/g,<?=Session.getActiveUser().getEmail()?>));
-                   query = new google.visualization.Query(
-                   'https://spreadsheets.google.com/tq?tq='+set_query+'&key=<?=clsid?>&gid=2122602018',opts);
-                  
-                   query.send(handleQueryTable);
+                .withSuccessHandler(function(isAdmin){ 
+                   console.log('admins:'+isAdmin)
                    
+                   if(isAdmin) {
+                     $('#symbol_admin').html('<span class="glyphicon glyphicon-king" style="color:red" aria-hidden="true" ></span>');
+                     $('#connecting').html('#admin');
+                   }
+                   google.script.run
+                     .withSuccessHandler(function(values){ 
+                           var filter='.*';
+                           
+                           if(!isAdmin) filter += <?=Session.getActiveUser().getEmail()?>+'.*';
+                           
+                           
+                           set_query = encodeURIComponent(values[0].replace(/@user/g,filter));
+                           query = new google.visualization.Query(
+                           'https://spreadsheets.google.com/tq?tq='+set_query+'&key=<?=clsid?>&gid=2122602018',opts);
+                           
+                           query.send(handleQueryTable);
+                           
+                           
+                           set_query = encodeURIComponent(values[1].replace(/@user/g,filter));
+                           query = new google.visualization.Query(
+                           'https://spreadsheets.google.com/tq?tq='+set_query+'&key=<?=clsid?>&gid=2122602018',opts);
+                           
+                           query.send(handleQueryTable2);
+                           
+                           
+                           set_query = encodeURIComponent(values[2].replace(/@user/g,filter));
+                           query = new google.visualization.Query(
+                           'https://spreadsheets.google.com/tq?tq='+set_query+'&key=<?=clsid?>&gid=2122602018',opts);
+                           
+                           query.send(handleQueryTable3);
+                           
+                       })
+                     .withFailureHandler(function(e){console.log('Exception'+e.message)})
+                     .enumParams('Dashboard table_synthese');
                    
-                   set_query = encodeURIComponent(values[1].replace(/@user/g,<?=Session.getActiveUser().getEmail()?>));
-                   query = new google.visualization.Query(
-                   'https://spreadsheets.google.com/tq?tq='+set_query+'&key=<?=clsid?>&gid=2122602018',opts);
-                  
-                   query.send(handleQueryTable2);
-                   
-                   
-                   set_query = encodeURIComponent(values[2].replace(/@user/g,<?=Session.getActiveUser().getEmail()?>));
-                   query = new google.visualization.Query(
-                   'https://spreadsheets.google.com/tq?tq='+set_query+'&key=<?=clsid?>&gid=2122602018',opts);
-                  
-                   query.send(handleQueryTable3);
-                   
+                    
                    
                 })
                 .withFailureHandler(function(e){
                   console.log('Exception'+e.message);     
                 })
-                .enumParams('Dashboard table_synthese');
+                .isAdmin();
      
      
      
@@ -198,6 +214,9 @@
   // Graphic A
   var data = response.getDataTable();
   console.log('in handleQueryTable',data)
+  
+  // view number of values
+  $('#num_attente').html( '('+data.getNumberOfRows()+')' )
   
   var chart = new google.visualization.Table(document.getElementById('id_table'));
   var cssClassNames = {
@@ -380,6 +399,8 @@ function handleQueryTable2(response) {
   // Graphic A
   var data = response.getDataTable();
   console.log('in handleQueryTable',data)
+  // view number of values
+  $('#num_go').html( '('+data.getNumberOfRows()+')' )
   
   var chart = new google.visualization.Table(document.getElementById('id_table2'));
   var cssClassNames = {
@@ -546,6 +567,9 @@ function handleQueryTable3(response) {
   // Graphic A
   var data = response.getDataTable();
   console.log('in handleQueryTable',data)
+  
+  // view number of values
+  $('#num_nogo').html( '('+data.getNumberOfRows()+')' )
   
   var chart = new google.visualization.Table(document.getElementById('id_table3'));
   var cssClassNames = {
