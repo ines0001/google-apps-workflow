@@ -14,7 +14,9 @@ function doGet(request) {
                         .setSandboxMode(HtmlService.SandboxMode.IFRAME);break;
     
     case 'dashboard':html = HtmlService.createTemplateFromFile('Page-dashboard');
-                         html.clsid = CLSID;  
+                        duration = PropertiesService.getScriptProperties().getProperty('ID_DURATION') 
+                        html.duration = (duration)?duration:'40s';
+                        html.clsid = CLSID;  
                         html=html.evaluate()
                         .setTitle('Administration AO')
                         .setSandboxMode(HtmlService.SandboxMode.IFRAME);break;                    
@@ -168,9 +170,13 @@ try{
 }catch(e){treatmentException_(e)}   
 }
 
+
+
 function testing_saveFiles(){
  try{ 
   var r = saveFiles(['0BxTfS7jXR_FYZThDRG5GT1B2Z2s'],'I1429787869176','toto');
+  
+ 
 }catch(e){treatmentException_(e)}   
   
   
@@ -205,10 +211,7 @@ function testing(){
 
   try{
     
-    // 0BxTfS7jXR_FYSDRFQ1Z2OXk4cEk
-    var fileID = '0BxTfS7jXR_FYSDRFQ1Z2OXk4cEk';
-
-    saveFiles(fileID.split(","),'testing','CR_GONOGO');
+    Logger.log("file:"+Getfilename('0B0WdP5H8ZjVmxYVmVuZ0h4SDg'))
     
  
     
@@ -740,7 +743,8 @@ function onValidateDecision(form){
                                                                                                            remise:form.remise,
                                                                                                            visa:form.visa,
                                                                                                            dar:form.dar,
-                                                                                                           synthèse:form.commentaire,}));
+                                                                                                           synthèse:form.commentaire,
+                                                                                                           cr:new C_Url(form.drive_id_files),}));
       // Push Event Calendar
       var calendar = CalendarApp.getDefaultCalendar();
       var guests=[],date_evt = form.dar.split("/");
@@ -762,12 +766,12 @@ function onValidateDecision(form){
           */
           
           description:'Dossier de suivi: '+row.dossier+'\r'+
-                      'Merci de confirmer le rdv avec la bonne liste de diffusion des participants dès que la date définitive et l\'horaire seront connus.\r'+
-                      'Pour rappel les représentants direction à inviter pour le DAR AVV:\r'+
+                      'Merci de confirmer le rdv avec la bonne liste de diffusion des participants dès que la date définitive et l\'horaire (au moins 48h avant la remise) seront connus..\r'+
+                      'Les représentants direction à inviter pour le DAR AVV :\r'+
                       'Budget < 300 k€ : Nicolas Larousse ou Stéphane Escoubes\r'+
-                      'Budget compris entre 300 k€ et 1 M€ : Philippe Fuhr\r'+
-                      '> 1 M€ : Thierry Chemla ou Didier Fauque, Philippe Fuhr\r'+
-                      'il est indispensable d\'organiser un pré-DAR au minimum une semaine avant remise avec la direction de l\'agence. Le DAR final avec la direction SQLI sera à organiser manuellement',
+                      'Budget compris entre 300 k€ et 1 M€ : Nicolas Larousse ou Stéphane Escoubes + Philippe Fuhr\r'+
+                      'Budget > 1 M€ : Nicolas Larousse ou Stéphane Escoubes + Philippe Fuhr + Thierry Chemla ou Didier Fauque\r'+
+                      'Dans ce dernier cas, il est indispensable d\'organiser un pré-DAR au minimum une semaine avant remise avec la direction de l\'agence. Le DAR final avec la direction SQLI sera à organiser manuellement',
           guests:guests.join(),
           sendInvites:true});
                                                                                                            
@@ -778,7 +782,8 @@ function onValidateDecision(form){
       objet.sheet.getRange(row.rowNumber,COLUMN_SHEET_COMMENT_NOGO).setValue(form.commentaire);
       objet.sheet.getRange(row.rowNumber,COLUMN_SHEET_LOG).setValue(objet_log.pushSession('Décision NOGO',state.nogo,{client:form.client,
                                                                                                            dossier:form.dossier,
-                                                                                                           synthèse:form.commentaire,}));
+                                                                                                           synthèse:form.commentaire,
+                                                                                                           cr:new C_Url(form.drive_id_files),}));
       break;
     default: throw new Error('Traitement sur decision inconnu !');
       
@@ -919,6 +924,22 @@ return cleanArray(SpreadsheetApp.openById(CLSID).getSheetByName(SHEET_PARAMS)
 }catch(e){treatmentException_(e)}   
 }
 
+
+/**
+ * IsAdmin : detect if the current user is admin
+ * Params key : list of admins
+ * return : true if a current user in the list
+ *
+**/
+function isAdmin() {
+  var ret=false,users = Get_ADMIN(), current_user = Session.getActiveUser().getEmail();
+
+  ret= users.split(',').lastIndexOf(current_user)!=-1;
+  Logger.log('Logging page, current user:%s, is admin:%s',current_user,ret)
+  
+  return ret;
+
+}
 
 
 /**

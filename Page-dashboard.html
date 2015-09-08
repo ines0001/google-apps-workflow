@@ -31,7 +31,8 @@
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
     <?!= include('style-bootstrap-timeline'); ?>
-    <?!= include('style-dashboard'); ?>   
+    <?!= include('style-dashboard'); ?>
+    <?!= include('style-pp9web'); ?>
 
 
 </head>
@@ -61,15 +62,15 @@
       </a>
     
     </div>
-    <p class="navbar-brand navbar-nav">
+    <p class="navbar-brand navbar-nav navbar-view">
       <span class="pp9-police pp9-border-plein">P</span><span class="pp9-police pp9-border-plein">P</span><span class="pp9-police pp9-border-creux">9</span><span class="pp9-police">{WEB}</span>
     </p>
-    <p class="navbar-brand navbar-nav"><span class="glyphicon glyphicon-user" aria-hidden="true"></span>&nbsp;<?=Session.getActiveUser().getEmail()?></p>
+    <p class="navbar-brand navbar-nav navbar-view"><span id="symbol_admin"><span class="glyphicon glyphicon-user" aria-hidden="true"></span></span>&nbsp;<?=Session.getActiveUser().getEmail()?>&nbsp;<span id="connecting"></span></p>
     <!-- Collect the nav links, forms, and other content for toggling -->
     
     <div class="collapse navbar-collapse " id="bs-example-navbar-collapse-1">
       <span class="navbar-right timeline-badge info"><i class="glyphicon glyphicon-check"></i></span>
-      <span class="navbar-brand navbar-nav navbar-right">Formulaire de suivi d'un nouvel appel d'offre : <b>SYNTHESE</b></span> 
+      <span class="navbar-brand navbar-nav navbar-right"><span class="navbar-view">Formulaire de suivi d'un nouvel appel d'offre : </span><b>SYNTHESE</b></span> 
       
     </div><!-- /.navbar-collapse -->
   </div>
@@ -78,39 +79,83 @@
 
 
     <?!=HtmlService.createHtmlOutputFromFile('history-modal').getContent(); ?>
-    
+   
     <div class="container-fluid">
     
       <!-- Page Heading -->
+     
+      
       <div class="row">
-      
-        <div class="col-lg-12">
-          <a class="btn btn-primary  pull-right" href="<?=ScriptApp.getService().getUrl() + '?page=new' ?>" target="_blank" data-toggle="tooltip" data-placement="bottom" title="Pour créer une nouvelle demande, cliquer sur ce lien" role="button">Nouvelle demande&nbsp;<span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span></a>
-        
-        
-        </div>
+          
+          <a class="btn btn-success  pull-right" href="<?=ScriptApp.getService().getUrl() + '?page=new' ?>" target="_blank" data-toggle="tooltip" data-placement="top" title="Pour créer une nouvelle demande, cliquer sur ce lien" role="button"><h4><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span><b>&nbsp;Nouvelle demande</b></h4></a>
+          <a id="link" class="btn btn-default  pull-right" href="#" data-toggle="tooltip" data-placement="top" title="Pour télécharger la liste au format .csv" role="button"><h4><span class="glyphicon glyphicon-save" aria-hidden="true"></span></h4></a>
+          <!--?!=HtmlService.createHtmlOutputFromFile('dashboard-bloc-indicators').getContent(); ?-->
+          
+          <ul class="nav nav-tabs nav-pills nav-justified" role="tablist">
+            <li role="presentation" class="active">
+              <a href="#table_synthese_en_cours" aria-controls="table_synthese_en_cours" role="tab" data-toggle="tab" data-link="">
+                <h4>
+                  
+                    <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+                    &nbsp;DOSSIERS EN ATTENTE&nbsp;
+                  
+                  <span id="num_attente"></span>
+                </h4>
+              </a>
+            </li>
+            <li role="presentation">
+              <a href="#table_synthese_inprogress" aria-controls="table_synthese_inprogress" role="tab" data-toggle="tab" data-link="">
+                <h4>
+                  
+                  <span class="glyphicon glyphicon-hourglass" aria-hidden="true"></span>
+                  &nbsp;DOSSIERS EN COURS&nbsp;
+                  
+                  <span id="num_inprogress"></span>
+                </h4>
+              </a>
+            </li>
+            <li role="presentation">
+              <a href="#table_synthese_finale" aria-controls="table_synthese_won_lost" role="tab" data-toggle="tab" data-link="">
+                <h4>
+                  
+                  <span class="glyphicon glyphicon-flag" aria-hidden="true"></span>
+                    &nbsp;DOSSIERS CLOS&nbsp;
+                  
+                  <span id="num_clos"></span>
+                </h4>
+               </a>
+            </li>
+            <li role="presentation">
+              <a href="#table_synthese_nogo" aria-controls="table_synthese_nogo" role="tab" data-toggle="tab" data-link="">
+                <h4>
+                  
+                  <span class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span>
+                    &nbsp;DOSSIERS NO GO&nbsp;
+                  
+                  <span id="num_nogo"></span>
+                </h4>
+              </a>
+            </li>
+            
+          </ul>
+       
+           
       </div>
-      
-      <!--?!=HtmlService.createHtmlOutputFromFile('dashboard-bloc-indicators').getContent(); ?-->
-      
-      <ul class="nav nav-tabs nav-pills nav-justified" role="tablist">
-        <li role="presentation" class="active"><a href="#table_synthese_en_cours" aria-controls="table_synthese_en_cours" role="tab" data-toggle="tab"><h4>DOSSIERS EN ATTENTE</h4></a></li>
-        <li role="presentation"><a href="#table_synthese_go" aria-controls="table_synthese_go" role="tab" data-toggle="tab"><h4><span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span>&nbsp;DOSSIERS GO</h4></a></li>
-        <li role="presentation"><a href="#table_synthese_nogo" aria-controls="table_synthese_nogo" role="tab" data-toggle="tab"><h4><span class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span>&nbsp;DOSSIERS NO GO</h4></a></li>
-        
-      </ul>
       <!-- Tab panes -->
       <div class="tab-content">
         <div role="tabpanel" class="tab-pane fade in active" id="table_synthese_en_cours">  
             <div id="id_table"><br/><label>Recherche En cours. Merci de patientez...</label></div>
       
          </div>
-         <div role="tabpanel" class="tab-pane fade" id="table_synthese_go">
+         <div role="tabpanel" class="tab-pane fade" id="table_synthese_inprogress">
             <div id="id_table2"><br/><label>Recherche En cours. Merci de patientez...</label></div>
          </div>
           <div role="tabpanel" class="tab-pane fade" id="table_synthese_nogo">
             <div id="id_table3"><br/><label>Recherche En cours. Merci de patientez...</label></div>
-          </div>
+         </div>
+         <div role="tabpanel" class="tab-pane fade" id="table_synthese_finale">
+            <div id="id_table4"><br/><label>Recherche En cours. Merci de patientez...</label></div>
+         </div>
       
       </div>
     
@@ -118,9 +163,14 @@
     <!-- /.container-fluid -->
     <?!=HtmlService.createHtmlOutputFromFile('contact').getContent(); ?>
     <div class="navbar navbar-default navbar-fixed-bottom">
-      <div class="container">
-        <p class="navbar-text pull-left ">Site Built by <a class="text-mutex" href="http://www.sqli-enterprise.com/" target="_blank" title="Lien SQLI" >sqli.com</a></p>
-        <span id="contact" class="navbar-btn btn-danger btn pull-right" title="Prendre contact" >Contact</span>
+      <div class="">
+          <span class="navbar-text pull-left "><a id="info" class="" target="#" title="Release notes"> Releases</a></span>
+          
+          <span class="col-sm-9 ">
+            
+          </span>
+          <span class="col-sm-1 "></span>
+          <span id="contact" class="navbar-btn btn-danger btn" title="Prendre contact" >Contact</span>
       </div>
     </div>
 
@@ -134,43 +184,103 @@
     
     <script>
     google.load("visualization", "1.1", {packages:['table']});
-    
-    
   
+  function exportLink(){
+    
+    google.script.run
+                .withSuccessHandler(function(isAdmin){ 
+                   
+                   google.script.run
+                     .withSuccessHandler(function(values){ 
+                           var filter='.*',j, queries=[];
+                           
+                           if(!isAdmin) filter += <?=Session.getActiveUser().getEmail()?>+'.*';
+                           
+                           for( j in values ){
+                               var set_query = encodeURIComponent(values[j].replace(/@user/g,filter));
+                               var url = 'https://spreadsheets.google.com/tq?tqx=out:csv&tq='+set_query+'&key=<?=clsid?>&gid=2122602018';
+                               queries.push(url);
+                           }
+                          
+                           $('a[aria-controls="table_synthese_en_cours"]').attr('data-link',queries[0]);
+                           $('a[aria-controls="table_synthese_inprogress"]').attr('data-link',queries[1]);
+                           $('a[aria-controls="table_synthese_won_lost"]').attr('data-link',queries[3]);
+                           $('a[aria-controls="table_synthese_nogo"]').attr('data-link',queries[2]);
+                           
+                           $('#link').attr('href',queries[0]); // on force le lien sur la page active
+                       
+                           console.log($('li[role="presentation",class="active"]'));
+                           
+                       })
+                     .withFailureHandler(function(e){console.log('Exception'+e.message)})
+                     .enumParams('Dashboard table_export');
+                   
+                    
+                   
+                })
+                .withFailureHandler(function(e){
+                  console.log('Exception'+e.message);     
+                })
+                .isAdmin();
+  }
+    
   
   function drawTable() {
      var opts = {sendMethod: 'auto'}, set_query, query;
      
      
      google.script.run
-                .withSuccessHandler(function(values){ 
-                   console.log(values);
-                   set_query = encodeURIComponent(values[0].replace(/@user/g,<?=Session.getActiveUser().getEmail()?>));
-                   query = new google.visualization.Query(
-                   'https://spreadsheets.google.com/tq?tq='+set_query+'&key=<?=clsid?>&gid=2122602018',opts);
-                  
-                   query.send(handleQueryTable);
+                .withSuccessHandler(function(isAdmin){ 
+                   console.log('admins:'+isAdmin)
                    
+                   if(isAdmin) {
+                     $('#symbol_admin').html('<span class="glyphicon glyphicon-king" style="color:red" aria-hidden="true" ></span>');
+                     $('#connecting').html('#admin');
+                   }
+                   google.script.run
+                     .withSuccessHandler(function(values){ 
+                           var filter='.*';
+                           
+                           if(!isAdmin) filter += <?=Session.getActiveUser().getEmail()?>+'.*';
+                           
+                           
+                           set_query = encodeURIComponent(values[0].replace(/@user/g,filter));
+                           query = new google.visualization.Query(
+                           'https://spreadsheets.google.com/tq?tq='+set_query+'&key=<?=clsid?>&gid=2122602018',opts);
+                           
+                           query.send(handleQueryTable);
+                           
+                           set_query = encodeURIComponent(values[1].replace(/@user/g,filter));
+                           query = new google.visualization.Query(
+                           'https://spreadsheets.google.com/tq?tq='+set_query+'&key=<?=clsid?>&gid=2122602018',opts);
+                           
+                           query.send(handleQueryTable2);
+                           
+                           
+                           set_query = encodeURIComponent(values[2].replace(/@user/g,filter));
+                           query = new google.visualization.Query(
+                           'https://spreadsheets.google.com/tq?tq='+set_query+'&key=<?=clsid?>&gid=2122602018',opts);
+                           
+                           query.send(handleQueryTable3);
+                           
+                           
+                           set_query = encodeURIComponent(values[3].replace(/@user/g,filter));
+                           query = new google.visualization.Query(
+                           'https://spreadsheets.google.com/tq?tq='+set_query+'&key=<?=clsid?>&gid=2122602018',opts);
+                           
+                           query.send(handleQueryTable4);
+                           
+                       })
+                     .withFailureHandler(function(e){console.log('Exception'+e.message)})
+                     .enumParams('Dashboard table_synthese');
                    
-                   set_query = encodeURIComponent(values[1].replace(/@user/g,<?=Session.getActiveUser().getEmail()?>));
-                   query = new google.visualization.Query(
-                   'https://spreadsheets.google.com/tq?tq='+set_query+'&key=<?=clsid?>&gid=2122602018',opts);
-                  
-                   query.send(handleQueryTable2);
-                   
-                   
-                   set_query = encodeURIComponent(values[2].replace(/@user/g,<?=Session.getActiveUser().getEmail()?>));
-                   query = new google.visualization.Query(
-                   'https://spreadsheets.google.com/tq?tq='+set_query+'&key=<?=clsid?>&gid=2122602018',opts);
-                  
-                   query.send(handleQueryTable3);
-                   
+                    
                    
                 })
                 .withFailureHandler(function(e){
                   console.log('Exception'+e.message);     
                 })
-                .enumParams('Dashboard table_synthese');
+                .isAdmin();
      
      
      
@@ -185,6 +295,7 @@
  
  GOOGLE CHART TABLE
  
+ TABLE 1 REQUEST
  
  */
  
@@ -197,7 +308,9 @@
   
   // Graphic A
   var data = response.getDataTable();
-  console.log('in handleQueryTable',data)
+  
+  // view number of values
+  $('#num_attente').html( '('+data.getNumberOfRows()+')' )
   
   var chart = new google.visualization.Table(document.getElementById('id_table'));
   var cssClassNames = {
@@ -263,8 +376,11 @@
   Mise en forme de la colonne Action ( détail historique, lien folder google drive)
 /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\*/
   data.addColumn('string', 'Actions');
+   
    for(var i=0;i<data.getNumberOfRows();i++){
-     var link = data.getValue(i,i_url) , histo = data.getValue(i,i_log), ref=data.getValue(i,i_reference)
+    
+   /* 
+    var link = data.getValue(i,i_url) , histo = data.getValue(i,i_log), ref=data.getValue(i,i_reference)
      var html_msg = "<label >"
      
      html_msg += "<a class='cssCellAction' target='_blank' href='<?=ScriptApp.getService().getUrl()?>?page=response&ref="+ref+"'  data-toggle='tooltip' data-placement='bottom' title='Attribuer un RP ou Relancer'><img src='https://raw.githubusercontent.com/eremysqli/sqli/master/images/check30.png' style='width:24px;padding-rigth:1px'></a>"
@@ -275,8 +391,31 @@
      if( link) html_msg += "<a class='text-warning cssCellAction' href='"+link+"' target='_blank'><img src='https://raw.githubusercontent.com/eremysqli/sqli/master/images/clip27.png' style='width:24px;padding-rigth:1px'></a>"
      
      html_msg+="</label>"
+     
+     */
+     var link = data.getValue(i,i_url) , histo = data.getValue(i,i_log), ref=data.getValue(i,i_reference)
+     html_msg='<div class="btn-group dropup">';
+     html_msg+=(histo)?"<a href='#' data-url='"+histo+"' class='btn btn-info  btn-xs'>":'<a href="#" class="btn btn-info  btn-xs disabled">';
+     html_msg+='<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>';
+     html_msg+='<a href="#" class="btn btn-default btn-xs dropdown-toggle"  id="dropdownAction" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"> Plus ';
+     html_msg+='<span class="caret"></span></a>';
+     html_msg+='<ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownAction">';
+     html_msg+='<li>';
+     html_msg+='<a target="_blank" href="<?=ScriptApp.getService().getUrl()?>?page=response&ref='+ref+'"><span class="glyphicon glyphicon-share" aria-hidden="true"></span>&nbsp;Attribuer un RP</a>';
+     html_msg+='<a target="_blank" href="<?=ScriptApp.getService().getUrl()?>?page=decision&result=go&ref='+ref+'"><span class="glyphicon glyphicon-check" aria-hidden="true"></span>&nbsp;Valider par un Go</a>';
+     html_msg+='<a target="_blank" href="<?=ScriptApp.getService().getUrl()?>?page=decision&result=nogo&ref='+ref+'"><span class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span>&nbsp;Rejeter par un no Go</a>';
+     html_msg+='</li>';
+     html_msg+='<li class="divider hidden-desktop"></li>'; 
+     html_msg+=(link)?'<li>':'<li class="disabled">';
+     html_msg+='<a href="'+link+'" target="_blank" title="'+link+'"><span class="glyphicon glyphicon-cloud" aria-hidden="true"></span>&nbsp;Accéder au dossier AO</a>';
+     html_msg+='</li>';
+     html_msg+='</ul>';
+     html_msg+='</div>';
+     
      data.setValue(i,data.getNumberOfColumns()-1, html_msg )
    }
+   
+ 
   
   //formatter = new google.visualization.PatternFormat("<label><a href='#' data-url='{1}'><span class='glyphicon glyphicon-info-sign' aria-hidden='true'></span></a>&nbsp;<a href='{0}' target='_blank'><span class='glyphicon glyphicon-paperclip' aria-hidden='true'></span></a></label");
   //formatter.format(data, [data.getNumberOfColumns()-2,data.getNumberOfColumns()-1],data.getNumberOfColumns()-1);
@@ -317,7 +456,7 @@ Si aucun élément dans la table alors afficher aucun dossier
   
   google.visualization.events.addListener(chart, 'ready', myReadyHandler);
   chart.draw(view, options);
-  
+
   
   /*
   
@@ -328,6 +467,10 @@ Si aucun élément dans la table alors afficher aucun dossier
   $('#id_table  .cssHeaderCell:contains("Dossier")').css('width', '20%');
   $('#id_table  .cssHeaderCell:contains("Emission")').css('width', '10%');
   $('#id_table  .cssHeaderCell:contains("Remise")').css('width', '10%');
+  $('#id_table  .cssHeaderCell:contains("Actions")').css('width', '8%');
+  $('.dropup').parents().css('overflow', 'visible');
+  
+  
   
   
 
@@ -366,8 +509,8 @@ Si aucun élément dans la table alors afficher aucun dossier
 /*
  
  GOOGLE CHART TABLE  
- 
-   GO, WIN
+
+TABLE 2 REQUEST
  
  */
 function handleQueryTable2(response) {
@@ -379,7 +522,9 @@ function handleQueryTable2(response) {
   
   // Graphic A
   var data = response.getDataTable();
-  console.log('in handleQueryTable',data)
+  
+  // view number of values
+  $('#num_inprogress').html( '('+data.getNumberOfRows()+')' )
   
   var chart = new google.visualization.Table(document.getElementById('id_table2'));
   var cssClassNames = {
@@ -443,6 +588,7 @@ function handleQueryTable2(response) {
 /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\*/
   data.addColumn('string', 'Actions');
    for(var i=0;i<data.getNumberOfRows();i++){
+     /*
      var link = data.getValue(i,i_url) , histo = data.getValue(i,i_log)
      var html_msg = "<label >"
      
@@ -451,6 +597,32 @@ function handleQueryTable2(response) {
      
      html_msg+="</label>"
      data.setValue(i,data.getNumberOfColumns()-1, html_msg )
+     */
+     var link = data.getValue(i,i_url) , histo = data.getValue(i,i_log), obj = getHistoryKey(histo,'GO');
+     var url='',name_url='';
+     
+     if (obj!==undefined && obj.hasOwnProperty('comment')) { obj = obj.comment; if(obj.hasOwnProperty('cr')){ obj = obj.cr; if(obj.hasOwnProperty('URL')){ url = obj.URL, name_url = obj.NAME } }  }
+     
+     html_msg='<div class="btn-group dropup">';
+     html_msg+=(histo)?"<a href='#' data-url='"+histo+"' class='btn btn-info  btn-xs'>":'<a href="#" class="btn btn-info  btn-xs disabled">';
+     html_msg+='<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>';
+     html_msg+='<a href="#" class="btn btn-default btn-xs dropdown-toggle"  id="dropdownAction" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"> Plus ';
+     html_msg+='<span class="caret"></span></a>';
+     html_msg+='<ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownAction">';
+     
+     html_msg+=(link)?'<li>':'<li class="disabled">';
+     html_msg+='<a href="'+link+'" target="_blank" title="'+link+'"><span class="glyphicon glyphicon-cloud" aria-hidden="true"></span>&nbsp;Accéder au dossier AO</a>';
+     html_msg+='</li>';
+     html_msg+=(url)?'<li>':'<li class="disabled">';
+     html_msg+='<a href="'+url+'" target="_blank" title="'+name_url+'"><span class="glyphicon glyphicon-link" aria-hidden="true"></span>&nbsp;Accéder au CR</a>';
+     
+     
+     html_msg+='</li>';
+     html_msg+='</ul>';
+     html_msg+='</div>';
+     data.setValue(i,data.getNumberOfColumns()-1, html_msg )
+     
+     
    }
   
   
@@ -498,6 +670,8 @@ Si aucun élément dans la table alors afficher aucun dossier
   $('#id_table2  .cssHeaderCell:contains("Dossier")').css('width', '20%');
   $('#id_table2  .cssHeaderCell:contains("Emission")').css('width', '10%');
   $('#id_table2  .cssHeaderCell:contains("Remise")').css('width', '10%');
+  $('#id_table2  .cssHeaderCell:contains("Actions")').css('width', '8%');
+  $('.dropup').parents().css('overflow', 'visible');
 
 /*/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
   Gestion des triggers Event du google Table (mise à jour action)
@@ -533,7 +707,7 @@ Si aucun élément dans la table alors afficher aucun dossier
  
  GOOGLE CHART TABLE  
  
-   NOGO
+ TABLE 3 REQUEST
  
  */
 function handleQueryTable3(response) {
@@ -545,7 +719,10 @@ function handleQueryTable3(response) {
   
   // Graphic A
   var data = response.getDataTable();
-  console.log('in handleQueryTable',data)
+  
+  
+  // view number of values
+  $('#num_nogo').html( '('+data.getNumberOfRows()+')' )
   
   var chart = new google.visualization.Table(document.getElementById('id_table3'));
   var cssClassNames = {
@@ -609,6 +786,7 @@ function handleQueryTable3(response) {
 /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\*/
   data.addColumn('string', 'Actions');
    for(var i=0;i<data.getNumberOfRows();i++){
+     /*
      var link = data.getValue(i,i_url) , histo = data.getValue(i,i_log)
      var html_msg = "<label >"
      
@@ -616,6 +794,28 @@ function handleQueryTable3(response) {
      if( link) html_msg += "<a class='text-warning cssCellAction' href='"+link+"' target='_blank'><img src='https://raw.githubusercontent.com/eremysqli/sqli/master/images/clip27.png' style='width:24px;padding-rigth:1px'></a>"
      
      html_msg+="</label>"
+     */
+     var link = data.getValue(i,i_url) , histo = data.getValue(i,i_log), obj = getHistoryKey(histo,'NOGO');
+     var url='',name_url='';
+     
+     if (obj!==undefined && obj.hasOwnProperty('comment')) { obj = obj.comment; if(obj.hasOwnProperty('cr')){ obj = obj.cr; if(obj.hasOwnProperty('URL')){ url = obj.URL, name_url = obj.NAME } }  }
+     
+     html_msg='<div class="btn-group dropup">';
+     html_msg+=(histo)?"<a href='#' data-url='"+histo+"' class='btn btn-info  btn-xs'>":'<a href="#" class="btn btn-info  btn-xs disabled">';
+     html_msg+='<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>';
+     html_msg+='<a href="#" class="btn btn-default btn-xs dropdown-toggle"  id="dropdownAction" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"> Plus ';
+     html_msg+='<span class="caret"></span></a>';
+     html_msg+='<ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownAction">';
+     
+     html_msg+=(link)?'<li>':'<li class="disabled">';
+     html_msg+='<a href="'+link+'" target="_blank" title="'+link+'"><span class="glyphicon glyphicon-cloud" aria-hidden="true"></span>&nbsp;Accéder au dossier AO</a>';
+     html_msg+='</li>';
+     html_msg+=(url)?'<li>':'<li class="disabled">';
+     html_msg+='<a href="'+url+'" target="_blank" title="'+name_url+'"><span class="glyphicon glyphicon-link" aria-hidden="true"></span>&nbsp;Accéder au CR</a>';
+     
+     html_msg+='</li>';
+     html_msg+='</ul>';
+     html_msg+='</div>';
      data.setValue(i,data.getNumberOfColumns()-1, html_msg )
    }
   
@@ -664,6 +864,175 @@ Si aucun élément dans la table alors afficher aucun dossier
   $('#id_table3  .cssHeaderCell:contains("Dossier")').css('width', '20%');
   $('#id_table3  .cssHeaderCell:contains("Emission")').css('width', '10%');
   $('#id_table3  .cssHeaderCell:contains("Remise")').css('width', '10%');
+  $('#id_table3  .cssHeaderCell:contains("Actions")').css('width', '8%');
+  $('.dropup').parents().css('overflow', 'visible');
+
+/*/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
+  Gestion des triggers Event du google Table (mise à jour action)
+/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\*/
+  //google.visualization.events.addListener(chart, 'page', myReadyHandler);
+  google.visualization.events.addListener(chart, 'sort', myReadyHandler);
+  
+  
+}
+
+/*
+ 
+ GOOGLE CHART TABLE  
+ 
+ TABLE 4 REQUEST
+ 
+ */
+function handleQueryTable4(response) {
+  if (response.isError()) {
+    alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
+    return;
+  }
+  
+  
+  // Graphic A
+  var data = response.getDataTable();
+  
+  
+  // view number of values
+  $('#num_clos').html( '('+data.getNumberOfRows()+')' )
+  
+  var chart = new google.visualization.Table(document.getElementById('id_table4'));
+  var cssClassNames = {
+                
+                tableRow:'cssTableRow',
+                oddTableRow:'cssTableRow', 
+                selectedTableRow:'cssHoverRow', 
+                hoverTableRow:'cssHoverRow', 
+                 
+                headerCell:'cssHeaderCell',
+                tableCell:'cssCell',
+                rowNumberCell:'css8'}
+                
+  var options = {
+    title: 'Requête 4'
+    //,page:'enable'
+    //,pageSize: 12
+    ,allowHtml: true
+    //,showRowNumber: true
+    ,sortAscending:false
+    ,cssClassNames: cssClassNames
+      
+  };
+  
+  
+  
+  
+/*/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
+  Mise en forme de la colonne Statut
+/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/*/
+  var i_statut,i_url,i_log,i_datetime=[];
+  for(var i=0;i<data.getNumberOfColumns();i++){
+      if(data.getColumnLabel(i)=='Statut') i_statut = i;
+      if(data.getColumnLabel(i)=='url') i_url = i;
+      if(data.getColumnLabel(i)=='log') i_log = i;
+      if(data. getColumnType(i)=='datetime') i_datetime.push(i);
+      if(data.getColumnLabel(i).match('Emission')) options.sortColumn = i;
+      
+  }
+  var formatter = new google.visualization.PatternFormat('<span class="label {0}" data-html="{0}">&nbsp;</span>');
+  formatter.format(data, [i_statut],i_statut);
+  
+  /*/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
+  Mise en forme des colonnes datetime
+  /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/*/
+  var formatter_short = new google.visualization.DateFormat({pattern: 'dd/MM/yyyy'});
+  i_datetime.forEach(function(element,index){formatter_short.format(data, element);})
+  
+   /*
+  Mise en place des tooltip sur les champs string
+  */
+  formatter = new google.visualization.PatternFormat('<span  data-toggle="tooltip" data-placement="bottom" title="{0}">{0}</span>');
+  formatter.format(data, [1],1);
+  formatter.format(data, [2],2);
+  formatter.format(data, [3],3);
+  formatter.format(data, [4],4);
+  
+
+/*/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
+  Mise en forme de la colonne Action ( détail historique, lien folder google drive)
+/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\*/
+  data.addColumn('string', 'Actions');
+   for(var i=0;i<data.getNumberOfRows();i++){
+     /*
+     var link = data.getValue(i,i_url) , histo = data.getValue(i,i_log)
+     var html_msg = "<label >"
+     
+     if( histo ) html_msg += "<a class='cssCellAction' href='#' data-url='"+histo+"' data-toggle='tooltip' data-placement='bottom' title='Détail'><img src='https://raw.githubusercontent.com/eremysqli/sqli/master/images/information15.png' style='width:24px;padding-rigth:1px'></a>"
+     if( link) html_msg += "<a class='text-warning cssCellAction' href='"+link+"' target='_blank'><img src='https://raw.githubusercontent.com/eremysqli/sqli/master/images/clip27.png' style='width:24px;padding-rigth:1px'></a>"
+     
+     html_msg+="</label>"
+     */
+     var link = data.getValue(i,i_url) , histo = data.getValue(i,i_log);
+     
+     html_msg='<div class="btn-group dropup">';
+     html_msg+=(histo)?"<a href='#' data-url='"+histo+"' class='btn btn-info  btn-xs'>":'<a href="#" class="btn btn-info  btn-xs disabled">';
+     html_msg+='<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>';
+     html_msg+='<a href="#" class="btn btn-default btn-xs dropdown-toggle"  id="dropdownAction" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"> Plus ';
+     html_msg+='<span class="caret"></span></a>';
+     html_msg+='<ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownAction">';
+     
+     html_msg+=(link)?'<li>':'<li class="disabled">';
+     html_msg+='<a href="'+link+'" target="_blank" title="'+link+'"><span class="glyphicon glyphicon-cloud" aria-hidden="true"></span>&nbsp;Accéder au dossier AO</a>';
+     html_msg+='</li>';
+    
+     html_msg+='</ul>';
+     html_msg+='</div>';
+     data.setValue(i,data.getNumberOfColumns()-1, html_msg )
+   }
+  
+  
+  //formatter = new google.visualization.PatternFormat("<label><a href='#' data-url='{1}'><span class='glyphicon glyphicon-info-sign' aria-hidden='true'></span></a>&nbsp;<a href='{0}' target='_blank'><span class='glyphicon glyphicon-paperclip' aria-hidden='true'></span></a></label");
+  //formatter.format(data, [data.getNumberOfColumns()-2,data.getNumberOfColumns()-1],data.getNumberOfColumns()-1);
+
+  
+  
+  
+
+
+  for(var index=0;index<data.getNumberOfColumns();index++){
+    if(data.getColumnLabel(index).search('glyphicon')!=-1){
+      //  label C "glyphicon-eye-open,Mon label personnalisé",
+      var labels = data.getColumnLabel(index).split(','), label;
+      label = '<span class="glyphicon '+labels[0]+'" aria-hidden="true"></span>&nbsp;';
+      if(labels.length>1) label+= labels[1];
+      
+      data.setColumnLabel(index,label);
+      }
+    }
+  
+/*\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
+Si aucun élément dans la table alors afficher aucun dossier
+/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\\*/
+  if(data.getNumberOfRows()==0) { data.addRow();/*data.setValue(0, i_statut, 'Aucun dossier')*/}
+
+/*/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
+  Masquer les éventuelles colonnes pour le traitement des actions
+/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\*/ 
+  var view = new google.visualization.DataView(data);
+  //view.hideColumns([data.getNumberOfColumns()-2]);
+  view.hideColumns([i_url,i_log]);
+
+  
+  google.visualization.events.addListener(chart, 'ready', myReadyHandler);
+  chart.draw(view, options);
+  
+  /*
+  
+  REGLES D'AJUSTEMENT DES COLONNES
+  */
+  $('#id_table4  .cssHeaderCell:contains("Code")').css('width', '10%');
+  $('#id_table4  .cssHeaderCell:contains("Statut")').css('width', '6%');
+  $('#id_table4  .cssHeaderCell:contains("Dossier")').css('width', '20%');
+  $('#id_table4  .cssHeaderCell:contains("Emission")').css('width', '10%');
+  $('#id_table4  .cssHeaderCell:contains("Remise")').css('width', '10%');
+  $('#id_table4  .cssHeaderCell:contains("Actions")').css('width', '8%');
+  $('.dropup').parents().css('overflow', 'visible');
 
 /*/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
   Gestion des triggers Event du google Table (mise à jour action)
@@ -679,6 +1048,12 @@ function myReadyHandler(){
        Ce handler est remit à jour à chaque réorganisation du tableau
     */
     
+    //$('[data-toggle="tooltip"]').tooltip();
+    $('.dropdown-toggle').dropdown();
+    //$('.dropdown').parents().css('overflow', 'visible');
+    $('.dropup').parents().css('overflow', 'visible');
+  
+   
     $('a[data-url]').click(function(){
                 var log = JSON.parse($(this).attr('data-url'));
                 
@@ -696,6 +1071,19 @@ function myReadyHandler(){
               
     
 }
+
+function getHistoryKey(json,state){
+  var log = JSON.parse(json), events=[];
+  if(log){
+    for(var i=0;i<log.length;i++){
+      if(log[i].state==state) events.push(log[i])
+    }
+  
+  
+  }
+  return events.reverse()[0];
+}
+
 
 function eventHistory(e){
    console.log('click:',e);
@@ -749,7 +1137,7 @@ function addtimeline( o, inverse){
     
     bull+='      <div class="timeline-panel">';
     bull+='<div class="timeline-heading">';
-    bull+='<h4 class="timeline-title">'+o.operation+'</h4>';
+    bull+='<h5 class="timeline-title">'+o.operation+'</h4>';
     bull+='<p><small class="text-muted"><i class="glyphicon glyphicon-time"></i> '+$.format.date(o.date,'d MMMM yyyy h:mm p')+' by '+o.user+'</small></p>';
     bull+='</div>';
     bull+='<div class="timeline-body">';
@@ -760,35 +1148,106 @@ function addtimeline( o, inverse){
     bull+='</li>';
 
     return bull;
+   
     
  }
  
  function objToString (obj) {
     var str = '';
     
-    for (var p in obj) {
-       
-        if (obj.hasOwnProperty(p)) {
+    /* Test si object spécifique url
+       Seul le nom et le lien url est affiché
+    
+    */
+    if(obj.hasOwnProperty('URL')){
+      str +=  '<b>'+obj.NAME + '</b> : <a href="'+obj.URL+'" target="_blank"><span class="glyphicon glyphicon-link" aria-hidden="true"></span></a><br>';
+    
+    }else{
+    
+      for (var p in obj) {
             if(typeof obj[p] == 'object') str += objToString(obj[p]);
-            else {str += '<i>'+p + '</i> : ' + obj[p] + '<br>';}
-        }
+            else {str += '<b>'+p + '</b> : ' + obj[p] + '<br>';}
+          }
     }
     return str;
 }
 
-
     
     $(function(){
      console.log('ready');
+     
+     
      $('#contact').on('click',function(){ $('#contactModal').modal({
           backdrop:false,
           }); });
      
+     
+     $('#contactModal').on('show.bs.modal', function (e) {
+       $('#contactModal #recipient-name').val(<?=Session.getActiveUser().getEmail();?>);
+       $('#contactModal #message-text').val('');
+     });
+     
+     $('#contactModal button[class="btn btn-primary"]').on('click',function(){
+       var note = $('#contactModal #message-text').val();
+       
+       if( note == '') return;
+       google.script.run.withSuccessHandler()
+         .withFailureHandler(function(e){$('#alert #error').html(e);$('#alert').modal('show');})
+         .MailContact(note);
+       $('#contactModal').modal('hide');
+     
+     });
+   
      google.setOnLoadCallback(drawTable);
+     exportLink();
+     
+     $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+       $('#link').attr('href',$(e.target).attr('data-link')); // newly activated tab
+       
+     });
+     
      $('[data-toggle="tooltip"]').tooltip();
      
-     
+     /*
+     Mise en forme du ticker en pied de page
+   
+     $('.ticker').css('padding-right',$('.ticker-wrap').parent().width())
+     google.script.run.withSuccessHandler(function(values){
+                    var out='';
+                    $.each(values,function(index,value){out+='<div class="ticker__item">'+value+'</div>'})
+                    $('.ticker').append(out)
+                    
+                })
+                .withFailureHandler(function(e){
+                  console.log('Exception'+e.message);     
+                })
+                .enumParams('Informations flash');
+                
+      */
     
+    /*
+    Modal release notes
+    */
+    $('#info').on('click',function(){
+    
+      $('#release-notes').modal({
+        backdrop:false,
+      });
+    });
+    
+    $('#release-notes').on('show.bs.modal', function (e) {
+      google.script.run.withSuccessHandler(function(values){
+      $('#notes').html('')
+      for(var i in values){$('#notes').append(values[i])}
+      
+      })
+    .withFailureHandler(function(e){
+      console.log('Exception'+e.message);     
+    })
+    .enumParams('Release notes');
+    
+       
+     });
     
     });
 </script>

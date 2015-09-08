@@ -5,7 +5,7 @@
 
 
 
-[class*="col-"] {
+[class*="------col-"] {
  background-color: lightgreen;
  border: 1px solid black;
  border-radius: 6px;
@@ -24,106 +24,106 @@
 
 <body >
 <div class="container">  
+  
+   
+  
+  
   <div class="row ">
-        <div class=" col-md-8">
-        
-              <div id="select_response" class="" style="display:true" data-param_type="">
-                  
-                  <div class="col-md-4" data-val="true">
-                   <div class="thumbnail">
-                    <div class="caption ">
-                     <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span>
-                     <p class="text-uppercase hidden-xs hidden-sm">Ma Unit prend en charge&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
-                     <input data-val-required="The IsMyUnit field is required." id="IsMyUnit" name="A" type="radio" value="True">
-                    </div>
-                   </div>
-                  </div>
-                  
-                  <div class="col-md-4" data-val="false">
-                   <div class="thumbnail ">
-                    <div class="caption">
-                     <span class="glyphicon glyphicon-random " aria-hidden="true"></span>
-                     <p class="text-uppercase">Je redirige vers une autre Unit</p>
-                     <input   data-val-required="The IsMyUnit field is required." id="IsMyUnit" name="A" type="radio" value="False">
-                    </div>
-                   </div>
-                  </div>
-                  
-                  <div class="col-md-4"  data-val="other">
-                   <div class="thumbnail">
-                    <div class="caption ">
-                     <span class="glyphicon glyphicon-user " aria-hidden="true"></span>
-                     <p class="text-uppercase">Je redirige vers un collaborateur</p>
-                     <input  data-val-required="The IsMyUnit field is required." id="IsMyUnit" name="A" type="radio" value="Other">
-                    </div>
-                   </div>
-                  </div>
-               
-              </div>
-          </div> <!-- End class class="col-md-offset-2 col-md-8" -->
-       </div>  <!-- End row -->
-       
-       <div class="row">
-      <div class="col-md-offset-3 col-md-7">
-       <!--div class="col-md-11"-->
-         <a href="<?=ScriptApp.getService().getUrl() +'?page=new'?>" target="_blank">
-          <div style="background-color: lightgrey; ">
-            <img src="https://raw.githubusercontent.com/eremysqli/pp9web/master/images/pp9-web-formulaire.png" style="width:390px;">
-         
-       
-            <span class="text_link">
-              <h1><b>Déclarer une AVV</b></h1>
-              Pour cela rien de plus simple. <br/>Votre demande s'intégrera ainsi automatiquement dans le workflow de suivi.
-         
-            </span>
-            
-          </div>
-        </a>
-       <!--/div-->
+    
+  <div id="ici">
+   <div class="btn-group">
+     <a href="#" class="btn btn-info  btn-xs dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>
+     
+     <div class="dropdown-menu">
+              <form id="formLogin" class="form container-fluid">
+                <br>
+                <div class="form-group">
+                	<input class="form-control" name="username" id="username" type="text" placeholder="Username" pattern="^[a-z,A-Z,0-9,_]{6,15}$" data-valid-min="6" title="Enter your username" required="">
+                </div>
+                <div class="form-group">	
+                	<input class="form-control" name="password" id="password" type="password" placeholder="Password" title="Enter your password" required="">
+                </div>  
+                <button type="button" id="btnLogin" class="btn btn-block">Login</button>
+              	<hr>
+              	<a href="#" title="Fast and free sign up!" id="btnNewUser" data-toggle="collapse" data-target="#formRegister" class="small">New User? Sign-up..</a>
+              </form>
       </div>
+     
+     
+     <a href="#" class="btn btn-primary  btn-xs"><span class="glyphicon glyphicon-link" aria-hidden="true"></span></a>
+     
+     <a href="#" class="dropdown-toggle"  id="dropdownAction" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+     <span class="caret"></span></a>
+     <ul class="dropdown-menu" aria-labelledby="dropdownAction">
+     <li>
+     <a href="#"><span class="glyphicon glyphicon-share" aria-hidden="true"></span>&nbsp;Attribuer</a>
+     <a href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span>&nbsp;Valider</a>
+     <a href="#"><span class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span>&nbsp;Rejeter</a>
+     </li>
+     <li class="divider hidden-desktop"></li>
+     <li>
+     <a href="#"><span class="glyphicon glyphicon-cloud" aria-hidden="true"></span>&nbsp;Drive</a>
+     </li>
+     </ul>
+     </div>
+  
+  
+  
+  
+  
+  </div>  
     
      
-    </div> <!--div row--> 
+  </div> <!--div row--> 
  
 </div> 
 
 <button type="submit" id="myButton" data-toggle="button" data-loading-text="Loading..." class="pull-right btn btn-primary" aria-pressed="false" >Envoyer sur paris.avv&nbsp;<span class="glyphicon glyphicon-share-alt"></span></button>               
 
+<div class="bs-example bs-example-tabs" data-example-id="togglable-tabs">
+    <ul id="myTabs" class="nav nav-tabs nav-pills nav-justified" role="tablist">
+      <li role="presentation" class="active"><a href="#home" id="home-tab" role="tab" data-toggle="tab" aria-controls="home" aria-expanded="true">Home</a></li>
+      <li role="presentation"><a href="#profile" role="tab" id="profile-tab" data-toggle="tab" aria-controls="profile">Profile</a></li>
+      <li role="presentation" class="dropdown">
+        <a href="#" id="myTabDrop1" class="dropdown-toggle" data-toggle="dropdown" aria-controls="myTabDrop1-contents" aria-expanded="false">Dropdown <span class="caret"></span></a>
+        <ul class="dropdown-menu" aria-labelledby="myTabDrop1" id="myTabDrop1-contents">
+          <li><a href="#dropdown1" >@fat</a></li>
+          <li><a href="#dropdown2" >@mdo</a></li>
+        </ul>
+      </li>
+    </ul>
+    
+    
+    
+    <div id="myTabContent" class="tab-content">
+      <div role="tabpanel" class="tab-pane fade in active" id="home" aria-labelledby="home-tab">
+        <p>Raw denim you probably haven't heard of them jean shorts Austin. Nesciunt tofu stumptown aliqua, retro synth master cleanse. Mustache cliche tempor, williamsburg carles vegan helvetica. Reprehenderit butcher retro keffiyeh dreamcatcher synth. Cosby sweater eu banh mi, qui irure terry richardson ex squid. Aliquip placeat salvia cillum iphone. Seitan aliquip quis cardigan american apparel, butcher voluptate nisi qui.</p>
+      </div>
+      <div role="tabpanel" class="tab-pane fade" id="profile" aria-labelledby="profile-tab">
+        <p>Food truck fixie locavore, accusamus mcsweeney's marfa nulla single-origin coffee squid. Exercitation +1 labore velit, blog sartorial PBR leggings next level wes anderson artisan four loko farm-to-table craft beer twee. Qui photo booth letterpress, commodo enim craft beer mlkshk aliquip jean shorts ullamco ad vinyl cillum PBR. Homo nostrud organic, assumenda labore aesthetic magna delectus mollit. Keytar helvetica VHS salvia yr, vero magna velit sapiente labore stumptown. Vegan fanny pack odio cillum wes anderson 8-bit, sustainable jean shorts beard ut DIY ethical culpa terry richardson biodiesel. Art party scenester stumptown, tumblr butcher vero sint qui sapiente accusamus tattooed echo park.</p>
+      </div>
+      <div role="tabpanel" class="tab-pane fade" id="dropdown1" aria-labelledby="dropdown1-tab">
+        <p>Etsy mixtape wayfarers, ethical wes anderson tofu before they sold out mcsweeney's organic lomo retro fanny pack lo-fi farm-to-table readymade. Messenger bag gentrify pitchfork tattooed craft beer, iphone skateboard locavore carles etsy salvia banksy hoodie helvetica. DIY synth PBR banksy irony. Leggings gentrify squid 8-bit cred pitchfork. Williamsburg banh mi whatever gluten-free, carles pitchfork biodiesel fixie etsy retro mlkshk vice blog. Scenester cred you probably haven't heard of them, vinyl craft beer blog stumptown. Pitchfork sustainable tofu synth chambray yr.</p>
+      </div>
+      <div role="tabpanel" class="tab-pane fade" id="dropdown2" aria-labelledby="dropdown2-tab">
+        <p>Trust fund seitan letterpress, keytar raw denim keffiyeh etsy art party before they sold out master cleanse gluten-free squid scenester freegan cosby sweater. Fanny pack portland seitan DIY, art party locavore wolf cliche high life echo park Austin. Cred vinyl keffiyeh DIY salvia PBR, banh mi before they sold out farm-to-table VHS viral locavore cosby sweater. Lomo wolf viral, mustache readymade thundercats keffiyeh craft beer marfa ethical. Wolf salvia freegan, sartorial keffiyeh echo park vegan.</p>
+      </div>
+    </div>
+  </div>
 
- 
+  
 
 </body>
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.4/js/bootstrap.min.js"></script>
 <script>
 // PARTIE JQUERY
 $(function(){
 
-$('.ticker').css('padding-right',$('.ticker-wrap').parent().width())
-
-// Alimentation de la liste des technos
-/*
-google.script.run.withSuccessHandler(function(values){
-                    var out='';
-                    $.each(values,function(index,value){out+='<div class="ticker__item">'+value+'</div>'})
-                    $('.ticker').append(out)
-                    
-                })
-                .withFailureHandler(function(e){
-                  console.log('Exception'+e.message);     
-                })
-                .enumParams('Informations flash');
-*/
-
-
-  
-   $('#myButton').on('click', function () {
-    var $btn = $(this).button('toggle')
-    // business logic...
-    //$btn.button('reset')
-  })
-
+ $('.stop-propagation').on('click', function (e) {
+    e.stopPropagation();
+});
 
 })
 </script>

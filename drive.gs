@@ -1,3 +1,25 @@
+function getFilename(Id){
+  var fileList;
+  try{
+    fileList = DriveApp.getFileById(Id).getName();
+  
+  }catch(e){fileList="";}
+  
+  return fileList;
+
+}
+
+function getUrl(Id){
+  var fileList;
+  try{
+    fileList = DriveApp.getFileById(Id).getUrl();
+  
+  }catch(e){fileList="";}
+  
+  return fileList;
+
+}
+
 function Copy_DriveAPI(source, destination){
   
   // Recopie de l'ensemble des fichiers du répertoire courant
@@ -31,6 +53,7 @@ function drive_testing(){
   
   try{
    
+    Logger.log(getFilename('0BxTfS7jXR_FYMTZDNUl2MENNbnc'))
    
   }catch(e){Logger.log(e);}
 }

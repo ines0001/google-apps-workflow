@@ -354,7 +354,7 @@ $(function(){
   \/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/*/
   $("form").on('submit',function(){
   
-     console.log('submit');
+     console.log(this);
      $('button[type="submit"]').button('copy');
      $('#error-mail').html('');
      

@@ -62,11 +62,28 @@ OLogger.prototype = {
   
 }
 
+
+// Define Specific URL CLass
+function C_Url(ID) {
+  this.ID = ID;
+  this.URL = getUrl(ID);
+  this.NAME = getFilename(ID);
+  Logger.log('Nouvel objet Url:%s',this);
+}
+
 function utilities_testing(){
- var t = '[{"date":"2015-04-27T12:42:54.824Z","user":"eremy@sqli.com","operation":"create","state":"EN ATTENTE","identifiant":"AZERTYUII"},{"date":"2015-04-27T12:45:14.881Z","user":"eremy@sqli.com","operation":"response","state":"RELANCE","comment":"onValidateRedirectionUnit"},{"date":"2015-04-27T12:46:02.875Z","user":"eremy@sqli.com","operation":"response","state":"RELANCE","comment":"onValidateRedirectionUnit"}]';
- var o = new OLogger(t);
+ var o = new OLogger();
+ mon_url =  new C_Url('0BxTfS7jXR_FYUVd6dFBORzNTLTA');
+ 
+ var json = o.pushSession('Décision GO','GO',{client:'toto',nom:'info',cr:new C_Url('0BxTfS7jXR_FYUVd6dFBORzNTLTA')});
+
+ var out = JSON.parse(json);
+ 
+ Logger.log( typeof out[0].comment.cr== 'object') // Renvoie TRUE
+ 
+ Logger.log(out[0].comment.cr.hasOwnProperty('URL'))
   
- Logger.log(o);
+ //Logger.log(o);
   
 }
 
@@ -288,3 +305,6 @@ function getNameinEmail(email)
  var t = email.split('@');
  return t[0]; 
 }
+
+
+
