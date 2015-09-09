@@ -65,11 +65,7 @@
     <p class="navbar-brand navbar-nav navbar-view">
       <span class="pp9-police pp9-border-plein">P</span><span class="pp9-police pp9-border-plein">P</span><span class="pp9-police pp9-border-creux">9</span><span class="pp9-police">{WEB}</span>
     </p>
-<<<<<<< HEAD
     <p class="navbar-brand navbar-nav navbar-view"><span id="symbol_admin"><span class="glyphicon glyphicon-user" aria-hidden="true"></span></span>&nbsp;<?=Session.getActiveUser().getEmail()?>&nbsp;<span id="connecting"></span></p>
-=======
-    <p class="navbar-brand navbar-nav"><span id="symbol_admin"><span class="glyphicon glyphicon-user" aria-hidden="true"></span></span>&nbsp;<?=Session.getActiveUser().getEmail()?>&nbsp;<span id="connecting"></span></p>
->>>>>>> origin/master
     <!-- Collect the nav links, forms, and other content for toggling -->
     
     <div class="collapse navbar-collapse " id="bs-example-navbar-collapse-1">
@@ -89,7 +85,6 @@
       <!-- Page Heading -->
      
       
-<<<<<<< HEAD
       <div class="row">
           
           <a class="btn btn-success  pull-right" href="<?=ScriptApp.getService().getUrl() + '?page=new' ?>" target="_blank" data-toggle="tooltip" data-placement="top" title="Pour créer une nouvelle demande, cliquer sur ce lien" role="button"><h4><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span><b>&nbsp;Nouvelle demande</b></h4></a>
@@ -146,23 +141,6 @@
        
            
       </div>
-=======
-        <div class="col-lg-12">
-          <a class="btn btn-primary  pull-right" href="<?=ScriptApp.getService().getUrl() + '?page=new' ?>" target="_blank" data-toggle="tooltip" data-placement="bottom" title="Pour créer une nouvelle demande, cliquer sur ce lien" role="button"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>&nbsp;Nouvelle demande</a>
-        
-        
-        </div>
-      </div>
-      
-      <!--?!=HtmlService.createHtmlOutputFromFile('dashboard-bloc-indicators').getContent(); ?-->
-      
-      <ul class="nav nav-tabs nav-pills nav-justified" role="tablist">
-        <li role="presentation" class="active"><a href="#table_synthese_en_cours" aria-controls="table_synthese_en_cours" role="tab" data-toggle="tab"><h4>DOSSIERS EN ATTENTE&nbsp;<span id="num_attente"></span></h4></a></li>
-        <li role="presentation"><a href="#table_synthese_go" aria-controls="table_synthese_go" role="tab" data-toggle="tab"><h4><span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span>&nbsp;DOSSIERS GO&nbsp;<span id="num_go"></span></h4></a></li>
-        <li role="presentation"><a href="#table_synthese_nogo" aria-controls="table_synthese_nogo" role="tab" data-toggle="tab"><h4><span class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span>&nbsp;DOSSIERS NO GO&nbsp;<span id="num_nogo"></span></h4></a></li>
-        
-      </ul>
->>>>>>> origin/master
       <!-- Tab panes -->
       <div class="tab-content">
         <div role="tabpanel" class="tab-pane fade in active" id="table_synthese_en_cours">  
@@ -272,10 +250,6 @@
                            
                            query.send(handleQueryTable);
                            
-<<<<<<< HEAD
-=======
-                           
->>>>>>> origin/master
                            set_query = encodeURIComponent(values[1].replace(/@user/g,filter));
                            query = new google.visualization.Query(
                            'https://spreadsheets.google.com/tq?tq='+set_query+'&key=<?=clsid?>&gid=2122602018',opts);
@@ -289,7 +263,6 @@
                            
                            query.send(handleQueryTable3);
                            
-<<<<<<< HEAD
                            
                            set_query = encodeURIComponent(values[3].replace(/@user/g,filter));
                            query = new google.visualization.Query(
@@ -297,8 +270,6 @@
                            
                            query.send(handleQueryTable4);
                            
-=======
->>>>>>> origin/master
                        })
                      .withFailureHandler(function(e){console.log('Exception'+e.message)})
                      .enumParams('Dashboard table_synthese');
@@ -337,9 +308,6 @@
   
   // Graphic A
   var data = response.getDataTable();
-  
-  // view number of values
-  $('#num_attente').html( '('+data.getNumberOfRows()+')' )
   
   // view number of values
   $('#num_attente').html( '('+data.getNumberOfRows()+')' )
@@ -554,15 +522,9 @@ function handleQueryTable2(response) {
   
   // Graphic A
   var data = response.getDataTable();
-<<<<<<< HEAD
   
   // view number of values
   $('#num_inprogress').html( '('+data.getNumberOfRows()+')' )
-=======
-  console.log('in handleQueryTable',data)
-  // view number of values
-  $('#num_go').html( '('+data.getNumberOfRows()+')' )
->>>>>>> origin/master
   
   var chart = new google.visualization.Table(document.getElementById('id_table2'));
   var cssClassNames = {
@@ -758,9 +720,6 @@ function handleQueryTable3(response) {
   // Graphic A
   var data = response.getDataTable();
   
-  
-  // view number of values
-  $('#num_nogo').html( '('+data.getNumberOfRows()+')' )
   
   // view number of values
   $('#num_nogo').html( '('+data.getNumberOfRows()+')' )

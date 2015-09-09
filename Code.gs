@@ -211,11 +211,7 @@ function testing(){
 
   try{
     
-<<<<<<< HEAD
     Logger.log("file:"+Getfilename('0B0WdP5H8ZjVmxYVmVuZ0h4SDg'))
-=======
-    Logger.log(isAdmin())
->>>>>>> origin/master
     
  
     
