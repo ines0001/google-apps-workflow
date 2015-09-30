@@ -28,6 +28,42 @@
 </div>
 
 
+<div class="modal fade " id="relanceModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Relance : <span class="modal-title label label-primary" id="title"></span></h4>
+        
+        
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="form-group">
+            <label for="recipient-name" class="control-label">Destinataire(s):</label>
+            <input type="text" class="form-control" id="recipient" >
+            <small class="help-block">Utiliser <b>la virgule</b> comme séparateur des emails</small>
+          </div>
+          <div class="form-group">
+            <label for="message-text" class="control-label">Votre message:</label>
+            <div>
+              <textarea class="form-control" id="message-text" rows="7" required></textarea>
+            </div>
+            <small class="help-block">Renseigner le message de relance</small>
+          </div>
+          <input type="text" class="invisible" id="reference_hide" readonly>
+          <input type="text" class="invisible" id="vue_hide" readonly>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" >Envoyer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
 <div id="release-notes" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
   <div class="modal-dialog">
     <div class="modal-content">

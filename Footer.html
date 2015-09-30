@@ -1,0 +1,76 @@
+<div>
+  <!-- /.container-fluid -->
+     
+    <div class="navbar navbar-default navbar-fixed-bottom">
+      <div class="">
+          <span class="navbar-text pull-left ">
+            <a target="_blank" href="<?=ScriptApp.getService().getUrl()?>?page=changelog" title="Change log">Releases</a>
+           </span>
+          
+          <span class="col-sm-9 ">
+             <span id="foot_alert" class="navbar-text"></span>
+          </span>
+          <span class="col-sm-1 "></span>
+          <span id="contact" class="navbar-btn btn-danger btn" title="Prendre contact" >Contact</span>
+      </div>
+    </div>
+</div>
+
+<!-- jQuery -->
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>
+function clear_alert(){
+
+    $('#foot_alert').html('');
+}
+
+function foot_warning(m){
+
+  $('#foot_alert').html('<span class="glyphicon glyphicon-warning-sign text-warning" aria-hidden="true"></span><span class="sr-only">Warning:</span>&nbsp;'+m);
+
+}
+
+function foot_error(m){
+  $('#foot_alert').html('<span class="glyphicon glyphicon-warning-sign text-danger" aria-hidden="true"></span><span class="sr-only">Error:</span>&nbsp;'+m);
+
+}
+
+function foot_success(m){
+  $('#foot_alert').html('<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span><span class="sr-only"></span>&nbsp;'+m);
+
+}
+
+function foot_message(m){
+  $('#foot_alert').html('<span class="glyphicon glyphicon-info-sign text-info" aria-hidden="true"></span><span class="sr-only"></span>&nbsp;'+m);
+
+}
+
+$(function(){
+    console.log('ready Footer page');
+    
+    $('#contact').on('click',function(){ $('#contactModal').modal({
+          backdrop:false,
+          }); });
+     
+     
+     $('#contactModal').on('show.bs.modal', function (e) {
+       $('#contactModal #recipient-name').val(<?=Session.getActiveUser().getEmail();?>);
+       $('#contactModal #message-text').val('');
+     });
+     
+     $('#contactModal button[class="btn btn-primary"]').on('click',function(){
+       var note = $('#contactModal #message-text').val();
+       
+       if( note == '') return;
+       google.script.run.withSuccessHandler()
+         .withFailureHandler(function(e){$('#alert #error').html(e);$('#alert').modal('show');})
+         .MailContact(note);
+       $('#contactModal').modal('hide');
+     
+     });
+     
+    
+ 
+ });
+ 
+</script>

@@ -10,15 +10,12 @@ function testingMail(){
   try{
     
         
-    mailingAfterGoNoGo('eremy@sqli.com',{ 
-                         ao:'dossier',
-                         client:'Mon client',
-                         remise:"10/10/2015",
-                         rp:'toto@sqli.com',
-                         title:'Mon titre ici',
-                         comment:'<p>VOILA</p>',
-                         cc:GetEMAIL_DIFFUSION_NOGO_CC(),
-                       });
+   MailingRelanceToManager('eremy@sqli.com', 
+                            {ao:'dossier',
+                            date:Utilities.formatDate(new Date(), "GMT+02:00", "dd/MM/yyyy"),
+                             client:'client',
+                             comment:'voici mo nmessage',
+                            });
     
   }catch(e){Logger.log(e);}
 
@@ -207,6 +204,130 @@ function MailingToRP(emetteur,option){
   return true;
 }
 
+
+function MailingRelanceToManager(destinataire,option){
+   if(__DEBUG__) {Logger.log('MailingRelanceToManager to:%-20s\toption:%s',destinataire,JSON.stringify(option,null,null));}
+  if(destinataire===undefined || typeof option!='object') throw 'MailingRelanceToManager:no values for sendMailing';
+  
+  var html = HtmlService.createTemplateFromFile('mailchimp_standard_cssonline'),
+      objet='',mail='';
+
+  html.client= option.client;
+  html.ao = option.ao;
+  
+  
+  
+  html.body_html= '%%body_mail%%';
+  
+ 
+  mail = '<div style="text-decoration:none;-webkit-box-sizing: border-box;-moz-box-sizing: border-box;box-sizing: border-box;padding: 15px;margin-bottom: 20px;border: 1px solid transparent;border-radius: 4px;color: #a94442;background-color: #f2dede;border-color: #ebccd1;margin-right: 15px;margin-left: 15px;"><b>&#9432;</b>';
+  mail+=' Le dossier est actuellement en attente  d\'affectation d\'un responsable de proposition.<br>Merci de compléter le formulaire suivant : ';
+  mail+='<a href="'+URL_EXEC+'?page=response&ref='+option.id+'" target="_blank" style="color:#FFFFFF; text-decoration:none;">Lien</a>';
+  mail+='</div>'
+  mail+='<u>message de <b>'+Session.getActiveUser().getEmail()+'</b>:</u><br>'
+  mail+=option.comment; 
+  
+  
+  var sqliLogoUrl = "http://www.sqli-enterprise.com/files/2014/05/logo_sqli_entreprise_340x156_bg_transp1.png";
+   
+  var sqliLogoBlob = UrlFetchApp
+                          .fetch(sqliLogoUrl)
+                          .getBlob()
+                          .setName("sqliLogoBlob");
+  
+  var advancedArgs = {htmlBody: html.evaluate()
+                                    .getContent()
+                                    .replace('%%body_mail%%',mail.nl2br()),
+                                    
+                      inlineImages:{
+                                     sqliLogo: sqliLogoBlob
+                                   },
+                      cc: option.cc,
+                      noReply:true,
+                     
+                     };
+  
+  objet = SUBJECT_ADMIN_RELANCE.replace('%date%',option.date);
+  objet = objet.replace('%dossier%',option.ao);
+  
+  if(option) MailApp.sendEmail(destinataire, objet, '', advancedArgs);
+ 
+  return true;
+}
+
+function MailingRelanceToGo(destinataire,option){
+   if(__DEBUG__) {Logger.log('MailingRelanceToManager to:%-20s\toption:%s',destinataire,JSON.stringify(option,null,null));}
+  if(destinataire===undefined || typeof option!='object') throw 'MailingRelanceToManager:no values for sendMailing';
+  
+  var html = HtmlService.createTemplateFromFile('mailchimp_standard_cssonline'),
+      objet='',mail='';
+
+  html.client= option.client;
+  html.ao = option.ao;
+  
+  
+  
+  html.body_html= '%%body_mail%%';
+  
+ 
+  mail = '<div style="text-decoration:none;-webkit-box-sizing: border-box;-moz-box-sizing: border-box;box-sizing: border-box;padding: 15px;margin-bottom: 20px;border: 1px solid transparent;border-radius: 4px;color: #a94442;background-color: #f2dede;border-color: #ebccd1;margin-right: 15px;margin-left: 15px;"><b>&#9432;</b>';
+  mail+=' Le dossier est actuellement en d\'un GO / NO GO depuis le <b>'+option.date+'</b>.<br>Merci de régulariser le dossier au plus vite.';
+  
+  
+  mail+='</div>'
+  
+  mail+='<u>message de <b>'+Session.getActiveUser().getEmail()+'</b>:</u><br>'
+  mail+=option.comment; 
+  
+  mail+= '<p>Vous êtes positionné par votre manager en tant que Responsable de Proposition</p>';
+  
+  mail+= '<table border="0" cellpadding="0" cellspacing="0" style="margin-left:10%;float:left;background-color:#0099CC; border:1px solid #006699; border-radius:5px;">'
+  mail+= '<tr>'
+  mail+= '<td align="center" valign="middle" style="color:#FFFFFF; font-family:Helvetica, Arial, sans-serif; font-size:16px; font-weight:normal; letter-spacing:-.5px; line-height:150%; padding-top:15px; padding-right:30px; padding-bottom:15px; padding-left:30px;">'
+  mail+= '<a href="'+URL_EXEC+'?page=decision&result=go&ref='+option.id+'" target="_blank" style="color:#FFFFFF; text-decoration:none;">Go !<br>Créer l\'arbo GDrive</a>'
+  mail+= '</td>'
+  
+  mail+= '</tr>'
+  mail+= '</table>'
+  mail+= '<table border="0" cellpadding="0" cellspacing="0" style="margin-right:10%;float:right;background-color:#CC0000; border:1px solid #990000; border-radius:5px;">'
+  mail+= '<tr>'
+  mail+= '<td align="center" valign="middle" style="color:#FFFFFF; font-family:Helvetica, Arial, sans-serif; font-size:16px; font-weight:normal; letter-spacing:-.5px; line-height:150%; padding-top:15px; padding-right:30px; padding-bottom:15px; padding-left:30px;">'
+  mail+= '<a href="'+URL_EXEC+'?page=decision&result=nogo&ref='+option.id+'" target="_blank" style="color:#FFFFFF; text-decoration:none;">No Go<br>Clore l\'avant-vente</a>'
+  mail+= '</td>'
+		
+  mail+= '</tr>'
+  mail+= '</table>'
+  mail+= '<br style="clear:both;"><p ><small>Ne pas effacer ce mail. Passer par paris.production si vous rencontrez des problèmes.</small></p>'
+
+  
+  var sqliLogoUrl = "http://www.sqli-enterprise.com/files/2014/05/logo_sqli_entreprise_340x156_bg_transp1.png";
+   
+  var sqliLogoBlob = UrlFetchApp
+                          .fetch(sqliLogoUrl)
+                          .getBlob()
+                          .setName("sqliLogoBlob");
+  
+  var advancedArgs = {htmlBody: html.evaluate()
+                                    .getContent()
+                                    .replace('%%body_mail%%',mail.nl2br()),
+                                    
+                      inlineImages:{
+                                     sqliLogo: sqliLogoBlob
+                                   },
+                      cc: option.cc,
+                      noReply:true,
+                     
+                     };
+  
+  objet = SUBJECT_ADMIN_RELANCE_GO.replace('%date%',option.date);
+  objet = objet.replace('%dossier%',option.ao);
+  
+  if(option) MailApp.sendEmail(destinataire, objet, '', advancedArgs);
+ 
+  return true;
+}
+
+
 function MailingToSales(emetteur,option){
   
   if(emetteur===undefined || typeof option!='object') throw 'MailingToSales:no values for sendMailing';
@@ -326,6 +447,47 @@ function MailingToOtherManager(emetteur,option){
   if(option) MailApp.sendEmail(option.manager, objet, '', advancedArgs);
 
   return true;
+}
+
+
+/*************************************************************
+/ Gridpp9ToHtml : Fonction permettant de produire un flux html
+/ pour la mise en forme sous forme de tableau des données
+/ de création d'une fiche AO
+/ [in]: objet contenant toutes le détail de la fiche ao
+/ [in]: 
+/ [in]: 
+
+/ [out]: flux html formaté
+/**************************************************************/
+function templateGridPP9(values){
+  if(values===undefined || typeof values!='object') throw 'Gridpp9ToHtml: no values for template';
+  var html = HtmlService.createTemplateFromFile('mailchimp_grid_pp9');
+  
+  html.client= values.client;
+  html.ao = values.ao;
+  html.contexte = '%%contexte%%' //values.contexte;
+  html.enjeux = '%%enjeux%%' //values.enjeux;
+  html.unit = values.unit;
+  html.budget = values.budget;
+  html.date = getDate(values.date);
+  html.ic = values.indice;
+  html.criteres = '%%critere%%'   //values.critere;
+  html.origine = '%%origine%%'   //values.origine;
+  html.pourquoi = '%%pourquoi%%'  //values.pourquoi;
+  html.partenaires = values.partenaires;
+  html.concurrents = values.concurrents;
+  html.crm = values.crm;
+  html.sales = values.emetteur;
+  html.techno = values.techno;
+  
+  return html.evaluate().getContent()
+                      .replace('%%contexte%%',(values.contexte==undefined)?'':values.contexte.nl2br())
+                      .replace('%%enjeux%%',(values.enjeux==undefined)?'':values.enjeux.nl2br())
+                      .replace('%%critere%%',(values.critere==undefined)?'':values.critere.nl2br())
+                      .replace('%%origine%%',(values.origine==undefined)?'':values.origine.nl2br())
+                      .replace('%%pourquoi%%',(values.pourquoi==undefined)?'':values.pourquoi.nl2br());
+
 }
 
 function MailingToManager(emetteur,id,values,mail,option){

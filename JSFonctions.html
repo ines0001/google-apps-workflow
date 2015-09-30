@@ -1,0 +1,190 @@
+<script>
+/*********************************************
+BIBLIOTHEQUE JS POUR LA GESTION DE LA TIMELINE
+Auteur: EREMY
+Copyright 2015
+**********************************************/
+
+/*********************************************
+Objet destiné à la synchronisation des appels
+de fonctions sur condition admin = true
+**********************************************/
+var objet_admin_={ g_admin : false, g_callback: []};
+
+
+/*********************************************
+Fonction permettant de renvoyer l'état du booléan
+admin de l'objet global admin
+[in]: boolean
+[in]: -
+[out]: -
+**********************************************/
+function setAdmin(v){if(typeof v=== 'boolean') objet_admin_.g_admin = v; }
+
+/*********************************************
+Fonction qui retourne l'état du boolean admin 
+de l'objet global admin
+[in]: -
+[in]: -
+[out]: boolean
+**********************************************/
+function isAdmin(){ return objet_admin_.g_admin;}
+
+/*********************************************
+Fonction permettant d'enregistrer une callback dans
+la pile d'appel de l'objet global admin
+[in]: référence fonction 
+[in]: -
+[out]: -
+**********************************************/
+function pushCallbackFunctions(f){
+
+  objet_admin_.g_callback.push(f);
+
+}
+
+/*********************************************
+Fonction permettant de déclencher l'appel de la
+pile de fonction de l'objet global admin uniquement
+si le boolean admin=true
+[in]: - 
+[in]: -
+[out]: -
+**********************************************/
+function CallAllbackFunctions_(){
+  if( !objet_admin_.g_admin) return;
+  for(var i=0;i<objet_admin_.g_callback.length;i++){
+      objet_admin_.g_callback[i]();
+      console.log('call g_callback admin');}
+
+}
+
+
+
+/*********************************************
+Fonction permettant d'extraire à partir d'un json historique
+le dernier objet correspondant à l'état state
+[in]: json objet
+[in]: état demandé
+[out]: l'objet correspondant à l'état demandé sinon objet vide
+**********************************************/
+function getHistoryKey(json,state){
+  var log = JSON.parse(json), events=[];
+  if(log){
+    for(var i=0;i<log.length;i++){
+      if(log[i].state==state) events.push(log[i])
+    }
+  
+  
+  }
+  return events.reverse()[0];
+}
+
+/*********************************************
+Fonction non utilisée
+[in]: event
+**********************************************/
+function eventHistory(e){
+   console.log('click:',e);
+  /* 
+   var log = JSON.parse(e);
+   console.log('eventHistory:',log);
+   if(log){ 
+   
+   var html='';
+   for(var i=0;i<log.length;i++){
+   html+=addtimeline(log[i]);
+   }
+   $('#historicalModal ul').html(html);
+   
+   $('#historicalModal').modal();
+   }
+    */
+}
+
+
+/*********************************************
+Fonction permettant de construire le flux html pour l'objet TimeLine
+Css requis : style-bootstrap-timeline.css
+[in]: objet historique
+[in]: non utilisé
+[out]: flux html encapsulé dans une balise <li> 
+**********************************************/
+function addtimeline( o, inverse){
+    var bull;
+      
+    switch(o.state){
+      case 'EN ATTENTE': bull ='<li>';bull+='<div class="timeline-badge info">';
+      bull+='<i class="glyphicon glyphicon-check"></i></div>';
+      break;
+      
+      case 'EN COURS':bull ='<li>';bull+='<div class="timeline-badge info">';
+      bull+='<i class="glyphicon glyphicon-repeat"></i></div>';
+      break;
+      
+      
+      case 'RELANCE':bull='<li class="timeline-inverted">';bull+='<div class="timeline-badge warning">';
+        
+        bull+='<i class="glyphicon glyphicon-refresh"></i></div>';
+        break;
+      
+      case 'GO':bull='<li class="timeline-inverted">';bull+='<div class="timeline-badge success">';
+      bull+='<i class="glyphicon glyphicon-thumbs-up"></i></div>';break;
+      
+      case 'NOGO':bull='<li class="timeline-inverted">';bull+='<div class="timeline-badge danger">';
+      bull+='<i class="glyphicon glyphicon-thumbs-down"></i></div>';break;
+      
+      default: bull='<li class="timeline-inverted">';bull+='<div class="timeline-badge primary">';bull+='<i class="glyphicon glyphicon-info-sign"></i></div>';
+    
+    
+    }
+    
+    
+    bull+='      <div class="timeline-panel">';
+    bull+='<div class="timeline-heading">';
+    bull+='<h5 class="timeline-title">'+o.operation+'</h4>';
+    bull+='<p><small class="text-muted"><i class="glyphicon glyphicon-time"></i> '+$.format.date(o.date,'d MMMM yyyy h:mm p')+' by '+o.user+'</small></p>';
+    bull+='</div>';
+    bull+='<div class="timeline-body">';
+    if(o.comment!==undefined)
+       bull+=' <p>'+objToString(o.comment)+'</p>';
+    bull+=' </div>';
+    bull+='</div>';
+    bull+='</li>';
+
+    return bull;
+   
+    
+ }
+ 
+/*********************************************
+Fonction permettant de traduire un objet { id:value } 
+en flux Html
+Les objets dont l'id = cr sont également traduit pour
+un formatage html particulier
+[in]: objet
+
+[out]: flux html balisé traduisant l'id et la value
+
+**********************************************/
+ function objToString (obj) {
+    var str = '';
+    
+    /* Test si object spécifique url
+       Seul le nom et le lien url est affiché
+    
+    */
+    if(obj.hasOwnProperty('URL')){
+      str +=  '<b>'+obj.NAME + '</b> : <a href="'+obj.URL+'" target="_blank"><span class="glyphicon glyphicon-link" aria-hidden="true"></span></a><br>';
+    
+    }else{
+    
+      for (var p in obj) {
+            if(typeof obj[p] == 'object') str += objToString(obj[p]);
+            else {str += '<b>'+p + '</b> : ' + obj[p] + '<br>';}
+          }
+    }
+    return str;
+}
+
+</script>

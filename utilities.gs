@@ -46,7 +46,7 @@ OLogger.prototype = {
     return JSON.stringify(this.sessions,function(key, valeur) {
                           if (typeof valeur === "string") {
                             
-                            replaced = valeur.replace(/(["'])/g, function(m, group1) {
+                            replaced = valeur.replace(/(["'\n])/g, function(m, group1) {
                               if (group1 == "" ) return m;
                               else {return "&apos;";}
                             });
@@ -65,10 +65,12 @@ OLogger.prototype = {
 
 // Define Specific URL CLass
 function C_Url(ID) {
+  if(__DEBUG__) Logger.log('Nouvel objet Url- ID:%s',ID);
+  if(ID=='') return;
   this.ID = ID;
   this.URL = getUrl(ID);
   this.NAME = getFilename(ID);
-  Logger.log('Nouvel objet Url:%s',this);
+  
 }
 
 function utilities_testing(){

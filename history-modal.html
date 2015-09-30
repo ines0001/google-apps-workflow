@@ -4,11 +4,51 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title">Historique des opérations</h4>
+        <h5 class="modal-title text-uppercase">Informations</h5>
       </div>
       <div class="modal-body">
        
-       <ul class="timeline"><h3>En cours...</h3></ul>
+       
+       
+        <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+                
+                <div class="panel panel-default">
+                  <div class="panel-heading" role="tab" id="headingTwo">
+                    <h4 class="panel-title">
+                    <a class="collapsed btn" style="padding:0;" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                    <span class="glyphicon glyphicon-plus"></span>
+                    Détail du dossier
+                    </a>
+                    </h4>
+                  </div>
+                  <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+                    <div class="panel-body">
+                      <div id="gridpp9"></div>
+                    </div>
+                  </div>
+                </div>
+                  
+                <div class="panel panel-default">
+                  <div class="panel-heading" role="tab" id="headingOne">
+                    <h4 class="panel-title">
+                    <a class="btn" style="padding:0;" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                    <span class="glyphicon glyphicon-plus"></span>
+                    Historique des opérations
+                    </a>
+                    </h4>
+                  </div>
+                  <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+                    <div class="panel-body">
+                      <ul class="timeline"><h3>En cours...</h3></ul>
+                    
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+       
+       
+       
        
        
       </div>
@@ -16,3 +56,30 @@
     </div>
   </div>
 </div>
+
+<!-- jQuery -->
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>
+
+$(function(){
+  console.log('ready Modal History page');
+  
+  $('.collapse').on('shown.bs.collapse', function(){
+      $(this).parent().find(".glyphicon-plus").removeClass("glyphicon-plus").addClass("glyphicon-minus");
+     }).on('hidden.bs.collapse', function(){
+      $(this).parent().find(".glyphicon-minus").removeClass("glyphicon-minus").addClass("glyphicon-plus");
+   });
+
+  $('#historicalModal').on('show.bs.modal', function (e) {
+      console.log('historicalModal show.bs.modal');
+      $('#collapseTwo').removeClass("in");
+      $('#collapseTwo').parent().find(".glyphicon-minus").removeClass("glyphicon-minus").addClass("glyphicon-plus");
+      $('#collapseOne').removeClass("in").addClass("in");
+      $('#collapseOne').parent().find(".glyphicon-plus").removeClass("glyphicon-plus").addClass("glyphicon-minus");
+      $('#gridpp9').html('<h4>Recherche en cours...</h4>')
+     
+  });
+
+});
+
+</script>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <?!= include('style-pp9web'); ?>
+     <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.4/lumen/bootstrap.min.css">
+  </head>
+  
+  <style>
+   
+   body{ 
+      
+      padding-top: 70px;
+      padding-bottom: 70px;}
+   
+   .footer {
+    
+    bottom: 0;
+    width: 100%;
+    /* Set the fixed height of the footer here */
+    height: 60px;
+    background-color: #f5f5f5;
+    }
+  </style>
+  
+ <body>
+    <nav class="navbar navbar-default navbar-fixed-top">
+   
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <a class="" href="<?=ScriptApp.getService().getUrl()?>">
+      <img alt="Brand" style="background-color: white;" src="http://www.sqli-enterprise.com/files/2014/05/logo_sqli_entreprise_340x156_bg_transp1.png" height="50">
+      </a>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+     
+      <p class="nav navbar-nav navbar-brand"><span class="pp9-police pp9-border-plein">P</span><span class="pp9-police pp9-border-plein">P</span><span class="pp9-police pp9-border-creux">9</span><span class="pp9-police">{WEB}</span></p>
+      
+      <p class="nav navbar-nav navbar-brand"><span class="glyphicon glyphicon-user" aria-hidden="true"></span>&nbsp;<?=Session.getActiveUser().getEmail()?></p>
+      
+  
+      <p class="nav navbar-nav navbar-brand navbar-right" id="bs-example-navbar-collapse-1">Formulaire de suivi d'un nouvel appel d'offre : <span><b id="_page_"></b></span></p>
+      <p class="nav navbar-nav navbar-text navbar-right"><span id="integration"  class="label label-warning"></span></p>
+      <p class="nav navbar-nav navbar-text navbar-right"><span class="label label-danger" id="symbol_admin" ></span></p>
+      
+    </div><!-- /.navbar-collapse -->
+
+
+    
+  </nav>
+</body>
+
+<!-- jQuery -->
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+
+<script>
+
+function page_header(a){
+  $('#_page_').html(a);
+}
+
+function nav_swith_admin(){
+  $('#symbol_admin').html('ADMIN');
+}
+
+function nav_swith_integration(){
+  $('#symbol_admin').html('ADMIN');
+}
+
+$(function(){
+    console.log('ready header..');
+    google.script.run
+       .withSuccessHandler(function(ret){if(ret) $('#integration').html('INTEGRATION') ;})
+       .IsIntegration();
+});
+
+</script>
