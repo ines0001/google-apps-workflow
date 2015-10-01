@@ -14,7 +14,7 @@ Menu Fichier/Gérer les versions depuis le projet google script apps
 28/07/15: 10:17
 */
 var __PROD__  = false;
-var __DEBUG__ = true;
+var __DEBUG__ = false;
 
 var ID_CLSID_PROD = '1h3y9ferdQq8S6Xk48B01sEsEpC4czP4gdncB9l9AoJY';
 //var CLSID =     '1B7TBEOMVfg1kiPGrlW3dY5wWpYdmqOLwDi985L7sKo0';

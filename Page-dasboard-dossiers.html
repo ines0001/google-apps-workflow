@@ -1,7 +1,7 @@
  <head>
     <?!= include('style-bootstrap-timeline'); ?>
     <?!= include('style-dashboard'); ?>
-    <?!= include('style-pp9web'); ?>
+
 
  </head>
  <body>
@@ -271,9 +271,10 @@
      html_msg+='<span class="caret"></span></a>';
      html_msg+='<ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownAction">';
      html_msg+='<li>';
-     html_msg+='<a target="_blank" href="<?=ScriptApp.getService().getUrl()?>?page=response&ref='+ref+'"><span class="glyphicon glyphicon-share" aria-hidden="true"></span>&nbsp;Attribuer un RP</a>';
-     html_msg+='<a target="_blank" href="<?=ScriptApp.getService().getUrl()?>?page=decision&result=go&ref='+ref+'"><span class="glyphicon glyphicon-check" aria-hidden="true"></span>&nbsp;Valider par un Go</a>';
-     html_msg+='<a target="_blank" href="<?=ScriptApp.getService().getUrl()?>?page=decision&result=nogo&ref='+ref+'"><span class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span>&nbsp;Rejeter par un no Go</a>';
+     html_msg+='<a target="_blank" href="<?=ScriptApp.getService().getUrl()?>?page=response&ref='+ref+'"><span class="glyphicon glyphicon-check" aria-hidden="true"></span>&nbsp;Attribuer un RP</a>';
+     html_msg+='<a target="_blank" href="<?=ScriptApp.getService().getUrl()?>?page=response&type=expanded&ref='+ref+'"><span class="glyphicon glyphicon-share" aria-hidden="true"></span>&nbsp;Rediriger le dossier</a>';
+     html_msg+='<a target="_blank" href="<?=ScriptApp.getService().getUrl()?>?page=decision&result=go&ref='+ref+'"><span class="glyphicon glyphicon-ok-sign" aria-hidden="true"></span>&nbsp;Valider par un Go</a>';
+     html_msg+='<a target="_blank" href="<?=ScriptApp.getService().getUrl()?>?page=decision&result=nogo&ref='+ref+'"><span class="glyphicon glyphicon-remove-sign" aria-hidden="true"></span>&nbsp;Rejeter par un no Go</a>';
      html_msg+='</li>';
      html_msg+='<li class="divider hidden-desktop"></li>'; 
      html_msg+=(link)?'<li>':'<li class="disabled">';
@@ -796,7 +797,7 @@ function handleQueryTable4(response) {
 /*/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
   Mise en forme de la colonne Statut
 /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/*/
-  var i_statut,i_url,i_log,i_datetime=[],i_reference;
+  var i_statut,i_url,i_log,i_datetime=[],i_reference,i_avancement_crm;
   for(var i=0;i<data.getNumberOfColumns();i++){
       if(data.getColumnLabel(i)=='Statut') i_statut = i;
       if(data.getColumnLabel(i)=='url') i_url = i;
@@ -804,10 +805,14 @@ function handleQueryTable4(response) {
       if(data. getColumnType(i)=='datetime') i_datetime.push(i);
       if(data.getColumnLabel(i)=='Identifiant') i_reference = i;
       if(data.getColumnLabel(i).match('Emission')) options.sortColumn = i;
+      if(data.getColumnLabel(i).toLowerCase().indexOf('avancement')!=-1) i_avancement_crm = i;
       
   }
   var formatter = new google.visualization.PatternFormat('<span class="label {0}" data-html="{0}">&nbsp;</span>');
   formatter.format(data, [i_statut],i_statut);
+  
+  formatter = new google.visualization.PatternFormat('<span class="label label-info">{0}</span>');
+  formatter.format(data, [i_avancement_crm],i_avancement_crm);
   
   /*/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
   Mise en forme des colonnes datetime
@@ -896,6 +901,7 @@ Si aucun élément dans la table alors afficher aucun dossier
   $('#id_table4  .cssHeaderCell:contains("Remise")').css('width', '10%');
   $('#id_table4  .cssHeaderCell:contains("Actions")').css('width', '8%');
   $('#id_table4  .cssHeaderCell:contains("Date")').css('width', '7%');
+  $('#id_table4  .cssHeaderCell:contains("vancement")').css('width', '7%');
   $('.dropup').parents().css('overflow', 'visible');
 
 /*/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
@@ -1064,7 +1070,7 @@ function myReadyHandler(){
 <script>
 $(function(){
      console.log('ready Page-dasboard-dossiers');
-     pushCallbackFunctions(DropdownAdminMenu);
+     setCallbackAdmin(DropdownAdminMenu);
      google.setOnLoadCallback(drawTable);
      exportLink();
      

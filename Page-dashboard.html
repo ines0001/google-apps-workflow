@@ -12,7 +12,8 @@
     <title>Reporting & dashboard</title>
 
     <!-- Bootstrap Core CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.4/lumen/bootstrap.min.css">
+    
+    <link rel="stylesheet" href="<?!=PropertiesService.getScriptProperties().getProperty('ID_TEMPLATE_DASHBOARD');?>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/iCheck/1.0.1/skins/square/grey.css">
     
     
@@ -46,23 +47,8 @@ function switch_admin(){
 
 $(function(){
     console.log('ready dashboard');
-    
-    
-    /********************************
-    / Determiner si le user est admin
-    /********************************/
-    google.script.run.withSuccessHandler(function(isAdmin){
-               /**************************
-               / Activer l'activité Relance
-               /***************************/
-               setAdmin(isAdmin);
-               pushCallbackFunctions(switch_admin)
-               CallAllbackFunctions_();
-               
-              
-           })
-         .withFailureHandler(function(e){console.log(e);})
-         .isAdmin();
+    setCallbackAdmin(switch_admin);
+    callAdminFunctions();
          
     
     
@@ -71,7 +57,7 @@ $(function(){
 </script>
 <body>
   <?!= HtmlService.createTemplateFromFile('Header').evaluate().setSandboxMode(HtmlService.SandboxMode.IFRAME).getContent(); ?> 
-  <?!=HtmlService.createHtmlOutputFromFile('contact').getContent(); ?>
+  
   <div class="container-fluid" >
   
   
@@ -118,6 +104,8 @@ $(function(){
 $(function(){
  
     page_header('REPORTING');
+    footer_load_tickers('Informations accueil');
+    
     $('input').iCheck({
     checkboxClass: 'icheckbox_square-grey',
     radioClass: 'iradio_square-grey',

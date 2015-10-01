@@ -1,12 +1,12 @@
 function doGet(request) {
   
-  var html=null, duration;
+  var html=null, duration=PropertiesService.getScriptProperties().getProperty('ID_DURATION');
   
   
   switch(request.parameter.page){
   
     case 'new':html = HtmlService.createTemplateFromFile('Page-new')
-               duration = PropertiesService.getScriptProperties().getProperty('ID_DURATION') 
+               
                html.duration = (duration)?duration:'40s';
                
                html = html.evaluate()
@@ -15,6 +15,7 @@ function doGet(request) {
     
     
     case 'dashboard':html = HtmlService.createTemplateFromFile('Page-dashboard');
+                     html.duration = (duration)?duration:'40s';   
                         html.clsid = CLSID;  
                         html=html.evaluate()
                         .setTitle('Reporting AO')
@@ -22,6 +23,7 @@ function doGet(request) {
                         
                         
     case 'response':html = HtmlService.createTemplateFromFile('Page-response');
+                    html.duration = (duration)?duration:'40s';
                     html.reference = request.parameter.ref;
                     html.type= (request.parameter.type=='expanded')?request.parameter.type:'small';
                     html = html.evaluate()
@@ -41,6 +43,7 @@ function doGet(request) {
                     break;
       
     case 'decision':html = HtmlService.createTemplateFromFile('Page-decision');
+                    html.duration = (duration)?duration:'40s';
                     html.result = request.parameter.result;              
                     html.reference = request.parameter.ref;
                     html = html.evaluate()
@@ -67,6 +70,7 @@ function doGet(request) {
       
       
     case 'build_avv':html = HtmlService.createTemplateFromFile('Page-build_avv');
+                    html.duration = (duration)?duration:'40s';
                     html.reference = request.parameter.ref;
                     html = html.evaluate()
                                .setTitle('Building AVV')

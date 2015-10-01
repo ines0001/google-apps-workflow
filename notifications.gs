@@ -469,7 +469,7 @@ function templateGridPP9(values){
   html.contexte = '%%contexte%%' //values.contexte;
   html.enjeux = '%%enjeux%%' //values.enjeux;
   html.unit = values.unit;
-  html.budget = values.budget;
+  html.budget = currencyFormatDE(values.budget);
   html.date = getDate(values.date);
   html.ic = values.indice;
   html.criteres = '%%critere%%'   //values.critere;
@@ -538,7 +538,8 @@ function MailingToManager(emetteur,id,values,mail,option){
                       .replace('%%enjeux%%',values.find('enjeux').nl2br())
                       .replace('%%critere%%',values.find('critere').nl2br())
                       .replace('%%origine%%',values.find('origine').nl2br())
-                      .replace('%%pourquoi%%',values.find('pourquoi').nl2br()),
+                      .replace('%%pourquoi%%',values.find('pourquoi').nl2br())
+                      .replace('cid:sqliLogo',(option==true)?'cid:sqliLogo':sqliLogoUrl),
                       inlineImages:{
                                      sqliLogo: sqliLogoBlob
                                    },

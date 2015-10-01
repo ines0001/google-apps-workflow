@@ -2,9 +2,7 @@
 <html>
   <head>
     <base target="_top">
-    <!-- Bootstrap Core CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.4/lumen/bootstrap.min.css">
-    <?!= include('style-pp9web'); ?>
+    <link rel="stylesheet" href="<?!=PropertiesService.getScriptProperties().getProperty('ID_TEMPLATE_DEFAULT');?>">
   </head>
   
   <style>
@@ -48,36 +46,7 @@
   </style>
   <body>
     
-    <nav class="navbar navbar-default navbar-fixed-top">
-   
-    <!-- Brand and toggle get grouped for better mobile display -->
-    <div class="navbar-header">
-      <a class="" href="<?=ScriptApp.getService().getUrl()?>">
-      <img alt="Brand" style="background-color: white;" src="http://www.sqli-enterprise.com/files/2014/05/logo_sqli_entreprise_340x156_bg_transp1.png" height="50">
-      </a>
-    </div>
-
-    <!-- Collect the nav links, forms, and other content for toggling -->
-    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-     
-      <p class="nav navbar-nav navbar-brand"><span class="pp9-police pp9-border-plein">P</span><span class="pp9-police pp9-border-plein">P</span><span class="pp9-police pp9-border-creux">9</span><span class="pp9-police">{WEB}</span></p>
-      
-      <p class="nav navbar-nav navbar-brand"><span class="glyphicon glyphicon-user" aria-hidden="true"></span>&nbsp;<?=Session.getActiveUser().getEmail()?></p>
-      
-  
-      <p class="nav navbar-nav navbar-brand navbar-right" id="bs-example-navbar-collapse-1">Formulaire de suivi d'un nouvel appel d'offre : <span><b>VERSION</b></span></p>
-      <p class="nav navbar-nav navbar-text navbar-right"><span id="integration"  class="label label-warning"></span></p>
-      <p class="nav navbar-nav navbar-text navbar-right"><span class="label label-danger" id="symbol_admin" ></span></p>
-      
-    </div><!-- /.navbar-collapse -->
-
-
-    
-  </nav>
-    
-    
-    
-    
+    <?!= HtmlService.createTemplateFromFile('Header').evaluate().setSandboxMode(HtmlService.SandboxMode.IFRAME).getContent(); ?>
     
     <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1" id="documentation-changelog">
                     
@@ -86,38 +55,40 @@
       
       <p class="lead">2015 <small>Octobre</small></p>
       <ul>
-        <li>Accès à la fonction des relances depuis la <code>Page de reporting</code><small>[Mode administrateur uniquement]:</small>.</li>
+        <li>Accès aux fonctions des relances depuis la <code>Page de reporting</code><small><kbd>[Mode administrateur]</kbd>:</small>.</li>
         <ul>
-            <li>Envoie d'un mail de relance destiné au manager de Unit sur les dossiers au statut <code>En attente</code> au delà de 48h.</li>
-            <li>Envoie d'un mail de relance destiné au responsable de proposition sur les dossiers au statut <code>Go no Go planifié </code>avec délai ouvré dépassé de 48h.</li> 
+            <li>Permettre d'envoyer un mail de relance destiné au manager de Unit sur les dossiers au statut <code>En attente</code> au delà de 48h.</li>
+            <li>Permettre d'envoyer un mail de relance destiné au responsable de proposition sur les dossiers au statut <code>Go no Go planifié </code>avec délai ouvré dépassé de 48h.</li> 
           
           </ul>
-        <li>Fonction de synchronisation des statuts d'avancement CRM via un fichier d'import au format .xls.<small>[Mode administrateur uniquement]</small></li>
-        <li>Enrichissement de la fenêtre détail d'un dossier depuis la <code>page de reporting </code>:</li>
+        <li>Fonction de synchronisation des statuts d'avancement CRM via un fichier d'import au format .xls.<small><kbd>[Mode administrateur ]</kbd></small></li>
+        <li>Enrichissement de la fenêtre de détail d'un dossier depuis la <code>page de reporting </code>:</li>
           <ul>
-            <li>Consultation de l'historique des opérations associées au dossier. Il est désormais possible d'accéder au compte-rendus Go/ No Go et au dossier drive de l'arborescence avant-vente </li>
-            <li>Possibilité d'afficher toutes les informations détaillées du dossier.</li> 
+            <li>Pouvoir consulter l'historique des opérations associées.</li>
+            <li>Accéder au compte-rendus Go/ No Go directement depuis la page historique. </li>
+            <li>Visualiser tous les champs de création du dossier.</li> 
           
           </ul>
-        <li>Ajout de la <code>page changelog </code>pour le suivi des mises à jour.</li>
+        <li>Possibilité de rediriger la demande vers un collaborateur spécifique depuis le <code>formulaire d'affectation </code>.</li>
+        <li>Ajout de la <code>page changelog </code>pour un meilleur suivi des mises à jour applicative.</li>
       </ul>
       <p class="lead">2015 <small>Septembre</small></p>
       <ul>
         <li>Gestion du profil Admin depuis la <code>Page de reporting</code>.</li>
-        <li>Possibilité d'exporter au format .csv le contenu du tableau de consultation des dossiers depuis la<code>Page de reporting</code>.</li> 
+        <li>Permettre d'exporter au format .csv le contenu du tableau de consultation des dossiers depuis la<code>Page de reporting</code>.</li> 
         
       </ul>
       <p class="lead">2015 <small>Juillet</small></p>
       <ul>
-        <li><code>Page de reporting</code> pour le suivi de vos dossiers par statut.</li> 
+        <li>Ajout de la <code>page de reporting</code> pour le suivi de vos dossiers par statut.</li> 
         <li>Modification du formulaire <code>de création d'un appel d'offre</code> : </li>
         <ul>
           <li>Ajout d'un champ obligatoire pour l'attribution de la techno principale.</li>
-          <li>Saisie du champ budget en € uniquement</li>
-          <li>Formatage des zones textes conservé</li>
+          <li>Formatage du champ budget en € </li>
+          <li>Possibilité de conserver les mises en forme sur les zones de texte <small>(Ex: Contexte, Enjeux,...)</small></li>
           
         </ul>
-        <li>Plusieurs simplifications sur le formatage des mails pour plus de clarté et réduction des destinataires pour éviter l'effet spam.</li>
+        <li>Plusieurs simplifications sur le formatage des mails pour plus de clarté tout en réduisant la liste des destinataires afin d'éviter l'effet spam.</li>
         <li>Modification du <code>formulaire de validation</code> : le CR du Go No Go devient non obligatoire</li>
         
       </ul>
@@ -125,9 +96,16 @@
       <ul>
         
         
-        <li>Ajout du <code>formulaire de création de l'arborescence d'avant-vente </code><small>[Mode administrateur uniquement]</small></li>
-        <li>Ajout du <code>formulaire de validation <small>GO</small></code> du dossier d'appel d'offre. Archivage du fichier compte-rendu. Possibilité de planifier une date du DAR</li>
-        <li>Ajout automatique de l'évènement DAR dans l'agenda du responsable de proposition</li>
+        <li>Ajout du <code>formulaire de création de l'arborescence d'avant-vente </code><small><kbd>[Mode administrateur ]</kbd></small></li>
+        <li>Ajout du <code>formulaire de validation GO/NO GO</code> :</li>
+        <ul>
+          <li>Archivage du fichier compte-rendu</li> 
+          <li>Ajout automatique de l'évènement DAR dans l'agenda du responsable de proposition</li>
+          
+        </ul>
+        <li>Diffusion quotidienne d'une synthèse des dossiers en retard <small><kbd>[Mode administrateur ]</kbd></small></li>
+        
+        
       </ul>
       <p class="lead">2015 <small>Mars</small></p>
       <ul>
@@ -144,4 +122,10 @@
 
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 
-
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+<script>
+$(function(){
+  console.log('Page changeLog');
+  page_header('VERSION');
+});
+</script>

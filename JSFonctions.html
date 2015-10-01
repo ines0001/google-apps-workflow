@@ -9,7 +9,7 @@ Copyright 2015
 Objet destiné à la synchronisation des appels
 de fonctions sur condition admin = true
 **********************************************/
-var objet_admin_={ g_admin : false, g_callback: []};
+var objet_admin_={ g_admin : false, g_callback: [], g_callbackWarning: []};
 
 
 /*********************************************
@@ -19,7 +19,26 @@ admin de l'objet global admin
 [in]: -
 [out]: -
 **********************************************/
-function setAdmin(v){if(typeof v=== 'boolean') objet_admin_.g_admin = v; }
+function callAdminFunctions(){
+
+  google.script.run.withSuccessHandler(function(v){
+               /**************************
+               / Activer l'activité Relance
+               /***************************/
+               if(typeof v=== 'boolean'){
+                 objet_admin_.g_admin = v;
+                 // Appel de toutes les callbacks rattachées
+                 CallAllWarningFunctions_();
+                 CallAllbackFunctions_();
+               }
+               
+              
+           })
+         .withFailureHandler(function(e){console.log(e);})
+         .isAdmin();
+}
+
+
 
 /*********************************************
 Fonction qui retourne l'état du boolean admin 
@@ -31,17 +50,31 @@ de l'objet global admin
 function isAdmin(){ return objet_admin_.g_admin;}
 
 /*********************************************
-Fonction permettant d'enregistrer une callback dans
-la pile d'appel de l'objet global admin
+Fonction permettant d'enregistrer une fonction dans
+la pile d'appel des callbacks de l'objet global admin
+
 [in]: référence fonction 
 [in]: -
 [out]: -
 **********************************************/
-function pushCallbackFunctions(f){
-
+function setCallbackAdmin(f){
   objet_admin_.g_callback.push(f);
-
+  
 }
+
+/*********************************************
+Fonction permettant d'enregistrer une fonction dans
+la pile d'appel des callbacks warning de l'objet global admin
+
+[in]: référence fonction 
+[in]: -
+[out]: -
+**********************************************/
+function setCallbackWarning(f){
+  objet_admin_.g_callbackWarning.push(f);
+  
+}
+
 
 /*********************************************
 Fonction permettant de déclencher l'appel de la
@@ -55,7 +88,24 @@ function CallAllbackFunctions_(){
   if( !objet_admin_.g_admin) return;
   for(var i=0;i<objet_admin_.g_callback.length;i++){
       objet_admin_.g_callback[i]();
-      console.log('call g_callback admin');}
+      console.log('call CallAllbackFunctions_ admin');}
+
+}
+
+/*********************************************
+Fonction permettant de déclencher l'appel de la
+pile de fonction Warning de l'objet global admin uniquement
+si le boolean admin=false
+
+[in]: - 
+[in]: -
+[out]: -
+**********************************************/
+function CallAllWarningFunctions_(){
+  if( objet_admin_.g_admin) return;
+  for(var i=0;i<objet_admin_.g_callbackWarning.length;i++){
+      objet_admin_.g_callbackWarning[i]();
+      console.log('call CallAllWarningFunctions_ admin');}
 
 }
 

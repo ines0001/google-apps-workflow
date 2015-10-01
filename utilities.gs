@@ -309,4 +309,22 @@ function getNameinEmail(email)
 }
 
 
+/*************************************************************
+/ currencyFormatDE : fonction convertissant une valeur monétaire
+/ en Euro
+/ Ex : 1234567.89)); // output 1.234.567,89 €
+/ [in]: value
+/ [in]: 
+/ [in]: 
+
+/ [out]: string
+/**************************************************************/
+function currencyFormatDE (num) {
+    return num
+       .toFixed(0) // always two decimal digits
+       .replace(".", ",") // replace decimal point character with ,
+       .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.") + " €" // use . as a separator
+}
+
+
 
