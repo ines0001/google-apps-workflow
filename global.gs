@@ -14,10 +14,13 @@ Menu Fichier/Gérer les versions depuis le projet google script apps
 28/07/15: 10:17
 */
 var __PROD__  = false;
+var __DEBUG__ = false;
 
 var ID_CLSID_PROD = '1h3y9ferdQq8S6Xk48B01sEsEpC4czP4gdncB9l9AoJY';
 //var CLSID =     '1B7TBEOMVfg1kiPGrlW3dY5wWpYdmqOLwDi985L7sKo0';
 var ID_CLSID_DEV ='1B7TBEOMVfg1kiPGrlW3dY5wWpYdmqOLwDi985L7sKo0';
+var URL_DEV = 'https://script.google.com/a/macros/sqli.com/s/AKfycbykrG6y4NPDzPIJfRz_EN29THb7eYU2gwFxPnS1Wek/dev';
+var URL_PROD = 'https://script.google.com/a/macros/sqli.com/s/AKfycbxCQqx63aOJGOBAb6-uACwa9P_ogZxhO2XioEdlRo6UnKpXoiE/exec';
 var CLSID = (__PROD__)?ID_CLSID_PROD:PropertiesService.getScriptProperties().getProperty('ID_CLSID')
 
 
@@ -39,6 +42,19 @@ Limite de lecture pour une colonne de paramtrage ( Ex : 1000 RP possible ! )
 var MAX_ROW      = 1000;
 var MAX_DAY_NO_ENCOURS_FOR_ALERTE = 2;
 
+/*
+file format prefix
+*/
+
+var MIMETYPE_MS = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+
+/*
+Prefix de requête en ligne Google spreadsheet
+voir : 
+*/
+var REQUEST_EXPORT_CSV_SUFFIX = 'https://spreadsheets.google.com/tq?tqx=out:csv&tq='
+var REQUEST_EXPORT_HTML_SUFFIX = 'https://spreadsheets.google.com/tq?tqx=out:html&tq='
+
 
 /*/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
     CARTOGRAPHIE des index name de la page de paramétrage
@@ -58,7 +74,7 @@ var COLUMN_EMAIL_ADMIN  ='Admin Email Notification';
 var COLUMN_ADMIN = 'Admin';
 var COLUMN_FORMULES = 'Formules';
 var COLUMN_ARBITRAGE = 'Arbitrage UNIT';
-var COLUMN_DASHBOARD_SQL = 'Dashboard Requete';
+var COLUMN_DASHBOARD_EXPORT = 'Dashboard table_export';
 var COLUMN_DASHBOARD_TABLE_SQL = 'Dashboard table_synthese';
 var COLUMN_LIST_TECHNOS = 'Liste des technos'
 
@@ -90,7 +106,9 @@ var COLUMN_SHEET_UNIT = 4;
 
 var COLUMN_SHEET_MESSAGE = 40;
 var COLUMN_SHEET_LOG = 26;
-var MAX_COL = 27;
+var COLUMN_SHEET_DATE_RELANCE = 27;
+var COLUMN_SHEET_IMPORT_STATE_CRM = 28;
+var MAX_COL = 32;
 var CEL_FORMULE_RETARD_PARAMS ='M2';
 
 /*/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
@@ -110,7 +128,13 @@ CONSTANTES : table des ressources TEXT
 
 var SUBJECT ='Dossier %%client%%-%%ao%% pour le %%date%%  - %%unit%%';
 var SUBJECT_DECISION_GONOGO ='%%result%%- %%client%%-%%ao%% pour le %%date%%  - %%unit%%';
-var SUBJECT_ADMIN='[AVV] Dossiers sans RP au %date%';
+var SUBJECT_ADMIN_RELANCE='[AVV] Dossiers %dossier% sans RP depuis le %date%';
+var SUBJECT_ADMIN_RELANCE_GO='[AVV] Dossiers %dossier% délais GO/ NOGO dépassé depuis le %date%';
+
+/*/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
+MESSAGES
+/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\*/
+var MESSAGE_DASHBOARD_SYNC_ENCOURS = 'Opération de synchronisation de <b>%file</b> en cours...'; 
 
 
 /*/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
@@ -134,19 +158,12 @@ function Get_ADMIN(){return enumParams(COLUMN_ADMIN).join();}
 
 
 function GetIMAGE_URL(id){return 'https://drive.google.com/uc?export=view&id='+id;}
-function IsIntegration(){return !(__PROD__);}
+function IsIntegration(){return !(ID_CLSID_PROD==CLSID);}
+function isProduction(){return (__PROD__);}
 var URL_EXEC  = 
   (function () {
-  return IsIntegration()?'https://script.google.com/a/macros/sqli.com/s/AKfycbykrG6y4NPDzPIJfRz_EN29THb7eYU2gwFxPnS1Wek/dev'
-  :'https://script.google.com/a/macros/sqli.com/s/AKfycbxCQqx63aOJGOBAb6-uACwa9P_ogZxhO2XioEdlRo6UnKpXoiE/exec';})();
+  return isProduction()?URL_PROD:URL_DEV;})();
   
-
-/*/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
-CONSTANTES : MODE DEBUGGING
-
-/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\*/
-
-var __DEBUG__ = true;
 
 
 //DriveApp.getFolderById(scriptProperties.getProperty('ID_FOLDER_DRIVE_TEMPLATE'));
@@ -230,7 +247,7 @@ SHEET_AO.prototype = {
 function global_testing() {
   try{
   var sheet_objet = new SHEET_AO();
-  var ref = 'I1433242948271';
+  var ref = 'I1431101804699';
   
   var out = sheet_objet.Info_A(ref);
   var out_json;

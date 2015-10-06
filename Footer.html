@@ -1,0 +1,112 @@
+<style>
+#footer {
+  -webkit-animation-duration: 2s;
+  /*-webkit-animation-delay: 0s;*/
+  /*-webkit-animation-iteration-count: 1;*/
+}
+
+
+
+</style>
+<div>
+  <!-- /.container-fluid -->
+   
+    <div id="footer" class="navbar navbar-default navbar-fixed-bottom animated bounceInUp">
+      <div class="">
+          <span class="navbar-text pull-left ">
+            <a target="_blank" href="<?=ScriptApp.getService().getUrl()?>?page=changelog" title="Change log">Releases</a>
+           </span>
+          
+          <span class="col-sm-9 ">
+             <div id="foot_alert" class="ticker-wrap">
+               <div  class="ticker" style="-webkit-animation-duration: <?=duration?>;animation-duration: <?=duration?>;"></div>
+             </div>
+          </span>
+          <span class="col-sm-1 "></span>
+          <span id="contact" class="navbar-btn btn-danger btn" title="Prendre contact" >Contact</span>
+      </div>
+    </div>
+</div>
+
+<!-- jQuery -->
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>
+function clear_alert(){
+    
+    $('#foot_alert').html('');
+    $('#foot_alert').removeClass('ticker-wrap').addClass('navbar-text');
+
+}
+
+function foot_warning(m){
+  
+  $('#foot_alert').html('<span class="glyphicon glyphicon-warning-sign text-warning" aria-hidden="true"></span><span class="sr-only">Warning:</span>&nbsp;'+m);
+  $('#foot_alert').removeClass('ticker-wrap').addClass('navbar-text');
+
+}
+
+function foot_error(m){
+  
+  $('#foot_alert').html('<span class="glyphicon glyphicon-warning-sign text-danger" aria-hidden="true"></span><span class="sr-only">Error:</span>&nbsp;'+m);
+  $('#foot_alert').removeClass('ticker-wrap').addClass('navbar-text');
+ 
+}
+
+function foot_success(m){
+  
+  $('#foot_alert').html('<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span><span class="sr-only"></span>&nbsp;'+m);
+  $('#foot_alert').removeClass('ticker-wrap').addClass('navbar-text');
+
+}
+
+function foot_message(m){
+ 
+  $('#foot_alert').html('<span class="glyphicon glyphicon-info-sign text-info" aria-hidden="true"></span><span class="sr-only"></span>&nbsp;'+m);
+  $('#foot_alert').removeClass('ticker-wrap').addClass('navbar-text');
+
+}
+
+
+function footer_load_tickers(e){
+  google.script.run.withSuccessHandler(function(values){
+                      var out='';
+                      $.each(values,function(index,value){out+='<div class="ticker__item">'+value+'</div>'})
+                      $('.ticker').append(out)
+                      
+                  })
+                  .withFailureHandler(function(e){
+                    console.log('Exception'+e.message);     
+                  })
+                  .enumParams(e);
+
+}
+
+$(function(){
+    console.log('ready Footer page');
+    $('.ticker').css('padding-right',$('.ticker-wrap').parent().width())
+    $('#contact').on('click',function(){ $('#contactModal').modal({
+          backdrop:false,
+          }); });
+     
+     
+     $('#contactModal').on('show.bs.modal', function (e) {
+       $('#contactModal #recipient-name').val(<?=Session.getActiveUser().getEmail();?>);
+       $('#contactModal #message-text').val('');
+     });
+     
+     $('#contactModal button[class="btn btn-primary"]').on('click',function(){
+       var note = $('#contactModal #message-text').val();
+       
+       if( note == '') return;
+       google.script.run.withSuccessHandler()
+         .withFailureHandler(function(e){$('#alert #error').html(e);$('#alert').modal('show');})
+         .MailContact(note);
+       $('#contactModal').modal('hide');
+     
+     });
+     
+    
+ 
+ });
+ 
+</script>

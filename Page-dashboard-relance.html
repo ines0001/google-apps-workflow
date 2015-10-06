@@ -1,0 +1,434 @@
+ <head>
+
+    <?!= include('style-dashboard'); ?>
+    
+
+ </head>
+ <body>
+          <ul class="nav nav-tabs nav-pills nav-justified" role="tablist">
+            <li role="presentation" class="active">
+              <a href="#table_alerte_sans_RP" aria-controls="table_alerte_sans_RP" role="tab" data-toggle="tab" data-link="">
+                <h4>
+                  
+                    <span class="glyphicon glyphicon-volume-down" aria-hidden="true"></span>
+                    &nbsp;DOSSIERS SANS RP&nbsp;
+                  
+                  <span id="num_alert_sans_rp" class="badge"></span>
+                </h4>
+              </a>
+            </li>
+            <li role="presentation">
+              <a href="#table_alert_go_depasse" aria-controls="table_alert_go_depasse" role="tab" data-toggle="tab" data-link="">
+                <h4>
+                  
+                  <span class="glyphicon glyphicon-volume-up" aria-hidden="true"></span>
+                  &nbsp;DATE GO NOGO DEPASSE&nbsp;
+                  
+                  <span id="num_alert_go" class="badge"></span>
+                </h4>
+              </a>
+            </li>
+            
+          </ul>
+       
+          <!-- Tab panes -->
+          <div class="tab-content">
+             <div role="tabpanel" class="tab-pane fade in active" id="table_alerte_sans_RP">  
+                <div id="id_table_relance1"><br/><label>Recherche En cours. Merci de patientez...</label></div>
+          
+             </div>
+             <div role="tabpanel" class="tab-pane fade" id="table_alert_go_depasse">
+                <div id="id_table_relance2"><br/><label>Recherche En cours. Merci de patientez...</label></div>
+             </div>
+              
+          
+          </div>
+          
+          <?!=HtmlService.createHtmlOutputFromFile('contact').getContent(); ?>
+
+  </body>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>  
+  <script>
+
+  function drawTableRelance() {
+     var opts = {sendMethod: 'auto'}, set_query, query;
+     
+     try{
+     
+     google.script.run
+           .withSuccessHandler(function(values){ 
+             var filter='.*';
+             
+             if(!isAdmin()) filter += <?=Session.getActiveUser().getEmail()?>+'.*';
+             
+             
+             set_query = encodeURIComponent(values[0].replace(/@user/g,filter));
+             query = new google.visualization.Query(
+             'https://spreadsheets.google.com/tq?tq='+set_query+'&key=<?=clsid?>&gid=2122602018',opts);
+             
+             query.send(handleQueryTableRelance1);
+             
+             set_query = encodeURIComponent(values[1].replace(/@user/g,filter));
+             query = new google.visualization.Query(
+             'https://spreadsheets.google.com/tq?tq='+set_query+'&key=<?=clsid?>&gid=2122602018',opts);
+             
+             query.send(handleQueryTableRelance2);
+             
+           })
+           .withFailureHandler(function(e){console.log('Exception'+e.message)})
+           .enumParams('Dashboard table_relance');
+             
+     
+     
+     }catch(e){console.log(e)}
+                 
+       
+    };
+    
+    function myReadyHandlerRelance(){
+    /* mise en écoute sur les l'accès aux liens data-info
+       Ce handler est remit à jour à chaque réorganisation du tableau
+    */
+    
+    
+    $('a[data-info]').click(function(){
+                
+                $('#relanceModal #title').html($(this).attr('data-info'));
+                $('#relanceModal #recipient').val($(this).attr('data-mail'));
+                $('#relanceModal #reference_hide').val($(this).attr('data-ref'));
+                $('#relanceModal #vue_hide').val($(this).attr('data-vue'));
+                $('#relanceModal #message-text').val('');
+                $('#relanceModal').modal({backdrop:false,});
+                
+                })
+              
+    
+    }
+    
+    /*
+ 
+ 
+ GOOGLE CHART TABLE
+ 
+ TABLE 1 REQUEST
+ 
+ */
+ 
+ function handleQueryTableRelance1(response) {
+  if (response.isError()) {
+    alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
+    return;
+  }
+  
+  
+  // Graphic A
+  var data = response.getDataTable();
+  
+  // view number of values
+  $('#num_alert_sans_rp').html( data.getNumberOfRows())
+  
+  var chart = new google.visualization.Table(document.getElementById('id_table_relance1'));
+  var cssClassNames = {
+                
+                tableRow:'cssTableRow',
+                oddTableRow:'cssTableRow', 
+                selectedTableRow:'cssHoverRow', 
+                hoverTableRow:'cssHoverRow', 
+                 
+                headerCell:'cssHeaderCell',
+                tableCell:'cssCell',
+                rowNumberCell:'css8'}
+                
+  var options = {
+    title: 'Dossiers en attente'
+    //,page:'enable'
+    //,pageSize: 12
+    ,allowHtml: true
+    //,showRowNumber: true
+    ,sortAscending:false
+
+    ,cssClassNames: cssClassNames
+    
+      
+  };
+  
+  /*/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
+  Identification des positions de colonnes présentes
+  /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/*/
+  var i_statut,i_url,i_log,i_datetime=[],i_reference,i_mail_pressenti,i_mail_affecte;
+  for(var i=0;i<data.getNumberOfColumns();i++){
+      if(data.getColumnLabel(i).toLowerCase()=='statut') i_statut = i;
+      if(data.getColumnLabel(i).toLowerCase().indexOf('pressenti')!=-1) i_mail_pressenti = i;
+      if(data.getColumnLabel(i).toLowerCase().indexOf('en charge')!=-1) i_mail_affecte = i;
+      if(data.getColumnLabel(i).toLowerCase()=='identifiant') i_reference = i;
+      if(data. getColumnType(i)=='datetime') i_datetime.push(i);
+      
+  }
+  
+  var formatter = new google.visualization.PatternFormat('<span class="label {0}" data-html="{0}">&nbsp;</span>');
+  formatter.format(data, [i_statut],i_statut);
+  
+  
+  /*/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
+  Mise en forme des colonnes datetime
+  /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/*/
+  var formatter_short = new google.visualization.DateFormat({pattern: 'dd/MM/yyyy'});
+  i_datetime.forEach(function(element,index){formatter_short.format(data, element);})
+  
+  /*/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
+    Mise en forme de la colonne Action ( détail historique, lien folder google drive)
+  /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\*/
+  data.addColumn('string', 'Actions');
+   
+   for(var i=0;i<data.getNumberOfRows();i++){
+    
+     var ref=data.getValue(i,i_reference), info= data.getValue(i,1)+' : '+data.getValue(i,2);
+     
+     var mail= (i_mail_affecte && data.getValue(i,i_mail_affecte))?data.getValue(i,i_mail_affecte):data.getValue(i,i_mail_pressenti);
+     
+     
+     html_msg="<a href='#' class='' data-ref='"+ref+"' data-mail='"+mail+"' data-vue='0' data-info='"+info+"'>";
+     html_msg+='<span class="glyphicon glyphicon-envelope text-warning" aria-hidden="true" data-toggle="tooltip" data-placement="left" title="Relancer le manager pressenti"></span></a>';
+          
+     data.setValue(i,data.getNumberOfColumns()-1, html_msg )
+   }
+
+  for(var index=0;index<data.getNumberOfColumns();index++){
+    if(data.getColumnLabel(index).search('glyphicon')!=-1){
+      //  label C "glyphicon-eye-open,Mon label personnalisé",
+      var labels = data.getColumnLabel(index).split(','), label;
+      label = '<span class="glyphicon '+labels[0]+'" aria-hidden="true"></span>&nbsp;';
+      if(labels.length>1) label+= labels[1];
+      
+      data.setColumnLabel(index,label);
+      }
+    }
+  
+  /*\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
+  Si aucun élément dans la table alors afficher aucun dossier
+  /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\\*/
+  if(data.getNumberOfRows()==0) { data.addRow();/*data.setValue(0, i_statut, 'Aucun dossier')*/}
+
+
+  /*/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
+    Masquer les éventuelles colonnes pour le traitement des actions
+  /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\*/ 
+  var view = new google.visualization.DataView(data);
+  view.hideColumns([i_reference]);
+
+
+  
+
+
+  
+  google.visualization.events.addListener(chart, 'ready', myReadyHandlerRelance);
+  chart.draw(view, options);
+  $('[data-toggle="tooltip"]').tooltip();
+  /*
+  
+  REGLES D'AJUSTEMENT DES COLONNES
+  */
+  $('#id_table_relance1  .cssHeaderCell:contains("chrono")').css('width', '10%');
+  $('#id_table_relance1  .cssHeaderCell:contains("Statut")').css('width', '10%');
+  $('#id_table_relance1  .cssHeaderCell:contains("Dossier")').css('width', '20%');
+  $('#id_table_relance1  .cssHeaderCell:contains("Emission")').css('width', '10%');
+  $('#id_table_relance1  .cssHeaderCell:contains("Date")').css('width', '7%');
+  $('#id_table_relance1  .cssHeaderCell:contains("Retard")').css('width', '5%');
+  $('#id_table_relance1  .cssHeaderCell:contains("Actions")').css('width', '8%');
+  $('.dropdown').parents().css('overflow', 'visible');
+  
+  /*/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
+    Gestion des triggers Event du google Table (mise à jour action)
+  /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\*/
+  google.visualization.events.addListener(chart, 'page', myReadyHandlerRelance);
+  google.visualization.events.addListener(chart, 'sort', myReadyHandlerRelance);
+  
+  
+  
+}
+
+/*
+ 
+ 
+ GOOGLE CHART TABLE
+ 
+ TABLE 2 REQUEST
+ 
+ */
+ 
+ function handleQueryTableRelance2(response) {
+  if (response.isError()) {
+    alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
+    return;
+  }
+  
+  
+  // Graphic A
+  var data = response.getDataTable();
+  
+  // view number of values
+  $('#num_alert_go').html( data.getNumberOfRows())
+  
+  var chart = new google.visualization.Table(document.getElementById('id_table_relance2'));
+  var cssClassNames = {
+                
+                tableRow:'cssTableRow',
+                oddTableRow:'cssTableRow', 
+                selectedTableRow:'cssHoverRow', 
+                hoverTableRow:'cssHoverRow', 
+                 
+                headerCell:'cssHeaderCell',
+                tableCell:'cssCell',
+                rowNumberCell:'css8'}
+                
+  var options = {
+    title: 'Dossiers en attente'
+    //,page:'enable'
+    //,pageSize: 12
+    ,allowHtml: true
+    //,showRowNumber: true
+    ,sortAscending:false
+
+    ,cssClassNames: cssClassNames
+    
+      
+  };
+  
+  /*/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
+  Identification des positions de colonnes présentes
+  /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/*/
+  var i_statut,i_url,i_log,i_datetime=[],i_reference,i_mail_rp;
+  for(var i=0;i<data.getNumberOfColumns();i++){
+      if(data.getColumnLabel(i).toLowerCase()=='statut') i_statut = i;
+      if(data.getColumnLabel(i).toLowerCase().indexOf('proposition')!=-1) i_mail_rp = i;
+      if(data.getColumnLabel(i).toLowerCase()=='identifiant') i_reference = i;
+      if(data. getColumnType(i)=='datetime') i_datetime.push(i);
+      
+  }
+  
+  var formatter = new google.visualization.PatternFormat('<span class="label {0}" data-html="{0}">&nbsp;</span>');
+  formatter.format(data, [i_statut],i_statut);
+  
+  
+
+  
+  /*/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
+  Mise en forme des colonnes datetime
+  /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/*/
+  var formatter_short = new google.visualization.DateFormat({pattern: 'dd/MM/yyyy'});
+  i_datetime.forEach(function(element,index){formatter_short.format(data, element);})
+  
+  /*/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
+    Mise en forme de la colonne Action ( détail historique, lien folder google drive)
+  /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\*/
+  data.addColumn('string', 'Actions');
+   
+   for(var i=0;i<data.getNumberOfRows();i++){
+    
+     var ref=data.getValue(i,i_reference), info= data.getValue(i,1)+' : '+data.getValue(i,2);
+     
+     var mail= (i_mail_rp && data.getValue(i,i_mail_rp))?data.getValue(i,i_mail_rp):'no mail';
+     
+     
+     html_msg="<a href='#' class='' data-ref='"+ref+"' data-vue='1' data-mail='"+mail+"' data-info='"+info+"'>";
+     html_msg+='<span class="glyphicon glyphicon-envelope text-warning" aria-hidden="true" data-toggle="tooltip" data-placement="left" title="Relancer le manager pressenti"></span></a>';
+          
+     data.setValue(i,data.getNumberOfColumns()-1, html_msg )
+   }
+
+  for(var index=0;index<data.getNumberOfColumns();index++){
+    if(data.getColumnLabel(index).search('glyphicon')!=-1){
+      //  label C "glyphicon-eye-open,Mon label personnalisé",
+      var labels = data.getColumnLabel(index).split(','), label;
+      label = '<span class="glyphicon '+labels[0]+'" aria-hidden="true"></span>&nbsp;';
+      if(labels.length>1) label+= labels[1];
+      
+      data.setColumnLabel(index,label);
+      }
+    }
+  
+  /*\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
+  Si aucun élément dans la table alors afficher aucun dossier
+  /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\\*/
+  if(data.getNumberOfRows()==0) { data.addRow();/*data.setValue(0, i_statut, 'Aucun dossier')*/}
+
+
+  /*/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
+    Masquer les éventuelles colonnes pour le traitement des actions
+  /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\*/ 
+  var view = new google.visualization.DataView(data);
+  view.hideColumns([i_reference]);
+
+
+  google.visualization.events.addListener(chart, 'ready', myReadyHandlerRelance);
+  chart.draw(view, options);
+
+  /*
+  
+  REGLES D'AJUSTEMENT DES COLONNES
+  */
+  $('#id_table_relance2  .cssHeaderCell:contains("chrono")').css('width', '10%');
+  $('#id_table_relance2  .cssHeaderCell:contains("Statut")').css('width', '10%');
+  $('#id_table_relance2  .cssHeaderCell:contains("Dossier")').css('width', '20%');
+  $('#id_table_relance2  .cssHeaderCell:contains("Emission")').css('width', '10%');
+  $('#id_table_relance2  .cssHeaderCell:contains("Date")').css('width', '10%');
+  $('#id_table_relance2  .cssHeaderCell:contains("Retard")').css('width', '5%');
+  $('#id_table_relance2  .cssHeaderCell:contains("Actions")').css('width', '8%');
+  $('.dropup').parents().css('overflow', 'visible');
+  
+  
+
+  /*/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
+    Gestion des triggers Event du google Table (mise à jour action)
+  /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\*/
+  google.visualization.events.addListener(chart, 'page', myReadyHandlerRelance);
+  google.visualization.events.addListener(chart, 'sort', myReadyHandlerRelance);
+  
+  
+  
+  
+}
+
+
+$(function(){
+  console.log('ready Page-dasboard-relance');
+
+  google.setOnLoadCallback(drawTableRelance);
+  
+  // Evenement sur d'un evenement form
+  $("#relanceModal button").on('click',function(){
+  
+     var note = $('#relanceModal #message-text').val(), reference=$('#relanceModal #reference_hide').val();
+     var destinataires = $('#relanceModal #recipient').val();
+     if( note == '' || destinataires=='') return;
+     
+     // Identifier l'origine de l'appel
+     // 0 : Alerte sans RP
+     // 1 : Alerte Go NOGO hors délais  
+     
+     switch($('#relanceModal #vue_hide').val()){
+       case '0': 
+                 google.script.run.withSuccessHandler()
+                   .withFailureHandler(function(e){console.log(e);})
+                   .RelanceWithoutRP(reference,note,destinataires);
+                 break;
+       case '1':
+                 google.script.run.withSuccessHandler()
+                   .withFailureHandler(function(e){console.log(e);})
+                   .RelanceOutDelayGo(reference,note,destinataires);
+                 break;
+       default:
+      }
+     
+     
+     
+     
+     
+     $('#relanceModal').modal('hide');
+     
+  });
+
+});
+  
+  
+</script>
