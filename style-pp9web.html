@@ -91,17 +91,34 @@ body{
     animation-name: ticker;
     -webkit-animation-duration: 40s;
     animation-duration: 40s;
+    
   }
   .ticker__item {
     display: inline-block;
     padding: 0 2rem;
     font-size: 2rem;
-    color: white;
+    color: grey;
   }
   
   .ticker__item:after {
     content:"  >>>";
   }
   
+  /*
+    Mise en forme pour template mail pour les mises en forme
+    Principe: copier/coller le groupe de css dans la rubrique
+              <style> du template html des modèles de mails
+    outils : nécessite de cross compiler avec le service en ligne
+             de MailGimp : http://templates.mailchimp.com/resources/inline-css/
+    
+  */
+  .template_mail_button1:after {
+     display:<?=pp9_display_button1?>;
+  
+  }
+  .template_mail_button2:after {
+     display:<?=pp9_display_button2?>;
+  
+  }
  
 </style>

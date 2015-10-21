@@ -1,26 +1,29 @@
 function doGet(request) {
   
-  var html=null, duration;
+  var html=null, duration=PropertiesService.getScriptProperties().getProperty('ID_DURATION');
   
   
   switch(request.parameter.page){
   
     case 'new':html = HtmlService.createTemplateFromFile('Page-new')
-               duration = PropertiesService.getScriptProperties().getProperty('ID_DURATION') 
+               
                html.duration = (duration)?duration:'40s';
                
                html = html.evaluate()
                         .setTitle('Saisie formulaire AO')
                         .setSandboxMode(HtmlService.SandboxMode.IFRAME);break;
     
+    
     case 'dashboard':html = HtmlService.createTemplateFromFile('Page-dashboard');
-                         html.clsid = CLSID;  
+                     html.duration = (duration)?duration:'40s';   
+                        html.clsid = CLSID;  
                         html=html.evaluate()
-                        .setTitle('Administration AO')
+                        .setTitle('Reporting AO')
                         .setSandboxMode(HtmlService.SandboxMode.IFRAME);break;                    
                         
                         
     case 'response':html = HtmlService.createTemplateFromFile('Page-response');
+                    html.duration = (duration)?duration:'40s';
                     html.reference = request.parameter.ref;
                     html.type= (request.parameter.type=='expanded')?request.parameter.type:'small';
                     html = html.evaluate()
@@ -30,8 +33,8 @@ function doGet(request) {
                         
                     break;
       
-    case 'relance':html = HtmlService.createTemplateFromFile('Page-relance');
-                    html.reference = request.parameter.ref; 
+    case 'changelog':html = HtmlService.createTemplateFromFile('Page-changelog');
+                    
                     html = html.evaluate()
                                .setTitle('Relance formulaire AO')
                                .setSandboxMode(HtmlService.SandboxMode.IFRAME);
@@ -40,6 +43,7 @@ function doGet(request) {
                     break;
       
     case 'decision':html = HtmlService.createTemplateFromFile('Page-decision');
+                    html.duration = (duration)?duration:'40s';
                     html.result = request.parameter.result;              
                     html.reference = request.parameter.ref;
                     html = html.evaluate()
@@ -66,6 +70,7 @@ function doGet(request) {
       
       
     case 'build_avv':html = HtmlService.createTemplateFromFile('Page-build_avv');
+                    html.duration = (duration)?duration:'40s';
                     html.reference = request.parameter.ref;
                     html = html.evaluate()
                                .setTitle('Building AVV')
@@ -91,7 +96,7 @@ function doGet(request) {
                   */
                   
                   var out = '<h1>SQLI PP9-WEB</h1><b><p>Command : Admin</p></b><p><i>debugging:</i><b>'+Logger.getLevel()+'</p></b></br>';
-                  out += '<p><i>clsid_dev (spreadsheet):</i><b>'+clsid_+'</p></b>';
+                  out += '<p><i>spreadsheet (rattaché):</i><b>'+clsid_+'</p></b>';
                   out += '<p><i>production:</i><b>'+__PROD__+'</p></b>';
                   out += '<p><i>url:</i><b>'+URL_EXEC+'</p></b>';
                   
@@ -118,59 +123,13 @@ function include(filename) {
       .getContent();
 }
 
-// BEGIN DRIVE INTERFACE
-/* fonction permettant de déplacer les fichiers(files) vers
-   le dossier drive (destination). La fonction permet de créer
-   le folder destination si celui-ci n'existe pas. Tous les fichiers
-   sources (IDs) seront ensuite effacés de la source DRIVE du user
-   files : Array ID drive file
-   destination: string define the name folder destination
-*/
-function saveFiles(files,destination,subdestination){
-try{
-    var file, folder = DriveApp.getFolderById(ID_FOLDER_FILES);
-    
-    
-    var folder_dest = folder.getFoldersByName(destination);
-    if(__DEBUG__) {Logger.finest(JSON.stringify(files));}
-    /* verification de l'existence du dossier destination */
-    if(!folder_dest.hasNext()){
-        folder_dest = folder.createFolder(destination);
-    }else folder_dest = folder_dest.next();
-    
-    /* Existance d'un sous dossier */
-    var sub_folder;
-    
-  if(subdestination===undefined){
-    sub_folder = '';
-  }else{
-    sub_folder= folder_dest.getFoldersByName(subdestination);
-    if(!sub_folder.hasNext()){
-        sub_folder = folder_dest.createFolder(subdestination);
-    }else sub_folder = sub_folder.next();
-    folder_dest = sub_folder;
-  }
-    
-  
-  
-    /* recopie de l'ensemble des fichiers dans le folder destination*/
-    
-    for(var index=0; index< files.length;index++){
-      if(files[index]===undefined || typeof files[index]!='string' || files[index]=='' ) continue;
-      
-      file = DriveApp.getFileById(files[index]);
-      file.makeCopy(folder_dest);
-      
-      DriveApp.removeFile(file);
-    }
- 
-    return folder_dest.getUrl();
-}catch(e){treatmentException_(e)}   
-}
+
 
 function testing_saveFiles(){
  try{ 
   var r = saveFiles(['0BxTfS7jXR_FYZThDRG5GT1B2Z2s'],'I1429787869176','toto');
+  
+ 
 }catch(e){treatmentException_(e)}   
   
   
@@ -205,11 +164,9 @@ function testing(){
 
   try{
     
-    // 0BxTfS7jXR_FYSDRFQ1Z2OXk4cEk
-    var fileID = '0BxTfS7jXR_FYSDRFQ1Z2OXk4cEk';
-
-    saveFiles(fileID.split(","),'testing','CR_GONOGO');
     
+    //https://drive.google.com/open?id=0BxTfS7jXR_FYZFBBTV94WjUtQzQ
+    Logger.log(GetGridPP9Html('I1430302684776'))
  
     
   }catch(e){Logger.log(e);}
@@ -336,17 +293,27 @@ function GetUnit(pratice){
   }catch(e){treatmentException_(e)} 
 }
 
-
-function HtmlPreviewModal(form,mail){
+/*************************************************************
+/ HtmlPreviewModal : fonction permettant de produire le flux html
+/ de sortie associé à l'appel à la fonction MailingToManager
+/ [in]: emetteur
+/ [in]: identifiant du dossier
+/ [in]: -
+/
+/ [out]: string sous forme flux html
+/**************************************************************/
+function HtmlPreviewModal(values,mail){
  try{ 
-  if(form===undefined || typeof form!='object') throw 'null form';
+  if(values===undefined || typeof values!='object') throw 'null values';
   
   if(__DEBUG__) Logger.finest('HtmlPreviewModal:'+mail);
    return MailingToManager(Session.getActiveUser().getEmail(),
                    '#',
-                   form,
+                   values,
                    mail,
                    false);
+                   
+                 
   }catch(e){treatmentException_(e)} 
 }
 
@@ -510,32 +477,10 @@ function onValidateRedirectionUnit(form){
     var state=GetRowParams(COLUMN_STATE);
     
       
-    // ****** FUNCTION INLINE  ****
-    var row = (function () {
-      var row, data =getRowsData(sheet, sheet.getRange(2, 1, sheet.getMaxRows() - 1, MAX_COL));
-      
-      
-      for(var i=0;i<data.length;i++){
-        row = data[i];
-        row.rowNumber = i+2;
-        if(form.identifiant==row.identifiant && row.statut!=state.enCours) return row;
-        
-      }
-      return null;
-      })();
-    
-    var row_sheet = (function () {
-      var row, data =getRowsData(sheet_form, sheet_form.getRange(2, 1, sheet_form.getMaxRows() - 1, MAX_COL));
-      
-      
-      for(var i=0;i<data.length;i++){
-        row = data[i];
-        row.rowNumber = i+2;
-        if(form.identifiant==row.identifiant && row.statut!=state.enCours) return row;
-        
-      }
-      return null;
-      })();
+    // ****** Accès à aux détails du dossier  ****
+    var objet = new SHEET_AO();
+    var row = objet.Info_A(form.identifiant);
+    var row_sheet = objet.Info_B(form.identifiant);
     
     // ****** FUNCTION INLINE  ****
     
@@ -544,10 +489,12 @@ function onValidateRedirectionUnit(form){
                   
                   sheet.getRange(row.rowNumber,COLUMN_SHEET_RU).setValue(form.selectunit); /*\/\/\/\/\/\/On affecte le nouveau Manager en suivi */
                   //sheet.getRange(row.rowNumber,COLUMN_SHEET_MANAGER).setValue(GetManager(form.selectunit));
-                  sheet.getRange(row.rowNumber,COLUMN_SHEET_STATE).setValue(state.relance);
+                  
+                  /******On laisse le dossier en attente****/
+                  //sheet.getRange(row.rowNumber,COLUMN_SHEET_STATE).setValue(state.relance);
                   sheet.getRange(row.rowNumber,COLUMN_SHEET_DATE_RESP).setValue(new Date());
                   var objet_log= new OLogger(row.log);
-                  sheet.getRange(row.rowNumber,COLUMN_SHEET_LOG).setValue(objet_log.pushSession('Dossier redirigé',state.relance,{client:row.client,
+                  sheet.getRange(row.rowNumber,COLUMN_SHEET_LOG).setValue(objet_log.pushSession('Dossier redirigé',null,{client:row.client,
                                                                                                                                   dossier:row.dossier,
                                                                                                                                   info:form}));
                   //REnvoie du mail au Manager de UNIT
@@ -555,25 +502,18 @@ function onValidateRedirectionUnit(form){
                   MailingToOtherManager(row.emetteur,
                                        {client:row.client,
                                         ao:row.dossier,
-                                        contexte:row_sheet.contexte,
-                                        enjeux:row_sheet.enjeux,
+                                        
                                         unit:row_sheet.unit,
-                                        budget:row_sheet.budget,
+                                        
                                         date:row_sheet.remise,
-                                        indice:row_sheet.indice,
-                                        critere:row_sheet.critere,
-                                        origine:row_sheet.origine,
-                                        pourquoi:row_sheet.pourquoi,
-                                        partenaires:row_sheet.partenaires,
-                                        concurrents:row_sheet.concurrents,
-                                        crm:row_sheet.crm,
+                                        
                                         emetteur:row.emetteur,
                                         identifiant:row.identifiant,
                                         bodymail:row_sheet.message,
-                                        url:row_sheet.url,
+                                        
                                         manager:form.selectunit,
-                                        techno:row_sheet.techno,
-
+                                        
+                                        
                                         previous_manager:Session.getActiveUser().getEmail(),
                                         info_complementaire: form.commentaire_manager,
                                                       
@@ -740,7 +680,8 @@ function onValidateDecision(form){
                                                                                                            remise:form.remise,
                                                                                                            visa:form.visa,
                                                                                                            dar:form.dar,
-                                                                                                           synthèse:form.commentaire,}));
+                                                                                                           synthèse:form.commentaire,
+                                                                                                           cr:new C_Url(form.drive_id_files),}));
       // Push Event Calendar
       var calendar = CalendarApp.getDefaultCalendar();
       var guests=[],date_evt = form.dar.split("/");
@@ -762,12 +703,12 @@ function onValidateDecision(form){
           */
           
           description:'Dossier de suivi: '+row.dossier+'\r'+
-                      'Merci de confirmer le rdv avec la bonne liste de diffusion des participants dès que la date définitive et l\'horaire seront connus.\r'+
-                      'Pour rappel les représentants direction à inviter pour le DAR AVV:\r'+
+                      'Merci de confirmer le rdv avec la bonne liste de diffusion des participants dès que la date définitive et l\'horaire (au moins 48h avant la remise) seront connus..\r'+
+                      'Les représentants direction à inviter pour le DAR AVV :\r'+
                       'Budget < 300 k€ : Nicolas Larousse ou Stéphane Escoubes\r'+
-                      'Budget compris entre 300 k€ et 1 M€ : Philippe Fuhr\r'+
-                      '> 1 M€ : Thierry Chemla ou Didier Fauque, Philippe Fuhr\r'+
-                      'il est indispensable d\'organiser un pré-DAR au minimum une semaine avant remise avec la direction de l\'agence. Le DAR final avec la direction SQLI sera à organiser manuellement',
+                      'Budget compris entre 300 k€ et 1 M€ : Nicolas Larousse ou Stéphane Escoubes + Philippe Fuhr\r'+
+                      'Budget > 1 M€ : Nicolas Larousse ou Stéphane Escoubes + Philippe Fuhr + Thierry Chemla ou Didier Fauque\r'+
+                      'Dans ce dernier cas, il est indispensable d\'organiser un pré-DAR au minimum une semaine avant remise avec la direction de l\'agence. Le DAR final avec la direction SQLI sera à organiser manuellement',
           guests:guests.join(),
           sendInvites:true});
                                                                                                            
@@ -778,7 +719,8 @@ function onValidateDecision(form){
       objet.sheet.getRange(row.rowNumber,COLUMN_SHEET_COMMENT_NOGO).setValue(form.commentaire);
       objet.sheet.getRange(row.rowNumber,COLUMN_SHEET_LOG).setValue(objet_log.pushSession('Décision NOGO',state.nogo,{client:form.client,
                                                                                                            dossier:form.dossier,
-                                                                                                           synthèse:form.commentaire,}));
+                                                                                                           synthèse:form.commentaire,
+                                                                                                           cr:new C_Url(form.drive_id_files),}));
       break;
     default: throw new Error('Traitement sur decision inconnu !');
       
@@ -875,6 +817,217 @@ function onValidateDecision(form){
   }catch(e){treatmentException_(e)} 
 }
 
+/*************************************************************
+/ RelanceWithoutRP : fonction permettant de relancer
+/ le manager pressenti par mail suivant la référence au dossier
+/ [in]: reférence id de la fiche
+/ [in]: note du message
+/ [in]: Liste de destinataires
+
+/ [out]: -
+/**************************************************************/
+function RelanceWithoutRP(a,b,c){
+  try{
+    var objet = new SHEET_AO(),state=GetRowParams(COLUMN_STATE);
+    var row = objet.Info_A(a);
+    var objet_log= new OLogger(row.log);
+    
+    objet.sheet.getRange(row.rowNumber,COLUMN_SHEET_STATE).setValue(state.relance);
+    objet.sheet.getRange(row.rowNumber,COLUMN_SHEET_DATE_RELANCE).setValue(new Date());
+    objet.sheet.getRange(row.rowNumber,COLUMN_SHEET_LOG).setValue(objet_log.pushSession('Relance sans RP',state.relance,{client:row.client,
+                                                                                                           dossier:row.dossier,
+                                                                                                           manager: c,
+                                                                                                           émission:(row.dateheureMission===undefined )?'':Utilities.formatDate(row.dateheureMission, "GMT+02:00", "dd/MM/yyyy"),
+                                   
+                                                                                                           message: b,}));
+                                                                                                           
+    MailingRelanceToManager(c, 
+                            {ao:row.dossier,
+                            date:(row.dateheureMission===undefined )?'':Utilities.formatDate(row.dateheureMission, "GMT+02:00", "dd/MM/yyyy"),
+                             client:row.client,
+                             comment:b,
+                             id:a,
+                            }
+    )
+      
+    Logger.log('Appel relance sans RP: %s, à: %s',a,c);
+  
+  }catch(e){treatmentException_(e)}
+
+}
+
+/*************************************************************
+/ RelanceOutDelayGo : fonction permettant de relancer
+/ le responsable de proposition sur un dépassement de délais / date du Go
+/ [in]: reférence id de la fiche
+/ [in]: note du message
+/ [in]: Liste de destinataires
+
+/ [out]: -
+/**************************************************************/
+function RelanceOutDelayGo(a,b,c){
+  try{
+    var objet = new SHEET_AO(),state=GetRowParams(COLUMN_STATE);
+    var row = objet.Info_A(a);
+    var objet_log= new OLogger(row.log);
+    
+    // On enregistre la dernière date de relance (quelque soit le type de relance)
+    objet.sheet.getRange(row.rowNumber,COLUMN_SHEET_DATE_RELANCE).setValue(new Date());
+    objet.sheet.getRange(row.rowNumber,COLUMN_SHEET_LOG).setValue(objet_log.pushSession('Relance RP',null,{client:row.client,
+                                                                                                           dossier:row.dossier,
+                                                                                                           manager: c,
+                                                                                                           date_du_go:(row.dateGoNogo===undefined )?'':Utilities.formatDate(row.dateGoNogo, "GMT+02:00", "dd/MM/yyyy"),
+                                   
+                                                                                                           message: b,}));
+                                                                                                           
+    MailingRelanceToGo(c, 
+                            {ao:row.dossier,
+                            date:(row.dateGoNogo===undefined )?'':Utilities.formatDate(row.dateGoNogo, "GMT+02:00", "dd/MM/yyyy"),
+                             client:row.client,
+                             comment:b,
+                             id:a,
+                            }
+    )
+      
+    Logger.log('Appel relance sans GonoGO: %s, à: %s',a,c);
+  
+  }catch(e){treatmentException_(e)}
+
+}
+
+/*************************************************************
+/ SynchronizeCRM : fonction permettant de lire l'ensemble des 
+/ statut CRM liés au code chrono à partir d'un fichier excel
+/ importé
+/ [in]: reférence id du fichier .xls
+/ [in]: 
+/ [in]: 
+
+/ [out]: -
+/**************************************************************/
+function SynchronizeCRM(id){
+  try{
+    var xlsname = getFilename(id);
+    var gfile = convert_XLSfile_to_Gdrive(id);
+    
+    var sheet_ao =  SpreadsheetApp.openById(CLSID).getSheetByName(SHEET_O_AVV),
+        sheet_crm = SpreadsheetApp.openById(gfile).getSheets()[0];
+    var data_ao=getRowsData(sheet_ao, sheet_ao.getRange(2, 1, sheet_ao.getMaxRows() - 1, MAX_COL));
+    var data_crm =getRowsData(sheet_crm, sheet_crm.getRange(2, 1, sheet_crm.getMaxRows() - 1, MAX_COL));
+     
+    // Valider si dispose des colonnes de synchronisation
+    if(data_crm[0].numroChrono===undefined || data_crm[0].avancement===undefined)  throw 'Error format file:'+xlsname;
+    
+    for(var i=0;i<data_ao.length;i++){
+       for(var j=0;j<data_crm.length;j++){
+         if(data_ao[i].nChrono==data_crm[j].numroChrono) 
+           {
+             sheet_ao.getRange(i+2,COLUMN_SHEET_IMPORT_STATE_CRM).setValue(data_crm[j].avancement);
+             break;
+           }
+       
+       
+       }
+      
+    
+    }
+    
+    Logger.log('Synchronize file:%s terminated',xlsname);
+    DriveApp.removeFile(DriveApp.getFileById(gfile));
+    
+  }catch(e){treatmentException_(e)}
+
+}
+
+
+/*************************************************************
+/ GetGridPP9Html : fonction permettant de générer à partir d'une
+/ référence id de fiche AO, le flux html sous forme de tableau 
+/ formaté
+/ [in]: reférence id de la fiche
+/ [in]: 
+/ [in]: 
+
+/ [out]: Flux html
+/**************************************************************/
+function GetGridPP9Html(id){
+  try{ 
+    
+    var objet = new SHEET_AO();
+    var row = objet.Info_A(id);
+    var row_sheet = objet.Info_B(id);
+    
+    if( row&&row_sheet){
+        return templateGridPP9( {client:row.client,
+                     ao:row.dossier,
+                     contexte:row_sheet.contexte,
+                     enjeux:row_sheet.enjeux,
+                     unit:row_sheet.unit,
+                     budget:row_sheet.budget,
+                     date:getDate(row_sheet.remise),
+                     indice:row_sheet.indice,
+                     critere:row_sheet.critere,
+                     origine:row_sheet.origine,
+                     pourquoi:row_sheet.pourquoi,
+                     partenaires:row_sheet.partenaires,
+                     concurrents:row_sheet.concurrents,
+                     crm:row_sheet.crm,
+                     emetteur:row.emetteur,
+                     identifiant:row.identifiant,
+                     bodymail:row_sheet.message,
+                     url:row_sheet.url,
+                     
+                     techno:row_sheet.techno,
+                    });
+        
+    
+    
+          
+    }else throw new Error('Aucun dossier associé avec la référence suivante : '+id);
+ }catch(e){treatmentException_(e)}
+
+}
+
+
+/*************************************************************
+/ GetGridPP9Html_v : fonction permettant de générer à partir d'un
+/ tableau de valeurs issue d'un formulaire
+/ [in]: tableau de valeur
+/ [in]: 
+/ [in]: 
+
+/ [out]: Flux html
+/**************************************************************/
+function GetGridPP9Html_v(values){
+  try{ 
+    
+    
+    if( values){
+        return templateGridPP9( {client:values.find('client'),
+                     ao:values.find('ao'),
+                     contexte:values.find('contexte'),
+                     enjeux:values.find('enjeux'),
+                     unit:values.find('unit'),
+                     budget:currencyFormatNum(values.find('budget')),
+                     date:values.find('date'),
+                     indice:values.find('indice'),
+                     critere:values.find('critere'),
+                     origine:values.find('origine'),
+                     pourquoi:values.find('pourquoi'),
+                     partenaires:values.find('partenaires'),
+                     concurrents:values.find('concurrents'),
+                     crm:values.find('crm').toUpperCase(),
+                     techno:values.find('techno')+'-'+values.find('techno-autre'),
+                    });
+        
+    
+    
+          
+    }else throw new Error('GetGridPP9Html_v : tableau vide ');
+ }catch(e){treatmentException_(e)}
+
+}
+
 
 function GetRowParams(header){
  try{
@@ -918,6 +1071,24 @@ return cleanArray(SpreadsheetApp.openById(CLSID).getSheetByName(SHEET_PARAMS)
                                          
 }catch(e){treatmentException_(e)}   
 }
+
+
+/**
+ * IsAdmin : detect if the current user is admin
+
+ * return : true if a current user in the list
+ *
+**/
+function isAdmin() {
+  var ret=false,users = Get_ADMIN(), current_user = Session.getActiveUser().getEmail();
+
+  ret= users.split(',').lastIndexOf(current_user)!=-1;
+  Logger.log('Logging page, current user:%s, is admin:%s',current_user,ret)
+  
+  return ret;
+
+}
+
 
 
 

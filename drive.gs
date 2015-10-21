@@ -1,3 +1,141 @@
+/**********************************
+// Fonction permettant de convertir un .xls
+// en Google Spreadsheet depuis le Drive
+// [in] : ID fichier .xls
+// [in]
+// [out] : ID fichier converti.
+// A noter que le fichier généré est stocké
+// sous le Drive user
+/***********************************/
+function convert_XLSfile_to_Gdrive(xlsxFileId){
+  if(_isMSType(xlsxFileId)){
+      var sheetfile = convert_MSfile_to_Gdrive(xlsxFileId);
+      DriveApp.removeFile(DriveApp.getFileById(xlsxFileId));
+      return sheetfile;
+  }
+  else{
+    DriveApp.removeFile(DriveApp.getFileById(xlsxFileId));
+    throw 'not .xls file';
+  }
+}
+
+
+/**********************************
+// Fonction permettant de convertir un .xls
+// en Google Spreadsheet depuis le Drive
+// [in] : ID fichier .xls
+// [in]
+// [out] : ID fichier converti.
+// A noter que le fichier généré est stocké
+// sous le Drive user
+/***********************************/
+function convert_MSfile_to_Gdrive(FileId) { 
+  try{
+  var fileSrc = DriveApp.getFileById(FileId);
+  var xlsxBlob = fileSrc.getBlob();
+  var file = {
+    title: Utilities.formatDate(new Date(), "GMT+02:00", "yyyy-MM-dd HH:mm:ss")+'_'+getFilename(FileId)
+  };
+  
+  
+  file = Drive.Files.insert(file, xlsxBlob, {
+    convert: true
+  });
+  }catch(e){Logger.log(e);throw(e)}
+  
+  return (file.id);
+  
+}
+
+/*************************************************
+// Fonction qui détermine si le fichier est un au format .xls
+// [in] : ID fichier .xls
+// [in]
+// [out] : booleen exception si n'existe pas
+/*************************************************/
+function _isMSType(id){
+
+     return(DriveApp.getFileById(id).getMimeType()==MIMETYPE_MS)
+}
+
+
+// BEGIN DRIVE INTERFACE
+/* fonction permettant de déplacer les fichiers(files) vers
+   le dossier drive (destination). La fonction permet de créer
+   le folder destination si celui-ci n'existe pas. Tous les fichiers
+   sources (IDs) seront ensuite effacés de la source DRIVE du user
+   files : Array ID drive file
+   destination: string define the name folder destination
+   // [in] : (Array) array contenant une liste de ID de fichier à déplacer
+   // [in] : (ID) ID Folder destination
+   // [in] : (String) Name SubFolder destination
+   // [out] : (string) url fichier déplacé
+/***********************************/
+function saveFiles(files,destination,subdestination){
+try{
+    var file, folder = DriveApp.getFolderById(ID_FOLDER_FILES);
+    
+    
+    var folder_dest = folder.getFoldersByName(destination);
+    if(__DEBUG__) {Logger.finest(JSON.stringify(files));}
+    /* verification de l'existence du dossier destination */
+    if(!folder_dest.hasNext()){
+        folder_dest = folder.createFolder(destination);
+    }else folder_dest = folder_dest.next();
+    
+    /* Existance d'un sous dossier */
+    var sub_folder;
+    
+  if(subdestination===undefined){
+    sub_folder = '';
+  }else{
+    sub_folder= folder_dest.getFoldersByName(subdestination);
+    if(!sub_folder.hasNext()){
+        sub_folder = folder_dest.createFolder(subdestination);
+    }else sub_folder = sub_folder.next();
+    folder_dest = sub_folder;
+  }
+    
+  
+  
+    /* recopie de l'ensemble des fichiers dans le folder destination*/
+    
+    for(var index=0; index< files.length;index++){
+      if(files[index]===undefined || typeof files[index]!='string' || files[index]=='' ) continue;
+      
+      file = DriveApp.getFileById(files[index]);
+      file.makeCopy(folder_dest);
+      
+      DriveApp.removeFile(file);
+    }
+ 
+    return folder_dest.getUrl();
+}catch(e){treatmentException_(e)}   
+}
+
+
+function getFilename(Id){
+  var fileList;
+  try{
+    fileList = DriveApp.getFileById(Id).getName();
+  
+  }catch(e){fileList="";}
+  
+  return fileList;
+
+}
+
+function getUrl(Id){
+  var fileList;
+  try{
+    fileList = DriveApp.getFileById(Id).getUrl();
+  
+  }catch(e){fileList="";}
+  
+  return fileList;
+
+}
+
 function Copy_DriveAPI(source, destination){
   
   // Recopie de l'ensemble des fichiers du répertoire courant
@@ -30,8 +168,10 @@ function Logg(format)
 function drive_testing(){
   
   try{
-   
-   
+    //https://drive.google.com/open?id=0BxTfS7jXR_FYTjRyRFBEc3pwOEU
+    Logger.log(convert_XLSfile_to_Gdrive('0BxTfS7jXR_FYTjRyRFBEc3pwOEU'));
+    
+    
   }catch(e){Logger.log(e);}
 }
 

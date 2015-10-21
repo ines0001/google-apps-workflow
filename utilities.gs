@@ -46,7 +46,7 @@ OLogger.prototype = {
     return JSON.stringify(this.sessions,function(key, valeur) {
                           if (typeof valeur === "string") {
                             
-                            replaced = valeur.replace(/(["'])/g, function(m, group1) {
+                            replaced = valeur.replace(/(["'\n])/g, function(m, group1) {
                               if (group1 == "" ) return m;
                               else {return "&apos;";}
                             });
@@ -62,11 +62,20 @@ OLogger.prototype = {
   
 }
 
-function utilities_testing(){
- var t = '[{"date":"2015-04-27T12:42:54.824Z","user":"eremy@sqli.com","operation":"create","state":"EN ATTENTE","identifiant":"AZERTYUII"},{"date":"2015-04-27T12:45:14.881Z","user":"eremy@sqli.com","operation":"response","state":"RELANCE","comment":"onValidateRedirectionUnit"},{"date":"2015-04-27T12:46:02.875Z","user":"eremy@sqli.com","operation":"response","state":"RELANCE","comment":"onValidateRedirectionUnit"}]';
- var o = new OLogger(t);
+
+// Define Specific URL CLass
+function C_Url(ID) {
+  if(__DEBUG__) Logger.log('Nouvel objet Url- ID:%s',ID);
+  if(ID=='') return;
+  this.ID = ID;
+  this.URL = getUrl(ID);
+  this.NAME = getFilename(ID);
   
- Logger.log(o);
+}
+
+function utilities_testing(){
+ Logger.log(currencyFormatDE(currencyFormatNum('898 789 €')));
+ //Logger.log(o);
   
 }
 
@@ -257,12 +266,15 @@ function isDigit(char) {
 /**************************************************************************/
 function getDate(idate)
 {
+  
+
   if( (idate==undefined || idate.constructor!=Date) ) throw 'Error format date';
   var d = (idate==undefined || idate.constructor!=Date)?new Date():idate;
                        
-	var m = d.getUTCMonth()+1;          
-	var j = d.getUTCDate();                
-	var a = d.getUTCFullYear(); 
+	var m = d.getMonth()+1;          
+	var j = d.getDate(); 
+
+	var a = d.getFullYear(); 
 	var m_s = String(m);
 	var j_s = String(j);
 
@@ -288,3 +300,38 @@ function getNameinEmail(email)
  var t = email.split('@');
  return t[0]; 
 }
+
+
+/*************************************************************
+/ currencyFormatDE : fonction convertissant une valeur monétaire
+/ en Euro
+/ Ex : 1234567.89)); // output 1.234.567,89 €
+/ [in]: value
+/ [in]: 
+/ [in]: 
+
+/ [out]: string
+/**************************************************************/
+function currencyFormatDE (num) {
+    return num
+       .toFixed(0) // always two decimal digits
+       .replace(".", ",") // replace decimal point character with ,
+       .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.") + " €" // use . as a separator
+}
+
+/*************************************************************
+/ currencyFormatNum : fonction convertissant une valeur monétaire
+/ sous la forme 1 234 567 89 € en valeur numérique
+
+/ [in]: string
+/ [in]: 
+/ [in]: 
+
+/ [out]: numeric
+/**************************************************************/
+function currencyFormatNum (v) {
+  return parseInt(v.replace(/[\s\€]/g,''),10);
+}
+
+
+

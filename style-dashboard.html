@@ -5,6 +5,14 @@
 	*/
 	
     
+    @media(max-width: 991px){
+      .navbar-view{
+          display:none;
+      
+      }
+    
+    }
+    
     
 	/* Zebra striping */
 	.cssHoverRow { 
@@ -13,7 +21,7 @@
 	.cssHeaderCell { 
           padding:20px 10px 40px 10px;
           color:#E4E4E4;
-          font-size: 1.2em;
+          font-size: 1.0em;
           background-color:#222;
           <!--font-family: Georgia, serif;-->
           font-weight:normal;
@@ -24,7 +32,7 @@
           box-shadow:0px -1px 4px #000;
           text-shadow:0px 0px 1px #fff;
           text-shadow:1px 1px 1px #000;
-          line-height: 1.4em;
+          line-height: 1.2em;
       }
 	
     .cssTableRow {
@@ -215,6 +223,12 @@
     padding: 7px;
   }
   
+  .ABD:before {
+    background-color: black;
+    content: attr(data-html);
+    padding: 7px;
+  }
+  
   .EN.ATTENTE:before{
     color: DarkOrange;
     content: attr(data-html);
@@ -227,7 +241,7 @@
     padding: 7px;
   }
   
-  .WIN:before {
+  .WON:before {
     background-color: green;
     content: attr(data-html);
     padding: 7px;
@@ -242,9 +256,12 @@
   
   .RELANCE:before {
     background-color: #ec971f;
+    /*content: "REDIRIG\00C9";*/
     content: attr(data-html);
     padding: 7px;
     }
+    
+  
     
   .TRAITE:before {
     background-color: #5e5e5e;
