@@ -131,25 +131,51 @@ function getHistoryKey(json,state){
 }
 
 /*********************************************
-Fonction non utilisée
-[in]: event
+Fonction permettant de lire l'ID du dossier rattaché à l'objet TimeLine
+[in]: objet TimeLine
+[in]: nom de l'opération
+[out]: objet de l'opération, null sinon 
 **********************************************/
-function eventHistory(e){
-   console.log('click:',e);
-  /* 
-   var log = JSON.parse(e);
-   console.log('eventHistory:',log);
-   if(log){ 
-   
-   var html='';
-   for(var i=0;i<log.length;i++){
-   html+=addtimeline(log[i]);
-   }
-   $('#historicalModal ul').html(html);
-   
-   $('#historicalModal').modal();
-   }
-    */
+function getSessionKey( obj,key){
+  var str=null;
+  
+  for (var p in obj) {
+    if(typeof obj[p] == 'object') str = getSessionKey(obj[p],key);
+    if(str) break;
+    if(obj.hasOwnProperty(key)){
+      str = obj[key];
+      break;
+    }
+  }
+  return str;
+
+}
+
+/*********************************************
+  Fonction permettant de lire la dernière opération 
+  <name> depuis l'objet TimeLine
+  [in]: objets TimeLine JSON
+  [in]: nom de l'opération
+  [out]: objet de l'opération, null sinon 
+  **********************************************/
+function getSession( s, name){
+    var sessions;
+    var session={};
+    var regex = new RegExp(name, "gi");
+    
+    if( typeof(s) === 'string' || s instanceof String ){
+      sessions = JSON.parse(s);
+    }
+    else sessions = [];
+    
+    for(var i=sessions.length;i>0;i--) 
+      if (sessions[i-1].operation.match(regex)){
+        // match i-1 position trouvé
+        session = sessions[i-1];
+        break;
+      }
+    
+    return session
 }
 
 

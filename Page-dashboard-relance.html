@@ -45,8 +45,9 @@
           </div>
           
           <?!=HtmlService.createHtmlOutputFromFile('contact').getContent(); ?>
-
+          
   </body>
+  <?!= include('JSFonctions'); ?>
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>  
   <script>
 
@@ -85,25 +86,7 @@
        
     };
     
-    function myReadyHandlerRelance(){
-    /* mise en écoute sur les l'accès aux liens data-info
-       Ce handler est remit à jour à chaque réorganisation du tableau
-    */
     
-    
-    $('a[data-info]').click(function(){
-                
-                $('#relanceModal #title').html($(this).attr('data-info'));
-                $('#relanceModal #recipient').val($(this).attr('data-mail'));
-                $('#relanceModal #reference_hide').val($(this).attr('data-ref'));
-                $('#relanceModal #vue_hide').val($(this).attr('data-vue'));
-                $('#relanceModal #message-text').val('');
-                $('#relanceModal').modal({backdrop:false,});
-                
-                })
-              
-    
-    }
     
     /*
  
@@ -158,6 +141,7 @@
   var i_statut,i_url,i_log,i_datetime=[],i_reference,i_mail_pressenti,i_mail_affecte;
   for(var i=0;i<data.getNumberOfColumns();i++){
       if(data.getColumnLabel(i).toLowerCase()=='statut') i_statut = i;
+      if(data.getColumnLabel(i)=='log') i_log = i;
       if(data.getColumnLabel(i).toLowerCase().indexOf('pressenti')!=-1) i_mail_pressenti = i;
       if(data.getColumnLabel(i).toLowerCase().indexOf('en charge')!=-1) i_mail_affecte = i;
       if(data.getColumnLabel(i).toLowerCase()=='identifiant') i_reference = i;
@@ -183,13 +167,22 @@
    for(var i=0;i<data.getNumberOfRows();i++){
     
      var ref=data.getValue(i,i_reference), info= data.getValue(i,1)+' : '+data.getValue(i,2);
+     var  histo = data.getValue(i,i_log);
      
      var mail= (i_mail_affecte && data.getValue(i,i_mail_affecte))?data.getValue(i,i_mail_affecte):data.getValue(i,i_mail_pressenti);
      
+     html_msg='<div class="btn-group" role="group">';
+     html_msg+=(histo)?"<a href='#' data-reference='"+ref+"' data-url='"+histo+"' class='btn btn-info  btn-xs'>":'<a href="#" class="btn btn-info  btn-xs disabled">';
+     html_msg+='<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>';
      
-     html_msg="<a href='#' class='' data-ref='"+ref+"' data-mail='"+mail+"' data-vue='0' data-info='"+info+"'>";
-     html_msg+='<span class="glyphicon glyphicon-envelope text-warning" aria-hidden="true" data-toggle="tooltip" data-placement="left" title="Relancer le manager pressenti"></span></a>';
-          
+     html_msg+='<div class="btn-group" role="group">';
+     html_msg+="<a href='#' class='btn btn-default btn-xs' title='relance' data-ref='"+ref+"' data-mail='"+mail+"' data-vue='0' data-info='"+info+"'>Relancer</a>";
+     //html_msg+='<span class="glyphicon glyphicon-envelope" aria-hidden="true" data-toggle="tooltip" data-placement="left" title="Relancer le manager pressenti">   </span></a>';
+     html_msg+='</div>';
+     
+     
+     html_msg+='</div>';
+     
      data.setValue(i,data.getNumberOfColumns()-1, html_msg )
    }
 
@@ -214,14 +207,29 @@
     Masquer les éventuelles colonnes pour le traitement des actions
   /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\*/ 
   var view = new google.visualization.DataView(data);
-  view.hideColumns([i_reference]);
+  view.hideColumns([i_reference,i_log]);
 
 
   
-
-
+   /*
+   Handle Evenement Ready ControlWrapper
+   Permet de prendre la main sur une mise en forme
+   de la zone de recherche dans la barre Header
+   */
+   var tempListener = google.visualization.events.addListener(chart, 'ready',function(){
+     myReadyHandlerRelance();
+     google.visualization.events.removeListener(tempListener);
+   
+   });
+   
+   google.visualization.events.addListener(chart, 'sort',function(){
+     console.log('sort event Table');
+     myReadyHandlerRelance();
+     
+   });
+   
   
-  google.visualization.events.addListener(chart, 'ready', myReadyHandlerRelance);
+  
   chart.draw(view, options);
   $('[data-toggle="tooltip"]').tooltip();
   /*
@@ -240,8 +248,8 @@
   /*/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
     Gestion des triggers Event du google Table (mise à jour action)
   /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\*/
-  google.visualization.events.addListener(chart, 'page', myReadyHandlerRelance);
-  google.visualization.events.addListener(chart, 'sort', myReadyHandlerRelance);
+  //google.visualization.events.addListener(chart, 'page', myReadyHandlerRelance);
+  //google.visualization.events.addListener(chart, 'sort', myReadyHandlerRelance);
   
   
   
@@ -300,6 +308,7 @@
   var i_statut,i_url,i_log,i_datetime=[],i_reference,i_mail_rp;
   for(var i=0;i<data.getNumberOfColumns();i++){
       if(data.getColumnLabel(i).toLowerCase()=='statut') i_statut = i;
+      if(data.getColumnLabel(i)=='log') i_log = i;
       if(data.getColumnLabel(i).toLowerCase().indexOf('proposition')!=-1) i_mail_rp = i;
       if(data.getColumnLabel(i).toLowerCase()=='identifiant') i_reference = i;
       if(data. getColumnType(i)=='datetime') i_datetime.push(i);
@@ -327,12 +336,22 @@
     
      var ref=data.getValue(i,i_reference), info= data.getValue(i,1)+' : '+data.getValue(i,2);
      
+     var  histo = data.getValue(i,i_log);
+     
      var mail= (i_mail_rp && data.getValue(i,i_mail_rp))?data.getValue(i,i_mail_rp):'no mail';
      
+     html_msg='<div class="btn-group" role="group">';
+     html_msg+=(histo)?"<a href='#' data-reference='"+ref+"' data-url='"+histo+"' class='btn btn-info  btn-xs'>":'<a href="#" class="btn btn-info  btn-xs disabled">';
+     html_msg+='<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>';
      
-     html_msg="<a href='#' class='' data-ref='"+ref+"' data-vue='1' data-mail='"+mail+"' data-info='"+info+"'>";
-     html_msg+='<span class="glyphicon glyphicon-envelope text-warning" aria-hidden="true" data-toggle="tooltip" data-placement="left" title="Relancer le manager pressenti"></span></a>';
-          
+     html_msg+='<div class="btn-group" role="group">';
+     html_msg+="<a href='#' class='btn btn-default btn-xs' title='relance' data-ref='"+ref+"' data-mail='"+mail+"' data-vue='1' data-info='"+info+"'>Relancer</a>";
+     //html_msg+='<span class="glyphicon glyphicon-envelope" aria-hidden="true" data-toggle="tooltip" data-placement="left" title="Relancer le manager pressenti">   </span></a>';
+     html_msg+='</div>';
+     
+     
+     html_msg+='</div>';
+     
      data.setValue(i,data.getNumberOfColumns()-1, html_msg )
    }
 
@@ -357,10 +376,26 @@
     Masquer les éventuelles colonnes pour le traitement des actions
   /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\*/ 
   var view = new google.visualization.DataView(data);
-  view.hideColumns([i_reference]);
+  view.hideColumns([i_reference,i_log]);
 
 
-  google.visualization.events.addListener(chart, 'ready', myReadyHandlerRelance);
+  /*
+   Handle Evenement Ready ControlWrapper
+   Permet de prendre la main sur une mise en forme
+   de la zone de recherche dans la barre Header
+   */
+   var tempListener = google.visualization.events.addListener(chart, 'ready',function(){
+     myReadyHandlerRelance();
+     google.visualization.events.removeListener(tempListener);
+   
+   });
+   
+   google.visualization.events.addListener(chart, 'sort',function(){
+     console.log('sort event Table');
+     myReadyHandlerRelance();
+     
+   });
+   
   chart.draw(view, options);
 
   /*
@@ -381,8 +416,8 @@
   /*/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
     Gestion des triggers Event du google Table (mise à jour action)
   /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\*/
-  google.visualization.events.addListener(chart, 'page', myReadyHandlerRelance);
-  google.visualization.events.addListener(chart, 'sort', myReadyHandlerRelance);
+  //google.visualization.events.addListener(chart, 'page', myReadyHandlerRelance);
+  //google.visualization.events.addListener(chart, 'sort', myReadyHandlerRelance);
   
   
   
@@ -390,10 +425,66 @@
 }
 
 
+function myReadyHandlerRelance(){
+    /* mise en écoute sur les l'accès aux liens data-info
+       Ce handler est remit à jour à chaque réorganisation du tableau
+    */
+    
+    
+    $('a[title="relance"]').click(function(){
+                
+                $('#relanceModal #title').html($(this).attr('data-info'));
+                $('#relanceModal #recipient').val($(this).attr('data-mail'));
+                $('#relanceModal #reference_hide').val($(this).attr('data-ref'));
+                $('#relanceModal #vue_hide').val($(this).attr('data-vue'));
+                $('#relanceModal #message-text').val('');
+                $('#relanceModal').modal();
+                
+                })
+              
+    $('#relance a[data-url]').click(function(){
+                
+                var log = JSON.parse($(this).attr('data-url')),
+                    reference = $(this).attr('data-reference');
+                
+                if(log){ 
+                
+                var html='';
+                for(var i=0;i<log.length;i++){
+                html+=addtimeline(log[i]);
+                }
+                $('#historicalModal ul').html(html);
+                if(reference){
+                  google.script.run.withSuccessHandler(function(html){
+                    $('#historicalModal #gridpp9').html(html);
+                        
+                  })
+                  .withFailureHandler(function(e){console.log(e);foot_warning(e);})
+                  .GetGridPP9Html(reference);
+                }
+                $('#historicalModal').modal();
+                }
+                
+              });
+     
+     
+    }
+
 $(function(){
   console.log('ready Page-dasboard-relance');
 
   google.setOnLoadCallback(drawTableRelance);
+  
+  
+   $('#relance a[data-toggle="tab"]').on('show.bs.tab', function (e) {
+       console.log('Changement activité:',$(e.target).attr('aria-controls'));
+       
+       
+       myReadyHandlerRelance(); //On force le refresh des pages (mise à jour des status,dates,...)
+       
+     });
+  
+  
   
   // Evenement sur d'un evenement form
   $("#relanceModal button").on('click',function(){
@@ -421,12 +512,12 @@ $(function(){
       }
      
      
-     
-     
-     
      $('#relanceModal').modal('hide');
      
   });
+  
+  
+  
 
 });
   

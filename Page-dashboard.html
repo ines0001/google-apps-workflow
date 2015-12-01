@@ -13,7 +13,7 @@
 
     <!-- Bootstrap Core CSS -->
     
-    <link rel="stylesheet" href="<?!=PropertiesService.getScriptProperties().getProperty('ID_TEMPLATE_DASHBOARD');?>">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.4/journal/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/iCheck/1.0.1/skins/square/grey.css">
     
    
@@ -79,7 +79,7 @@ $(function(){
   
   
   </div>
-
+   <?!=HtmlService.createHtmlOutputFromFile('history-modal').getContent(); ?>
   <?!= HtmlService.createTemplateFromFile('Footer').evaluate().setSandboxMode(HtmlService.SandboxMode.IFRAME).getContent(); ?> 
 </body>
 
@@ -112,12 +112,14 @@ $(function(){
     
     $('input[name="inlineRadioOptions"]').on('ifChecked', function(event){
       $('#'+$(this).val()).show();
+      
     });
     
     $('input[name="inlineRadioOptions"]').on('ifUnchecked', function(event){
       $('#'+$(this).val()).hide();
+      
     });
-    
+   
     
     
 });

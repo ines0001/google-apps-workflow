@@ -28,9 +28,9 @@ var OtemplateMail = {
   html_ : '',
   tags:{tagCode1:'',tagCode2:'',},
   
-  init:function(){
+  init:function(template){
     
-    this.html_ =  HtmlService.createTemplateFromFile('template_mail');
+    this.html_ =  HtmlService.createTemplateFromFile(template);
     this.html_.pp9_title1='';
     this.html_.pp9_title2='';
     this.html_.pp9_body='*|TAG_MESSAGE_HTML|*';
@@ -45,9 +45,10 @@ var OtemplateMail = {
     this.html_.pp9_ColorButton2='#000000';
     this.html_.pp9_button1_display='none';
     this.html_.pp9_button2_display='none';
-    this.html_.pp9_link='LINK PP9 WEB';
+    this.html_.pp9_link=URL_EXEC+'?page=dashboard';
     this.html_.CURRENT_YEAR='2015';
-    this.html_.LIST_ADDRESS_HTML='eremy@sqli.com';
+    this.html_.LIST_COMPANY='SQLI GROUP';
+    this.html_.LIST_ADDRESS_HTML=GetEMAIL_CONTACT();
     
   },
   setContent: function(tag,v){
@@ -84,8 +85,8 @@ var OtemplateMail = {
 
 function testingMail(){
   try{
-  
-  OtemplateMail.init();
+  /*
+  OtemplateMail.init('template_mail');
   OtemplateMail.setContent(TAGS_MAIL.TITLE1,'Une nouvelle demande de référence déposé')
                .setContent(TAGS_MAIL.TITLE2,'dossier xx de yy')
                .setContent(TAGS_MAIL.CONTENT,'<h1>Lorem ipsum dolor sit amet, consectetur adipiscing elit</h1><h2>Fusce cursus suscipit tortor ac dictum</h2><h3>Ut mattis massa urna. Sed lacus nisi</h3><h4>efficitur nec orci nec, auctor pharetra odio</h4>Integer egestas magna odio, et aliquam ex convallis quis. Proin fringilla euismod diam a eleifend. Maecenas aliquam ultricies nisl, ac sodales lectus imperdiet et. Duis lacus nisl, faucibus eu dui vel, molestie molestie est. Vivamus massa felis, fringilla vel ornare ut, rhoncus a purus. Aliquam ex magna, condimentum ac accumsan eu, venenatis sit amet sem. Pellentesque dignissim vulputate sem, at lobortis lacus molestie convallis. Vivamus ultrices lacus ex, sit amet fermentum metus congue non. Nam hendrerit faucibus aliquet. Donec maximus, arcu ac lobortis eleifend, orci est sodales odio, in semper erat velit dictum sem. Ut auctor semper leo, eget dictum dolor facilisis id.')
@@ -107,10 +108,131 @@ function testingMail(){
                      };
   if(advancedArgs) MailApp.sendEmail(advancedArgs);
    
- 
+  */
+  
+  
+  MailingToAdminAskVisa('eremy@sqli.com',{
+                                 id:'xxxx',
+                                 visa:'visa',
+                                 ao:'dossier',
+                                 client:'client',
+                                 remise:'remise',
+                                 rp:'respponsable de proposition',
+   
+                                });
     
   }catch(e){Logger.log(e);}
 
+}
+
+
+/*************************************************************
+/ MailingAfterDAR : Notification par mail envoyé auprès des participants
+/ après un DAR
+/ [in]: liste des destinataires
+/ [in]: objet {
+                
+                
+                }
+/ [in]: -
+
+/ [out]: true
+/**************************************************************/
+function MailingAfterDAR(destinataire,option){
+  if(__DEBUG__) {Logger.log('MailingAfterDAR to:%-20s\toption:%s',destinataire,JSON.stringify(option,null,null));}
+  if(destinataire===undefined || typeof option!='object') throw 'MailingToAdminAskVisa:no values for sendMailing';
+  
+  var file = DriveApp.getFileById(option.attachements);
+  
+  var content = option.content;
+  content+='<hr><a href="'+file.getUrl()+'">Accès au compte-rendu du DAR</a><br>';
+  
+  OtemplateMail.init('template_mail');
+  OtemplateMail.setContent(TAGS_MAIL.TITLE1,option.client+'-'+option.ao)
+               .setContent(TAGS_MAIL.TITLE2,'Le DAR a été réalisé')
+               .setContent(TAGS_MAIL.CONTENT,content);
+  
+ 
+  var advancedArgs = { to: destinataire,
+                      subject: SUBJECT_DAR.replace('%%client%%',option.client)
+                                    .replace('%%ao%%',option.ao)
+                                    .replace('%%date%%',option.remise),
+  
+                      htmlBody: OtemplateMail.getContent(),
+  
+                       
+                      /*
+                       MANTIS 049
+                      */
+                      noReply:true,
+                      attachments:[file.getBlob()],
+                     
+                     };
+  
+  
+  
+  
+  if(advancedArgs) MailApp.sendEmail(advancedArgs);
+  
+  
+  
+  
+  return true;
+}
+
+/*************************************************************
+/ MailingAfterVISA : Notification par mail envoyé auprès des participants
+/ après un VISA FORFAIT
+/ [in]: liste des destinataires
+/ [in]: objet {
+                
+                
+                }
+/ [in]: -
+
+/ [out]: true
+/**************************************************************/
+function MailingAfterVISA(destinataire,option){
+  if(__DEBUG__) {Logger.log('MailingAfterVISA to:%-20s\toption:%s',destinataire,JSON.stringify(option,null,null));}
+  if(destinataire===undefined || typeof option!='object') throw 'MailingToAdminAskVisa:no values for sendMailing';
+  
+  var file = DriveApp.getFileById(option.attachements);
+  
+  var content = option.content;
+  content+='<hr><a href="'+file.getUrl()+'">Accès au compte-rendu PP10</a><br>';
+  
+  OtemplateMail.init('template_mail');
+  OtemplateMail.setContent(TAGS_MAIL.TITLE1,option.client+'-'+option.ao)
+               .setContent(TAGS_MAIL.TITLE2,'Le visa forfait a été réalisé')
+               .setContent(TAGS_MAIL.CONTENT,content);
+  
+ 
+  var advancedArgs = { to: destinataire,
+                      subject: SUBJECT_VISA.replace('%%client%%',option.client)
+                                    .replace('%%ao%%',option.ao)
+                                    .replace('%%date%%',option.remise),
+  
+                      htmlBody: OtemplateMail.getContent(),
+  
+                       
+                      /*
+                       MANTIS 049
+                      */
+                      noReply:true,
+                      cc:option.cc,
+                      attachments:[file.getBlob()],
+                     
+                     };
+  
+  
+  
+  
+  if(advancedArgs) MailApp.sendEmail(advancedArgs);
+  
+  
+  
+  
+  return true;
 }
 
 /*************************************************************
@@ -133,13 +255,15 @@ function testingMail(){
 /**************************************************************/
 
 function mailingAfterGoNoGo(destinataire,option){
-  if(__DEBUG__) {Logger.log('MailingToAdminAskVisa to:%-20s\toption:%s',destinataire,JSON.stringify(option,null,null));}
-  if(destinataire===undefined || typeof option!='object') throw 'MailingToAdminAskVisa:no values for sendMailing';
+  if(__DEBUG__) {Logger.log('mailingAfterGoNoGo to:%-20s\toption:%s',destinataire,JSON.stringify(option,null,null));}
+  if(destinataire===undefined || typeof option!='object') throw 'mailingAfterGoNoGo:no values for sendMailing';
   
-  OtemplateMail.init();
-  OtemplateMail.setContent(TAGS_MAIL.TITLE1,'Une opération de GO/NO GO a été effectuée')
+  OtemplateMail.init('template_mail');
+  OtemplateMail.setContent(TAGS_MAIL.TITLE1,option.client+'-'+option.ao)
                .setContent(TAGS_MAIL.TITLE2,'Vous avez une nouvelle notification de '+option.result)
                .setContent(TAGS_MAIL.CONTENT,option.comment);
+  
+  var file = (option.attachements.length>0)?DriveApp.getFileById(option.attachements):null;
   
   var advancedArgs = {to: destinataire,
                       subject: SUBJECT_DECISION_GONOGO.replace('%%client%%',option.client)
@@ -149,12 +273,12 @@ function mailingAfterGoNoGo(destinataire,option){
                                                     .replace('%%unit%%','(RP:'+option.rp+')'),
   
                       htmlBody: OtemplateMail.getContent(),
+                      
                       cc: option.cc,
                      
                      };
-  
+  if(file) { advancedArgs.attachments = [file.getBlob()]; }
 
-  
   
   if(advancedArgs) MailApp.sendEmail(advancedArgs);
   
@@ -186,8 +310,8 @@ function MailingToAdminAskVisa(destinataire,option){
   if(__DEBUG__) {Logger.log('MailingToAdminAskVisa to:%-20s\toption:%s',destinataire,JSON.stringify(option,null,null));}
   if(destinataire===undefined || typeof option!='object') throw 'MailingToAdminAskVisa:no values for sendMailing';
   
-  OtemplateMail.init();
-  OtemplateMail.setContent(TAGS_MAIL.TITLE1,'Une demande d\'initialisation de phase avant-vente a été reçu')
+  OtemplateMail.init('template_mail');
+  OtemplateMail.setContent(TAGS_MAIL.TITLE1,option.client+'-'+option.ao)
                .setContent(TAGS_MAIL.TITLE2,'Vous avez reçu une demande de création de dossier partagé ')
                .setContent(TAGS_MAIL.CONTENT,'<p>Une demande de <b>Visa Forfait</b> pour le: '+option.visa+'</p><p>Merci de traiter la demande de création de dossier avant-vente</p>')
                .setContent(TAGS_MAIL.BUTTON1_NAME,'Ajoutez un dossier avant-vente')
@@ -196,9 +320,66 @@ function MailingToAdminAskVisa(destinataire,option){
                .setContent(TAGS_MAIL.BUTTON1_VISIBILITY,true);
   
   var advancedArgs = { to: destinataire,
-                      subject: SUBJECT.replace('%%client%%',html.client)
-                                    .replace('%%ao%%',html.ao)
+                      subject: SUBJECT.replace('%%client%%',option.client)
+                                    .replace('%%ao%%',option.ao)
                                     .replace('%%date%%',option.remise)
+                                    .replace('%%unit%%','(RP:'+option.rp+')'),
+  
+                      htmlBody: OtemplateMail.getContent(),
+  
+                       
+                      /*
+                       MANTIS 049
+                      */
+                      noReply:true,
+                     
+                     };
+  
+  
+  
+  
+  if(advancedArgs) MailApp.sendEmail(advancedArgs);
+  
+  
+  
+  
+  return true;
+}
+
+/*************************************************************
+/ MailingToAdminAskCreateAVV : Notification par mail envoyé auprès de l'admin pour une demande 
+de création d'arborescence AVV uniquement
+/ [in]: liste des destinataires
+/ [in]: objet {
+                {'id':<?=reference?>,
+                'reviewer':<?=Session.getActiveUser().getEmail()?>,
+                'ao':$('#dossier').val(),
+                'client':$('#client').val(),
+                'rp':$('#rp').val(),
+                'revue':<?=type?>,}
+                
+                }
+/ [in]: -
+
+/ [out]: true
+/**************************************************************/
+function MailingToAdminAskCreateAVV(destinataire,option){
+  if(__DEBUG__) {Logger.log('MailingToAdminAskCreateAVV to:%-20s\toption:%s',destinataire,JSON.stringify(option,null,null));}
+  if(destinataire===undefined || typeof option!='object') throw 'MailingToAdminAskCreateAVV:no values for sendMailing';
+  
+  OtemplateMail.init('template_mail');
+  OtemplateMail.setContent(TAGS_MAIL.TITLE1,option.client+'-'+option.ao)
+               .setContent(TAGS_MAIL.TITLE2,'Vous avez reçu une demande de '+option.reviewer)
+               .setContent(TAGS_MAIL.CONTENT,'<p>Cette demande a été déclenché dans le cadre d\'une notification de fin de <b>'+option.revue+'</b>.<br><br>Il est donc urgent de traiter cette demande dans les plus brefs délais.</p>')
+               .setContent(TAGS_MAIL.BUTTON1_NAME,'Ajoutez un dossier avant-vente')
+               .setContent(TAGS_MAIL.BUTTON1_LINK,URL_EXEC+'?page=build_avv&ref='+option.id)
+               .setContent(TAGS_MAIL.BUTTON1_COLOR,'red')
+               .setContent(TAGS_MAIL.BUTTON1_VISIBILITY,true);
+  
+  var advancedArgs = { to: destinataire,
+                      subject: SUBJECT.replace('%%client%%',option.client)
+                                    .replace('%%ao%%',option.ao)
+                                    //.replace('%%date%%',option.remise)
                                     .replace('%%unit%%','(RP:'+option.rp+')'),
   
                       htmlBody: OtemplateMail.getContent(),
@@ -258,14 +439,14 @@ function MailingToRP(emetteur,option){
   mail+='<b>Date de Go/NoGo:</b>'+option.go+'<br>';
   mail+='<b>Date de remise:</b>'+option.date+'<br>';
   if(option.url) 
-    mail+='<b>Accès au cahier des charges :</b><a href="'+option.url+'"><br>';
+    mail+='<a href="'+option.url+'">Accès au cahier des charges :</a><br>';
   mail+='<br>';
-  mail+= '<p><u>Une fois le Go/no Go réalisé</u>, vous devez demander la création de l\'arborescence Avant-vente GDrive, ou bien donner les raisons du No Go.</p>'  
+  //mail+= '<p><u>Une fois le Go/no Go réalisé</u>, vous devez demander la création de l\'arborescence Avant-vente GDrive, ou bien donner les raisons du No Go.</p>'  
    
   
-  OtemplateMail.init();
-  OtemplateMail.setContent(TAGS_MAIL.TITLE1,'Une demande de GO/ NOGO a été générée')
-               .setContent(TAGS_MAIL.TITLE2,'Vous devez répondre à une notification de GO/ NOGO pour le '+option.go)
+  OtemplateMail.init('template_mail');
+  OtemplateMail.setContent(TAGS_MAIL.TITLE1,option.client+'-'+option.ao)
+               .setContent(TAGS_MAIL.TITLE2,'Vous devez organiser un GO/ NOGO pour le '+option.go)
                .setContent(TAGS_MAIL.CONTENT,mail)
                .setContent(TAGS_MAIL.BUTTON1_NAME,'Valider le dossier par un GO')
                .setContent(TAGS_MAIL.BUTTON1_LINK,URL_EXEC+'?page=decision&result=go&ref='+option.id)
@@ -323,14 +504,13 @@ function MailingRelanceToManager(destinataire,option){
   
   var mail ='<p>Bonjour,<p>';
   mail+='<p>Le dossier '+option.client+'-'+option.ao+' est actuellement <b>EN ATTENTE</b> d\'affectation d\'un responsable de proposition.</p>' 
-  mail+='<p>message de <b>'+Session.getActiveUser().getEmail()+'</b>:</p>';
-  mail+='<blockquote><q>'+option.comment+'</q></blockquote>';
+  mail+=ALERTE_MESSAGE_INLINE('<small>de '+Session.getActiveUser().getEmail()+':</small><br>'+option.comment);
   
   mail+='<p>Merci de compléter le formulaire depuis le lien ci-dessous.</p>';
   
-  OtemplateMail.init();
-  OtemplateMail.setContent(TAGS_MAIL.TITLE1,'Une relance de dossier vous a été remonté par '+ Session.getActiveUser().getEmail() )
-               .setContent(TAGS_MAIL.TITLE2,'Vous avez 1 dossier à traiter')
+  OtemplateMail.init('template_mail');
+  OtemplateMail.setContent(TAGS_MAIL.TITLE1,option.client+'-'+option.ao )
+               .setContent(TAGS_MAIL.TITLE2,'Vous avez un dossier à traiter')
                .setContent(TAGS_MAIL.CONTENT,mail)
                .setContent(TAGS_MAIL.BUTTON1_NAME,'Traiter le dossier')
                .setContent(TAGS_MAIL.BUTTON1_LINK,URL_EXEC+'?page=response&ref='+option.id)
@@ -370,19 +550,18 @@ function MailingRelanceToManager(destinataire,option){
 / [out]: true
 /**************************************************************/
 function MailingRelanceToGo(destinataire,option){
-   if(__DEBUG__) {Logger.log('MailingRelanceToManager to:%-20s\toption:%s',destinataire,JSON.stringify(option,null,null));}
-  if(destinataire===undefined || typeof option!='object') throw 'MailingRelanceToManager:no values for sendMailing';
+   if(__DEBUG__) {Logger.log('MailingRelanceToGo to:%-20s\toption:%s',destinataire,JSON.stringify(option,null,null));}
+  if(destinataire===undefined || typeof option!='object') throw 'MailingRelanceToGo:no values for sendMailing';
   
-  var mail ='<p>Bonjour,<p>';
-  mail+='<p>Le dossier '+option.client+'-'+option.ao+' est actuellement <b>EN ATTENTE</b> de GO / NO GO depuis le '+option.date+'.</p>' 
-  mail+='<p>message de <b>'+Session.getActiveUser().getEmail()+'</b>:<p>';
-  mail+='<blockquote><q>'+option.comment+'</q></blockquote>';
+  
+  var mail='<p>Le dossier '+option.client+'-'+option.ao+' est actuellement <b>EN ATTENTE</b> de GO / NO GO depuis le '+option.date+'.</p>' 
+  mail+=ALERTE_MESSAGE_INLINE('<small>de '+Session.getActiveUser().getEmail()+':</small><br>'+option.comment);
   
   mail+='<p>Merci de compléter le formulaire depuis les liens ci-dessous.</p>';
   
-  OtemplateMail.init();
-  OtemplateMail.setContent(TAGS_MAIL.TITLE1,'Une relance de dossier vous a été remonté par '+ Session.getActiveUser().getEmail())
-               .setContent(TAGS_MAIL.TITLE2,'Vous avez 1 dossier à traiter')
+  OtemplateMail.init('template_mail');
+  OtemplateMail.setContent(TAGS_MAIL.TITLE1,option.client+'-'+option.ao)
+               .setContent(TAGS_MAIL.TITLE2,'Vous avez un dossier à traiter')
                .setContent(TAGS_MAIL.CONTENT,mail)
                .setContent(TAGS_MAIL.BUTTON1_NAME,'Valider le dossier par un GO')
                .setContent(TAGS_MAIL.BUTTON1_LINK,URL_EXEC+'?page=decision&result=go&ref='+option.id)
@@ -402,6 +581,50 @@ function MailingRelanceToGo(destinataire,option){
   
                       htmlBody: OtemplateMail.getContent(),
                       cc: option.cc,
+                      noReply:true,
+                     
+                     };
+  
+ 
+  
+  if(advancedArgs) MailApp.sendEmail(advancedArgs);
+ 
+  return true;
+}
+
+/*************************************************************
+/ MailingtoComment : Notification par mail Envoyerle responsable 
+/ de proposition sur un dépassement de délais / date du Go
+/ [in]: liste des destinataires
+/ [in]: objet {ao:row.dossier,
+              client:row.client,
+              comment:b,
+              id:a,
+              }
+/ [in]: -
+
+/ [out]: true
+/**************************************************************/
+function MailingtoComment(destinataire,option){
+   if(__DEBUG__) {Logger.log('MailingtoComment to:%-20s\toption:%s',destinataire,JSON.stringify(option,null,null));}
+  if(destinataire===undefined || typeof option!='object') throw 'MailingtoComment:no values for sendMailing';
+ 
+  
+  OtemplateMail.init('template_mail');
+  OtemplateMail.setContent(TAGS_MAIL.TITLE1,option.client+'-'+option.ao)
+               .setContent(TAGS_MAIL.TITLE2,'Un commentaire vient d\'être ajouté par '+ Session.getActiveUser().getEmail())
+               .setContent(TAGS_MAIL.CONTENT,option.comment);
+               
+  
+ 
+ 
+  
+  var advancedArgs = {to: destinataire,
+                      subject:SUBJECT_COMMENT.replace('%%date%%',option.date)
+                                .replace('%%dossier%%',option.ao)
+                                .replace('%%client%%',option.client),
+  
+                      htmlBody: OtemplateMail.getContent(),
                       noReply:true,
                      
                      };
@@ -438,26 +661,23 @@ function MailingRelanceToGo(destinataire,option){
 function MailingToSales(emetteur,option){
   
   if(emetteur===undefined || typeof option!='object') throw 'MailingToSales:no values for sendMailing';
-  var html = HtmlService.createTemplateFromFile('mailchimp_standard_cssonline'),
-      objet='',mail='';
+  var mail='';
   
   if(__DEBUG__) {Logger.log('MailingToSales to:%-20s\toption:%s',emetteur,JSON.stringify(option,null,null));}
-  
-  
-  var mail ='<p>Bonjour,<p>';
-  mail+='<p>Le dossier <b>'+option.client+'-'+option.ao+'</b> est pris en charge par <b>'+option.rp+'</b> suivant ';
+
+  var mail='<p>Le dossier <b>'+option.client+'-'+option.ao+'</b> est pris en charge par <b>'+option.rp+'</b> suivant ';
   mail+='une date de Go/NoGo planifiée au <b>' +option.go+'</b></p>';
   
  
-  OtemplateMail.init();
-  OtemplateMail.setContent(TAGS_MAIL.TITLE1,'Le manager '+Session.getActiveUser().getEmail()+' vient d\'attribuer un responsable de proposition')
-               .setContent(TAGS_MAIL.TITLE2,'Votre dossier est désormais suivi par 1 responsable de proposition' )
+  OtemplateMail.init('template_mail');
+  OtemplateMail.setContent(TAGS_MAIL.TITLE1,option.client+'-'+option.ao)
+               .setContent(TAGS_MAIL.TITLE2,'Votre dossier est désormais suivi par un responsable de proposition' )
                .setContent(TAGS_MAIL.CONTENT,mail);
                
   
   var advancedArgs = {to: emetteur,
-                      subject:SUBJECT.replace('%%client%%',html.client)
-                                    .replace('%%ao%%',html.ao)
+                      subject:SUBJECT.replace('%%client%%',option.client)
+                                    .replace('%%ao%%',option.ao)
                                     .replace('%%date%%',option.date)
                                     .replace('%%unit%%',option.unit),
   
@@ -508,18 +728,19 @@ function MailingToOtherManager(emetteur,option){
   
   if(__DEBUG__){ Logger.log('MailingToOtherManager to:%-20s\toption:%s',emetteur,JSON.stringify(option,null,null));}
 
-  mail ='<p>Bonjour,<p>';
-  mail+='<p>Le dossier <b>'+option.client+'-'+option.ao+'</b> vient d\'être redirigé par <b>'+option.previous_manager+'</b> avec le commentaire suivant:<p>';
-  mail+='<blockquote><q>'+option.info_complementaire+'</q></blockquote>';
-  mail+='<br>';
-  mail+='<p>Rappel du message d\'origine de: <b>'+option.emetteur+'</b></p>';
-  mail+='<blockquote><q>'+option.bodymail+'</q></blockquote>';
+  mail+=ALERTE_MESSAGE_INLINE(' Le manager pressenti pour répondre à ce dossier (<b>'+option.previous_manager+'</b>), l\'a redirigé vers <b>'+option.manager+'</b>'); 
+  
+  
+  mail+=INFO_MESSAGE_INLINE('<small>de '+Session.getActiveUser().getEmail()+':</small><br>'+option.info_complementaire);
+  
+  mail+='<small>de '+option.emetteur+':</small><br>';
+  mail+= option.bodymail;
   mail+='<br>';
   mail+='<p>Merci de compléter le formulaire depuis les liens ci-dessous.</p>';
   
-  OtemplateMail.init();
-  OtemplateMail.setContent(TAGS_MAIL.TITLE1,'Une nouvelle demande vous a été transmis par '+ option.previous_manager )
-               .setContent(TAGS_MAIL.TITLE2,'Vous avez 1 dossier à traiter')
+  OtemplateMail.init('template_mail');
+  OtemplateMail.setContent(TAGS_MAIL.TITLE1,option.client+'-'+option.ao )
+               .setContent(TAGS_MAIL.TITLE2,'Vous avez un dossier à traiter')
                .setContent(TAGS_MAIL.CONTENT,mail)
                .setContent(TAGS_MAIL.BUTTON1_NAME,'Traiter le dossier')
                .setContent(TAGS_MAIL.BUTTON1_LINK,(arbitrage_enum.indexOf(option.unit)!=-1)?URL_EXEC+'?page=response&type=expanded&ref='+option.identifiant:URL_EXEC+'?page=response&ref='+option.identifiant)
@@ -528,10 +749,10 @@ function MailingToOtherManager(emetteur,option){
                .setContent(TAGS_MAIL.LOWER_BODY,GetGridPP9Html(option.identifiant));
  
   
-  var advancedArgs = {to: emetteur,
+  var advancedArgs = {to: option.manager,
                       subject:SUBJECT.replace('%%client%%',option.client)
                                   .replace('%%ao%%',option.ao)
-                                  .replace('%%date%%', option.date)
+                                  .replace('%%date%%', getDate(option.date))
                                   .replace('%%unit%%',option.unit),
   
                       htmlBody: OtemplateMail.getContent(),
@@ -561,21 +782,21 @@ function MailingToManager(emetteur,id,values,mail,option){
   
   
   
-  OtemplateMail.init();
-  OtemplateMail.setContent(TAGS_MAIL.TITLE1,'Une nouvelle demande vous a été transmis par '+ Session.getActiveUser().getEmail() )
-               .setContent(TAGS_MAIL.TITLE2,'Vous avez 1 dossier à traiter')
-               .setContent(TAGS_MAIL.CONTENT,mail)
-               .setContent(TAGS_MAIL.BUTTON1_NAME,'Traiter le dossier')
-               .setContent(TAGS_MAIL.BUTTON1_LINK,(option)?(arbitrage_enum.indexOf(values.find('unit'))!=-1)?URL_EXEC+'?page=response&type=expanded&ref='+id:URL_EXEC+'?page=response&ref='+id:'#')
-               .setContent(TAGS_MAIL.BUTTON1_COLOR,'red')
-               .setContent(TAGS_MAIL.BUTTON1_VISIBILITY,true)
-               .setContent(TAGS_MAIL.LOWER_BODY,(option)?GetGridPP9Html(id):GetGridPP9Html_v(values));
+  OtemplateMail.init((option)?'template_mail':'template_mail_preview');
+  OtemplateMail.setContent(TAGS_MAIL.TITLE1, values.find('client')+'-'+values.find('ao') )
+              .setContent(TAGS_MAIL.TITLE2,'Vous avez un dossier à traiter')
+              .setContent(TAGS_MAIL.CONTENT,mail)
+              .setContent(TAGS_MAIL.BUTTON1_NAME,'Traiter le dossier')
+              .setContent(TAGS_MAIL.BUTTON1_LINK,(option)?(arbitrage_enum.indexOf(values.find('unit'))!=-1)?URL_EXEC+'?page=response&type=expanded&ref='+id:URL_EXEC+'?page=response&ref='+id:'#')
+              .setContent(TAGS_MAIL.BUTTON1_COLOR,'red')
+              .setContent(TAGS_MAIL.BUTTON1_VISIBILITY,true)
+              .setContent(TAGS_MAIL.LOWER_BODY,(option)?GetGridPP9Html(id):GetGridPP9Html_v(values));
   
   
   var advancedArgs = {to: GetManager(values.find('unit')),
                       subject:SUBJECT.replace('%%client%%',values.find('client'))
                                     .replace('%%ao%%',values.find('ao'))
-                                    .replace('%%date%%',values.find('date'))
+                                    .replace('%%date%%',getDate(values.find('date')))
                                     .replace('%%unit%%',values.find('unit')),
   
                       htmlBody: OtemplateMail.getContent(),

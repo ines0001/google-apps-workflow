@@ -11,21 +11,25 @@
 <div>
   <!-- /.container-fluid -->
    
-    <div id="footer" class="navbar navbar-default navbar-fixed-bottom animated bounceInUp">
+    <div id="footer" class="navbar navbar-default navbar-fixed-bottom">
       <div class="">
           <span class="navbar-text pull-left ">
             <a target="_blank" href="<?=ScriptApp.getService().getUrl()?>?page=changelog" title="Change log">Releases</a>
            </span>
           
-          <span class="col-sm-9 ">
+          <span class="nav navbar-nav col-sm-9 hidden-xs hidden-sm">
              <div id="foot_alert" class="ticker-wrap">
                <div  class="ticker" style="-webkit-animation-duration: <?=duration?>;animation-duration: <?=duration?>;"></div>
              </div>
           </span>
-          <span class="col-sm-1 "></span>
-          <span id="contact" class="navbar-btn btn-danger btn" title="Prendre contact" >Contact</span>
+          
+          
+          <span id="contact" class="navbar-btn btn-danger btn pull-right" title="Prendre contact" >Contact</span>
       </div>
     </div>
+    
+    
+    
 </div>
 
 <!-- jQuery -->

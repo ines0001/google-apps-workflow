@@ -53,6 +53,16 @@ function doGet(request) {
       
                     break;
     
+    case 'validation':html = HtmlService.createTemplateFromFile('Page-validation');
+                    html.duration = (duration)?duration:'40s';
+                    html.type = request.parameter.type;              
+                    html.reference = request.parameter.ref;
+                    html = html.evaluate()
+                               .setTitle('Validation revue interne')
+                               .setSandboxMode(HtmlService.SandboxMode.IFRAME);
+      
+      
+                    break;
     
     case 'testing':html = HtmlService.createTemplateFromFile('testing');
                     html.reference = request.parameter.ref;
@@ -142,7 +152,7 @@ function getInfoGeneric(ref){
   var row = objet.Info_A(ref);
   var row_b = objet.Info_B(ref);
   
-  Logger.log('getInfoGeneric: %s',JSON.stringify(objet,null,null));
+  if(__DEBUG__) Logger.log('getInfoGeneric: %s',JSON.stringify(objet,null,null));
   
   if( row&&row_b) 
           return {sale:row.emetteur,
@@ -166,8 +176,20 @@ function testing(){
     
     
     //https://drive.google.com/open?id=0BxTfS7jXR_FYZFBBTV94WjUtQzQ
-    Logger.log(GetGridPP9Html('I1430302684776'))
- 
+    //Logger.log(GetGridPP9Html('I1430302684776'))
+    /*
+    
+    var sessions = new OLogger(getInfoGeneric('I1437424165657').historical);
+    var session = sessions.getSession('AVV');
+    Logger.log(sessions.getSessionKey(session,'ID'));
+    */ 
+    
+   
+    
+    //Logger.log(saveFile('1TVqM1nNdsZc1B8w6EHGOnMMntTsgryHPfCfGric4JHc','I1445351845773','CR_xxx'));
+    Logger.log(getID_reference('testing2'));
+   
+    
     
   }catch(e){Logger.log(e);}
 
@@ -360,7 +382,7 @@ function GetManager(unit){
     if( params[i][column.Unit_press]==unit) { out = params[i][column.Unit_press+1]; }
     
   }
-  if(__DEBUG__) Logger.finest('GetManager: %s',JSON.stringify(out,null,'\t'));
+  
 
 
   return out;
@@ -379,15 +401,16 @@ function save_form(form,mail,filesID){
 
   //Calcul de la référence dossier
   ref+=String(date.valueOf());
+  
   // url googledrive du folder de stockage
   if( filesID) url_drive = saveFiles(filesID.split(","),ref);
   
   if( url_drive ) 
-      mail+='<hr>Accès aux documents de l\'appel d\'offre: dossier Google Drive <a href="'
+      mail+='<hr><a href="'
         +url_drive
-        +'" target="_blank" title="Lien dossier google drive" >'+ref+'</a><hr>';
+        +'" target="_blank" title="Lien cahier des charges" >Accès au cahier des charges</a><hr>';
   else
-      mail+='<hr>Aucun document associé<hr>';
+      mail+='<hr>Aucun cahier des charges<hr>';
   
   out.push(ref);
   out.push(Session.getActiveUser().getEmail());
@@ -654,16 +677,23 @@ function onValidateDecision(form){
   if(__DEBUG__) {Logger.finest('onValidateDecision :%s',JSON.stringify(form,null,'\t'));}
   
   //form.visa, form.dar, form.remise, form.drive_id_files
-  var ret=null,state=GetRowParams(COLUMN_STATE);
+  var id_file='', ret=null,state=GetRowParams(COLUMN_STATE);
   
   var objet = new SHEET_AO();
   var row = objet.Info_A(form.reference);
   var row_b = objet.Info_B(form.reference);
   var objet_log= new OLogger(row.log);
   // row.rowNumber, row_b.rowNumber
+  
+   //\/\/\/\/\/\/BEGIN MANTIS 084
   /*\/\/\/\/\/\/\/\/\/\/\/\/\/\/
-  SAUVEGARDE DES DIFFERENTES DATES
+  SAUVEGARDE DU FICHIER CR GO-NOGO:
+  url googledrive du folder de stockage
   \/\/\/\/\/\/\/\/\/\/\/\/\/\/\/*/
+   if( form.drive_id_files) id_file = saveFile(form.drive_id_files,                  // id source
+                                               getID_reference(form.reference,true), // id folder destination sinon créer
+                                               ID_CR_FOLDER);                        // string subfolder destination
+  //\/\/\/\/\/\/END MANTIS 084
   switch(form.result){
     case 'go' :
       objet.sheet.getRange(row.rowNumber,COLUMN_SHEET_STATE).setValue(state.go);
@@ -681,7 +711,7 @@ function onValidateDecision(form){
                                                                                                            visa:form.visa,
                                                                                                            dar:form.dar,
                                                                                                            synthèse:form.commentaire,
-                                                                                                           cr:new C_Url(form.drive_id_files),}));
+                                                                                                           cr:new C_Url(id_file),}));
       // Push Event Calendar
       var calendar = CalendarApp.getDefaultCalendar();
       var guests=[],date_evt = form.dar.split("/");
@@ -720,7 +750,7 @@ function onValidateDecision(form){
       objet.sheet.getRange(row.rowNumber,COLUMN_SHEET_LOG).setValue(objet_log.pushSession('Décision NOGO',state.nogo,{client:form.client,
                                                                                                            dossier:form.dossier,
                                                                                                            synthèse:form.commentaire,
-                                                                                                           cr:new C_Url(form.drive_id_files),}));
+                                                                                                           cr:new C_Url(id_file),}));
       break;
     default: throw new Error('Traitement sur decision inconnu !');
       
@@ -728,11 +758,7 @@ function onValidateDecision(form){
   
   
   
-  /*\/\/\/\/\/\/\/\/\/\/\/\/\/\/
-  SAUVEGARDE DU FICHIER CR GO-NOGO:
-  url googledrive du folder de stockage
-  \/\/\/\/\/\/\/\/\/\/\/\/\/\/\/*/
-  if( form.drive_id_files) url_drive = saveFiles(form.drive_id_files.split(","),form.reference,ID_CR_FOLDER);
+  
   
   // Préparation & diffusion des mails aux destinataires
   var mail_text;
@@ -749,9 +775,9 @@ function onValidateDecision(form){
       Commentaire : commentaire saisi par le RP
       avec rappel du nom du RP, date remise, date visa forfait, date DAR
    */
-    mail_text='<p>Un Go a été prononcé sur ce dossier</p>'
+ 
     
-    mail_text+='<p>date de remise:&#09;<b>'+form.remise+'</b></p>'
+    mail_text='<p>date de remise:&#09;<b>'+form.remise+'</b></p>'
     mail_text+='<p>date du visa forfait:&#09;<b>'+form.visa+'</b></p>'
     mail_text+='<p>date du DAR:&#09;<b>'+form.dar+'</b></p>'
     mail_text+='<p>RP:&#09;<b>'+row.rp+'</b></p>'
@@ -766,6 +792,7 @@ function onValidateDecision(form){
                          remise:form.remise,
                          rp:row.rp,
                          title:'',
+                         attachements:id_file,
                          comment:mail_text,
                          cc:GetEMAIL_DIFFUSION_GO_CC(),
                        });
@@ -806,12 +833,178 @@ function onValidateDecision(form){
                          remise:form.remise,
                          rp:row.rp,
                          title:'',
+                         attachements:id_file,
                          comment:mail_text,
                          cc:GetEMAIL_DIFFUSION_NOGO_CC(),
                        });
   
   
   }
+  
+  return true;
+  }catch(e){treatmentException_(e)} 
+}
+
+/*************************************************************
+/ onValidateVisa : fonction permettant de traiter une demande de
+/ validation de visa (forfait, dar)
+/ [in]: objet regroupant tous les champs du formulaire
+/ [in]: -
+/ [in]: -
+
+/ [out]: true
+/ [Exception]: type de visa inconnue/ Erreur système
+/**************************************************************/
+function onValidateVisa(form){
+ try{ 
+  if(form===undefined ) throw 'null form';
+  if(__DEBUG__) {Logger.finest('onValidateVisa :%s',JSON.stringify(form,null,'\t'));}
+  
+  //form.visa, form.dar, form.remise, form.drive_id_files
+  var ret=null,state=GetRowParams(COLUMN_STATE);
+  
+  var objet = new SHEET_AO();
+  var row = objet.Info_A(form.reference);
+  var row_b = objet.Info_B(form.reference);
+  var objet_log= new OLogger(row.log);
+  var file='';
+  var mail_text;
+  
+  /*\/\/\/\/\/\/\/\/\/\/\/\/\/\/
+  STRATEGIE DE SAUVEGARDE DU FICHIER VISA/DAR
+  \/\/\/\/\/\/\/\/\/\/\/\/\/\/\/*/
+  switch(form.view_id){
+    case 'folders':
+      // Cas d'une sélection depuis le Folders de l'AVV
+      // Dans ce cas on associe la référence du fichier sélectionné
+      file = form.drive_id_files;
+      break;
+      
+    case 'upload':
+      // Cas d'une opération de upload vers la racine Drive
+      // Déterminer si l'arbo AVV existe ou pas, si oui recopier dans le folders 100_Suivi
+      if(form.folders_id){
+         // Accès à l'objet Folder de l'arbo AVV racine
+         file = saveFile(form.drive_id_files,                  // id source
+                         form.folders_id,     // id folder destination
+                         '100_Suivi');                        // string subfolder destination
+         
+      }else{
+        // Sinon on recopie le fichier dans le dossier AO ID_CR_FOLDER
+        file = saveFile(form.drive_id_files,                  // id source
+                 getID_reference(form.reference,true), // id folder destination sinon créer
+                 ID_CR_FOLDER);                        // string subfolder destination
+        
+      }
+      
+      break;
+      
+    default:
+      // Cas interdit remonter une exception
+      throw new Error('Aucune référence de fichier reconnu !');
+  }
+  
+  switch(form.result){
+    case 'dar':
+        /* Les informations suivantes a stocker dans le gsheet
+           [statut], COLUMN_SHEET_DAR_REEL
+        */
+       
+        objet.sheet.getRange(row.rowNumber,COLUMN_SHEET_STATE).setValue(state.dar);
+        objet.sheet.getRange(row.rowNumber,COLUMN_SHEET_COMMENT).setValue(form.commentaire);
+        objet.sheet.getRange(row.rowNumber,COLUMN_SHEET_DAR_REEL).setValue(form.date_realise);
+        objet.sheet.getRange(row.rowNumber,COLUMN_SHEET_LOG).setValue(objet_log.pushSession('Validation DAR',state.dar,{client:form.client,
+                                                                                                                      dossier:form.dossier,
+                                                                                                                      date_dar_reelle:form.date_realise,
+                                                                                                                      synthèse:form.commentaire.substr(0,200)+'...',
+                                                                                                                      cr:new C_Url(file),}));
+        /*
+          Mail envoyé uniquement à paris.production
+          Le forward sera ensuite pris en charge manuellement aux intervenants
+        */
+        
+        MailingAfterDAR([GetEMAIL_DIFFUSION_DAR(),row.rp,row.emetteur].join(),
+                        {client:form.client,
+                         ao:form.dossier,
+                         remise:Utilities.formatDate(row_b.remise, "GMT+02:00", "dd/MM/yyyy"),
+                         content:form.commentaire,
+                         attachements:file,
+                         
+                        });
+        
+        
+        
+        break;
+    
+    case 'visa forfait':
+        /* Les informations suivantes a stocker dans le gsheet
+          [statut], [datedarrealise]
+        
+          COLUMN_SHEET_VISA_REEL
+        */
+        objet.sheet.getRange(row.rowNumber,COLUMN_SHEET_STATE).setValue(state.visaForfait);
+        objet.sheet.getRange(row.rowNumber,COLUMN_SHEET_COMMENT).setValue(form.commentaire);
+        objet.sheet.getRange(row.rowNumber,COLUMN_SHEET_VISA_REEL).setValue(form.date_realise);
+        objet.sheet.getRange(row.rowNumber,COLUMN_SHEET_LOG).setValue(objet_log.pushSession('Validation Visa Forfait',state.visaForfait,{client:form.client,
+                                                                                                                      dossier:form.dossier,
+                                                                                                                      date_visa_reelle:form.date_realise,
+                                                                                                                      synthèse:form.commentaire.substr(0,200)+'...',
+                                                                                                                      cr:new C_Url(file),}));
+        
+        /*
+          Mail envoyé uniquement à paris.production
+          Le forward sera ensuite pris en charge manuellement aux intervenants
+        */
+        
+        MailingAfterVISA([row.rp,row.emetteur].join(),
+                        {client:form.client,
+                         ao:form.dossier,
+                         remise:Utilities.formatDate(row_b.remise, "GMT+02:00", "dd/MM/yyyy"),
+                         content:form.commentaire,
+                         attachements:file,
+                         cc:GetEMAIL_DIFFUSION_VISA(),
+                        
+                        });
+        
+        break;
+    
+    
+    default: throw new Error('Traitement sur decision inconnu !');
+      
+  }
+  
+  
+  return true;
+  }catch(e){treatmentException_(e)} 
+}
+
+
+/*************************************************************
+/ onValidateCreateAsk : fonction permettant de traiter une demande de
+/ création de nouvelle arbo AVV (forfait, dar)
+/ [in]: objet regroupant tous les champs du formulaire
+/       {'id':<?=reference?>,
+        'reviewer':<?=Session.getActiveUser().getEmail()?>,
+        'ao':$('#dossier').val(),
+        'client':$('#client').val(),
+        'rp':$('#rp').val(),
+        'revue':<?=type?>,}
+/ [in]: -
+/ [in]: -
+
+/ [out]: true
+/ [Exception]: type de visa inconnue/ Erreur système
+/**************************************************************/
+function onValidateCreateAsk(form){
+ try{ 
+  if(form===undefined ) throw 'null form';
+  if(__DEBUG__) {Logger.finest('onValidateVisa :%s',JSON.stringify(form,null,'\t'));}
+  
+  /*
+   Envoie par mail d'une demande de création d'arbo AVV
+  */
+   MailingToAdminAskCreateAVV(GetEMAIL_ADMIN(),form);
+  
   
   return true;
   }catch(e){treatmentException_(e)} 
@@ -891,6 +1084,47 @@ function RelanceOutDelayGo(a,b,c){
       
     Logger.log('Appel relance sans GonoGO: %s, à: %s',a,c);
   
+  }catch(e){treatmentException_(e)}
+
+}
+
+
+/*************************************************************
+/ onComment : fonction permettant d'enregistrer un commentaire
+/ dans la file de la TimeLine. Si destinaire renseigné alors 
+/ le commentaire est envoyé par mail suivant la liste de diffusion
+/ [in]: reférence id de la fiche
+/ [in]: note du message
+/ [in]: Liste de destinataires
+
+/ [out]: -
+/**************************************************************/
+function onComment(a,b,c){
+  try{
+    if(__DEBUG__) {Logger.finest('onComment :ref:%s note:%s diffusion:%s',a,b,c);}
+    var objet = new SHEET_AO(),state=GetRowParams(COLUMN_STATE);
+    var row = objet.Info_A(a);
+    var row_sheet = objet.Info_B(a);
+    var objet_log= new OLogger(row.log);
+    
+    // On enregistre la dernière date de relance (quelque soit le type de relance)
+    
+    objet.sheet.getRange(row.rowNumber,COLUMN_SHEET_LOG).setValue(objet_log.pushSession('Commentaire',null,{client:row.client,
+                                                                                                           dossier:row.dossier,
+                                                                                                           diffusion: c,
+                                                                                                           
+                                                                                                           message: b,}));
+                                                                                                           
+    if(c.length>0) MailingtoComment(c, 
+                            {ao:row.dossier,
+                             client:row.client,
+                             comment:b,
+                             date:(row_sheet.remise===undefined )?'':Utilities.formatDate(row_sheet.remise, "GMT+02:00", "dd/MM/yyyy"),
+                             id:a,
+                            }
+    )
+      
+      
   }catch(e){treatmentException_(e)}
 
 }

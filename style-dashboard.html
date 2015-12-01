@@ -211,67 +211,103 @@
     width: 9%;
   }
   
-  .GO:before {
+  
+  .GO{
     color: blue;
+    background-color: transparent;
+    }
+  .GO::before{
     content: attr(data-html);
-    padding: 7px;
-  }
+    }
   
-  .NOGO:before {
+  
+  .NOGO{
     background-color: black;
+    }
+  .NOGO::before{
     content: attr(data-html);
-    padding: 7px;
-  }
+    }
   
-  .ABD:before {
+  .ABD{
     background-color: black;
-    content: attr(data-html);
-    padding: 7px;
+   
   }
+  .ABD::before {
+    content: attr(data-html);
+    }
   
-  .EN.ATTENTE:before{
+  
+  .EN.ATTENTE{
+    background-color: transparent;
     color: DarkOrange;
-    content: attr(data-html);
-    padding: 7px;
-  }
+    
+    }
   
-  .EN.COURS:before{
+  .EN.ATTENTE::before{
+    content: attr(data-html);
+    }
+  
+  
+  .EN.COURS{
+    background-color: transparent;
     color: green;
+    }
+  
+  .EN.COURS::before{
     content: "GO / NO GO Planifié";
-    padding: 7px;
+    }
+  
+  .VISA.FORFAIT{
+    background-color: DarkOrange;
+    }
+  .VISA.FORFAIT::before{
+    content:"Visa Forfait"
   }
   
-  .WON:before {
+  .DAR{
     background-color: green;
+    
+    }
+  .DAR::before {
+    content: "DAR réalisé";
+    }
+    
+  .WON{
+    background-color: green;
+    }
+  .WON::before {
     content: attr(data-html);
-    padding: 7px;
+    }
   
-  }
-  
-  .LOST:before {
+  .LOST{
     background-color:red;
+    }
+  .LOST::before {
     content: attr(data-html);
-    padding: 7px;
-  }
+    }
   
-  .RELANCE:before {
+  .RELANCE{
     background-color: #ec971f;
-    /*content: "REDIRIG\00C9";*/
+    }
+  .RELANCE::before {
     content: attr(data-html);
-    padding: 7px;
     }
     
   
-    
-  .TRAITE:before {
+  .TRAITE{
     background-color: #5e5e5e;
+    }  
+  .TRAITE::before {
     content: attr(data-html);
-    padding: 7px;
     }
-  .INFO:before {
+  
+  
+  .INFO{
     background-color: #5e5e5e;
+    }    
+
+  .INFO::before {
     content: attr(data-html);
-    padding: 7px;
     }    
 
 </style>

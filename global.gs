@@ -14,7 +14,7 @@ Menu Fichier/Gérer les versions depuis le projet google script apps
 28/07/15: 10:17
 */
 var __PROD__  = false;
-var __DEBUG__ = false;
+var __DEBUG__ = (__PROD__)?false:true;
 
 var ID_CLSID_PROD = '1h3y9ferdQq8S6Xk48B01sEsEpC4czP4gdncB9l9AoJY';
 //var CLSID =     '1B7TBEOMVfg1kiPGrlW3dY5wWpYdmqOLwDi985L7sKo0';
@@ -86,6 +86,8 @@ var COLUMN_DASHBOARD_TABLE_SQL = 'Dashboard table_synthese';
 var COLUMN_LIST_TECHNOS = 'Liste des technos'
 
 var COLUMN_NOTIFICATION = 'Notification DAR';  //NE PAS OUBLIER DE CHANGER LE NOM DU CHAMP PAR LA SUITE
+var COLUMN_NOTIFICATION_DAR = 'Diffusion dar';
+var COLUMN_NOTIFICATION_VISA = 'Diffusion visa';
 var COLUMN_NOTIFICATION_GO_CC ='Diffusion go (cc)' ; // Liste de diffusion en cc après un GO envoyé par le RP
 var COLUMN_NOTIFICATION_NOGO_CC ='Diffusion nogo (cc)'; // Liste de diffusion en cc après un NOGO envoyé par le RP
 var COLUMN_NOTIFICATION_NOGO_TO ='Diffusion nogo (to)'; // Liste de diffusion  après un NOGO envoyé par le RP (ex: vdupeux)
@@ -107,7 +109,10 @@ var COLUMN_SHEET_COMMENT_NOGO = COLUMN_SHEET_STATE+1;
 var COLUMN_SHEET_COMMENT = COLUMN_SHEET_STATE+2;
 
 var COLUMN_SHEET_VISA = COLUMN_SHEET_STATE+3;
+var COLUMN_SHEET_VISA_REEL = COLUMN_SHEET_STATE+5;
 var COLUMN_SHEET_DAR_PLAN = COLUMN_SHEET_STATE+7;
+var COLUMN_SHEET_DAR_REEL = COLUMN_SHEET_STATE+8;
+
 var COLUMN_SHEET_REMISE = 8;
 var COLUMN_SHEET_UNIT = 4;
 
@@ -137,6 +142,9 @@ var SUBJECT ='Dossier %%client%%-%%ao%% pour le %%date%%  - %%unit%%';
 var SUBJECT_DECISION_GONOGO ='%%result%%- %%client%%-%%ao%% pour le %%date%%  - %%unit%%';
 var SUBJECT_ADMIN_RELANCE='[AVV] Dossiers %dossier% sans RP depuis le %date%';
 var SUBJECT_ADMIN_RELANCE_GO='[AVV] Dossiers %dossier% délais GO/ NOGO dépassé depuis le %date%';
+var SUBJECT_DAR ='[DAR] Dossier %%client%%-%%ao%% pour le %%date%%';
+var SUBJECT_VISA ='[VISA FORFAIT] Dossier %%client%%-%%ao%% pour le %%date%%';
+var SUBJECT_COMMENT ='[COMMENTAIRE] Dossier %%client%%-%%dossier%% pour le %%date%%';
 
 /*/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 MESSAGES
@@ -157,12 +165,16 @@ function GetEMAIL_ADMIN(){return enumParams(COLUMN_EMAIL_ADMIN).join();}
 function GetEMAIL_NOTIFICATION(){return enumParams(COLUMN_NOTIFICATION).join();}
 function GetEMAIL_DIFFUSION_GO_CC(){return enumParams(COLUMN_NOTIFICATION_GO_CC).join();}
 function GetEMAIL_DIFFUSION_NOGO_CC(){return enumParams(COLUMN_NOTIFICATION_NOGO_CC).join();}
+function GetEMAIL_DIFFUSION_DAR(){return enumParams(COLUMN_NOTIFICATION_DAR).join();}
+function GetEMAIL_DIFFUSION_VISA(){return enumParams(COLUMN_NOTIFICATION_VISA).join();}
+
+
 
 function GetEMAIL_DIFFUSION_NOGO_TO(){return enumParams(COLUMN_NOTIFICATION_NOGO_TO).join();}
 function Get_ADMIN(){return enumParams(COLUMN_ADMIN).join();}
 
-
-
+function ALERTE_MESSAGE_INLINE(msg) {return '<div style="text-decoration:none;-webkit-box-sizing: border-box;-moz-box-sizing: border-box;box-sizing: border-box;padding: 15px;margin-bottom: 20px;border: 1px solid transparent;border-radius: 4px;color: #a94442;background-color: #f2dede;border-color: #ebccd1;"><b>&#9432;</b>'+msg+'</div>';}
+function INFO_MESSAGE_INLINE(msg) {return '<div style="text-decoration:none;-webkit-box-sizing: border-box;-moz-box-sizing: border-box;box-sizing: border-box;padding: 15px;margin-bottom: 20px;border: 1px solid transparent;border-radius: 4px;background-color: #EEE;border-color: #BBB;">'+msg+'</div>';}
 
 function GetIMAGE_URL(id){return 'https://drive.google.com/uc?export=view&id='+id;}
 function IsIntegration(){return !(ID_CLSID_PROD==CLSID);}

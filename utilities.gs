@@ -58,7 +58,48 @@ OLogger.prototype = {
     
   },
   
-
+  /*********************************************
+  Fonction permettant de lire la dernière opération 
+  <name> depuis l'objet TimeLine
+  
+  [in]: nom de l'opération
+  [out]: objet de l'opération, null sinon 
+  **********************************************/
+  getSession:function( name){
+    var session={};
+    var regex = new RegExp(name, "gi");
+    
+    
+    for(var i=this.length;i>0;i--) 
+      if (this.sessions[i-1].operation.match(regex)){
+        // match i-1 position trouvé
+        session = this.sessions[i-1];
+        break;
+      }
+    
+    
+    return session
+  },
+  
+  /*********************************************
+  Fonction permettant de lire l'ID du dossier rattaché à l'objet TimeLine
+  [in]: objet TimeLine
+  [in]: nom de l'opération
+  [out]: objet de l'opération, null sinon 
+  **********************************************/
+  getSessionKey:function ( obj,key){
+    var str=null;
+    for (var p in obj) {
+      if(typeof obj[p] == 'object') str = this.getSessionKey(obj[p],key);
+      if(str) break;
+      if(obj.hasOwnProperty(key)){
+        str = obj[key];
+        break;
+      }
+    }
+    return str;
+  
+  },
   
 }
 
