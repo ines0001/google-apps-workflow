@@ -286,7 +286,7 @@ $('#techno').on('change', function (e) {
   google.script.run
        .withSuccessHandler(function(html){
               
-              $('#ModalPreview #cc').val(<?=EMAIL_CC?>);
+              $('#ModalPreview #cc').val(<?=GetEMAIL_CC()?>);
               $('#ModalPreview #objet').html('Dossier-'+$("#form_page1 #client").val()+'-'+$("#form_page1 #ao").val()+' pour le '+$("#form_page1 #date").val());
               $('#ModalPreview #modal_body_previsu').html(html.htmlBody);
               

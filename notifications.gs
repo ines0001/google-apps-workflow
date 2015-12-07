@@ -85,42 +85,41 @@ var OtemplateMail = {
 
 function testingMail(){
   try{
-  /*
-  OtemplateMail.init('template_mail');
-  OtemplateMail.setContent(TAGS_MAIL.TITLE1,'Une nouvelle demande de référence déposé')
-               .setContent(TAGS_MAIL.TITLE2,'dossier xx de yy')
-               .setContent(TAGS_MAIL.CONTENT,'<h1>Lorem ipsum dolor sit amet, consectetur adipiscing elit</h1><h2>Fusce cursus suscipit tortor ac dictum</h2><h3>Ut mattis massa urna. Sed lacus nisi</h3><h4>efficitur nec orci nec, auctor pharetra odio</h4>Integer egestas magna odio, et aliquam ex convallis quis. Proin fringilla euismod diam a eleifend. Maecenas aliquam ultricies nisl, ac sodales lectus imperdiet et. Duis lacus nisl, faucibus eu dui vel, molestie molestie est. Vivamus massa felis, fringilla vel ornare ut, rhoncus a purus. Aliquam ex magna, condimentum ac accumsan eu, venenatis sit amet sem. Pellentesque dignissim vulputate sem, at lobortis lacus molestie convallis. Vivamus ultrices lacus ex, sit amet fermentum metus congue non. Nam hendrerit faucibus aliquet. Donec maximus, arcu ac lobortis eleifend, orci est sodales odio, in semper erat velit dictum sem. Ut auctor semper leo, eget dictum dolor facilisis id.')
-               .setContent(TAGS_MAIL.BUTTON1_NAME,'Venez découvrir l\'offre')
-               .setContent(TAGS_MAIL.BUTTON1_LINK,URL_DEV+'?page=dashboard')
-               .setContent(TAGS_MAIL.BUTTON1_COLOR,'red')
-               .setContent(TAGS_MAIL.BUTTON1_VISIBILITY,true)
-               .setContent(TAGS_MAIL.BUTTON2_NAME,'Une autre offre prêt  de chez vous')
-               .setContent(TAGS_MAIL.BUTTON2_VISIBILITY,true)
-               .setContent(TAGS_MAIL.LOWER_BODY,GetGridPP9Html('I1430302684776'));
+  
+  var content = '<p>Nous mettons en production prochainement une nouvelle version de la PP9 Web qui prend en compte vos retours :';
+  content+='<ul>';
+  content+='<li>Nouvelle charte graphique plus claire</li>';
+  content+='<li>Nouveau dashboard pour suivre vos AVV et gérer vos actions</li>';
+  content+='<li>Accès optimisé depuis votre téléphone</li>';
+  content+='<li>Gestion des étapes de Visa Forfait et de DAR, qui sont maintenant uploadés via la PP9 Web</li>';
+  
+  content+='</ul>';
+  content+='N\'hésitez pas à nous faire part de vos retours';
+  content+='</p>'; 
   
   
-  var advancedArgs = {
-                      to: "eremy@sqli.com",
-                      subject: "Logos",
+  OtemplateMail.init('template_mail_diffusion');
+  OtemplateMail.setContent(TAGS_MAIL.TITLE1,'Nouvelle version de la PP9 Web')
+               .setContent(TAGS_MAIL.TITLE2,'Découvrez les dernières nouveautés')
+               .setContent(TAGS_MAIL.CONTENT,content)
+               
+  //var alias = GmailApp.getAliases()[0];
+  var advancedArgs = {to: 'eremy@sqli.com',
+                      subject:'Nouvelle version de la PP9 Web',
+  
                       htmlBody: OtemplateMail.getContent(),
-                     
-                     
+                      //cc: 'eremy@sqli.com',
+                      //noReply:true,
+                      //from:alias,
+                      
                      };
+  //sendEmail(recipient, subject, body, options)
   if(advancedArgs) MailApp.sendEmail(advancedArgs);
    
-  */
   
   
-  MailingToAdminAskVisa('eremy@sqli.com',{
-                                 id:'xxxx',
-                                 visa:'visa',
-                                 ao:'dossier',
-                                 client:'client',
-                                 remise:'remise',
-                                 rp:'respponsable de proposition',
-   
-                                });
-    
+  
+ 
   }catch(e){Logger.log(e);}
 
 }
@@ -756,7 +755,7 @@ function MailingToOtherManager(emetteur,option){
                                   .replace('%%unit%%',option.unit),
   
                       htmlBody: OtemplateMail.getContent(),
-                      cc: EMAIL_CC +','+emetteur,
+                      cc: GetEMAIL_CC() +','+emetteur,
                       
                      };
   
@@ -778,6 +777,10 @@ function MailingToOtherManager(emetteur,option){
 function MailingToManager(emetteur,id,values,mail,option){
   
   if(values===undefined || typeof values!='object') throw 'MailingToManager:no values for sendMailing';
+  if(__DEBUG__) Logger.log('MailingToManager: emeteur:%s id:%s',emetteur,id);
+  if(__DEBUG__) Logger.log('MailingToManager: values %s',JSON.stringify(values,null,null));
+  
+ 
   var arbitrage_enum = enumParams(COLUMN_ARBITRAGE);
   
   
@@ -796,11 +799,11 @@ function MailingToManager(emetteur,id,values,mail,option){
   var advancedArgs = {to: GetManager(values.find('unit')),
                       subject:SUBJECT.replace('%%client%%',values.find('client'))
                                     .replace('%%ao%%',values.find('ao'))
-                                    .replace('%%date%%',getDate(values.find('date')))
+                                    .replace('%%date%%',values.find('date'))
                                     .replace('%%unit%%',values.find('unit')),
   
                       htmlBody: OtemplateMail.getContent(),
-                      cc: EMAIL_CC +','+emetteur
+                      cc: GetEMAIL_CC() +','+emetteur
                      };
   
   if(option&&advancedArgs) MailApp.sendEmail(advancedArgs);

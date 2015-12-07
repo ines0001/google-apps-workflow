@@ -63,8 +63,8 @@ function doGet(request) {
       
       
                     break;
-    
-    case 'testing':html = HtmlService.createTemplateFromFile('testing');
+    /*
+    case 'testing':html = HtmlService.createTemplateFromFile('Page-home');
                     html.reference = request.parameter.ref;
                     html.duration = '40s';
                     
@@ -78,7 +78,7 @@ function doGet(request) {
       
                     break;
       
-      
+    */  
     case 'build_avv':html = HtmlService.createTemplateFromFile('Page-build_avv');
                     html.duration = (duration)?duration:'40s';
                     html.reference = request.parameter.ref;
@@ -116,7 +116,7 @@ function doGet(request) {
                     
                   break;                    
                         
-    default:html = HtmlService.createTemplateFromFile('Page-accueil')
+    default:html = HtmlService.createTemplateFromFile('Page-home')
             html.duration = (duration)?duration:'40s';
             html = html.evaluate()
                           .setTitle('Accueil formulaire AO')
@@ -328,7 +328,7 @@ function HtmlPreviewModal(values,mail){
  try{ 
   if(values===undefined || typeof values!='object') throw 'null values';
   
-  if(__DEBUG__) Logger.finest('HtmlPreviewModal:'+mail);
+  if(__DEBUG__) Logger.log('HtmlPreviewModal - values:%s',JSON.stringify(values,null,null));
    return MailingToManager(Session.getActiveUser().getEmail(),
                    '#',
                    values,
@@ -382,7 +382,7 @@ function GetManager(unit){
     if( params[i][column.Unit_press]==unit) { out = params[i][column.Unit_press+1]; }
     
   }
-  
+  if(__DEBUG__) Logger.finest('GetManager: %s',JSON.stringify(out,null,'\t'));
 
 
   return out;

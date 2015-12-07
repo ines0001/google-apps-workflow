@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.4/journal/bootstrap.min.css">
+    <?!= include('home-page-css'); ?> 
+    
+    <style type="text/css">
+      .margin_ul  {
+          margin: 4px;
+      }
+    </style>
+  
+  </head>
+  <body>
+      <!-- Navigation -->
+    <?!= HtmlService.createTemplateFromFile('Header').evaluate().setSandboxMode(HtmlService.SandboxMode.IFRAME).getContent(); ?> 
+
+
+    <!-- Full Width Image Header -->
+    <header class="header-image">
+        <div class="headline">
+            <div class="container">
+                <h2>PP9 WEB</h2>
+                <br>
+                <h4>Une application destinée à collecter tous vos appels d'offre et cela très simplement.<br>
+                Une gestion intelligente des notifications par mail ainsi qu'un suivi du workflow</h4>
+            </div>
+        </div>
+    </header>
+
+    <!-- Page Content -->
+    <div class="container">
+
+        <hr class="featurette-divider">
+
+        <!-- First Featurette -->
+        <div class="featurette" id="about">
+            <a href="<?=ScriptApp.getService().getUrl() +'?page=dashboard'?>" target="_blank">
+              <img class="featurette-image img-circle img-responsive pull-right" src="https://gallery.mailchimp.com/2cfd2df8bfe30d1c799d69601/images/8aaddcf1-4812-4946-8e3d-4e2f7e22bc68.png">
+            </a>
+            <h2 class="featurette-heading">Consulter tous vos dossiers
+                <span class="text-muted"><br>Depuis le Dashboard</span>
+            </h2>
+            <p class="lead">
+              Destiné aux commerciaux, managers et responsables de proposition mais aussi reviewers. Vous accédez clairement et facilement à tous vos dossiers.
+              <br>
+              La nouvelle charte graphique apporte une meilleur visibilité tout en facilitant l'accès à toutes les fonctions du processus avant-vente depuis le menu des actions.
+              Et toujours une interface 100% compatible avec l'ensemble des navigateurs internet.
+            
+            </p>
+        </div>
+
+        <hr class="featurette-divider">
+
+         <!-- First_bis Featurette -->
+        <div class="featurette" id="about">
+            <a href="<?=ScriptApp.getService().getUrl() +'?page=new'?>" target="_blank">
+              <img class="featurette-image img-circle img-responsive pull-left" src="https://gallery.mailchimp.com/2cfd2df8bfe30d1c799d69601/images/438e3baf-6d4d-4ccc-a051-916f9fe4845d.png">
+            </a>
+            <h2 class="featurette-heading">Déclarer une nouvelle demande
+                <span class="text-muted"><br>Rien de plus simple</span>
+            </h2>
+            <p class="lead">
+              Destiné principalement aux commerciaux mais pas seulement, vous disposez d'un formulaire unique dans lequel toutes les informations attendues sont réunies, affichées clairement et simplement.
+              <br>
+              Votre demande s'intégrera alors dans le processus avant-vente permettant ainsi à tous les acteurs d'être rapidement averti afin d'y apporter la meilleur réponse.           
+            </p>
+        </div>
+
+        <hr class="featurette-divider">
+        
+        <!-- Second Featurette -->
+        <div class="featurette" id="services">
+            
+              <img class="featurette-image  img-responsive pull-right" src="https://gallery.mailchimp.com/2cfd2df8bfe30d1c799d69601/images/c82b8302-7c0a-4a92-ae5f-29439928d6bf.png">
+            
+            <h2 class="featurette-heading">Un accès optimisé depuis votre mobile
+                <span class="text-muted"><br>100% responsive</span>
+            </h2>
+            <p class="lead">La nouvelle interface de la PP9-Web optimise son affichage en fonction du support utilisé.<br>
+            Par exemple, la consultation des notifications via votre boite mail sera parfaitement adaptée pour une meilleure lecture quelque soit son orientation.
+              
+            </p>
+        </div>
+
+        <hr class="featurette-divider">
+
+        <!-- Third Featurette -->
+        <div class="featurette" id="contact">
+            
+              <img class="featurette-image img-circle img-responsive pull-left" src="https://gallery.mailchimp.com/2cfd2df8bfe30d1c799d69601/images/ed19f779-f472-4346-8570-f4d8ee850ae4.png">
+           
+            <h2 class="featurette-heading">L'historique des opérations
+                <span class="text-muted"><br>La Time-line.</span>
+            </h2>
+            <p class="lead ">
+              Réellement un outil incontournable de la PP9-Web qui vous permettra de consulter le détail et l'historique pour un meilleur suivi de vos dossiers.Vous pourrez ainsi accéder à :
+            </p>  
+              <ul class="lead">
+              <li>La fiche détaillée</li>
+              <li>Toutes les opérations déclenchées et horodatées</li>
+              <li>Tous les liens d'accès à l'ensemble des compte-rendus mais aussi de l'archive avant-vente</li>
+              
+              </ul>
+             
+           
+            
+          
+        </div>
+
+        <hr class="featurette-divider">
+
+        <!-- Footer -->
+        <footer>
+            <div class="row">
+                <div class="col-lg-12">
+                    <p>Copyright &copy; SQLI 2015</p>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+    <!-- /.container -->
+    
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    
+  </body>
+</html>
+
+
+

@@ -156,10 +156,12 @@ var MESSAGE_DASHBOARD_SYNC_ENCOURS = 'Opération de synchronisation de <b>%file<
 Fonctions Générales : résolution emailing
 
 /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\*/
+/*
 var EMAIL_CC=(function () {var params = SpreadsheetApp.openById(CLSID).getSheetByName(SHEET_PARAMS).getDataRange().getValues();
                            for( var i=0;i< params[0].length;i++){if(params[0][i]==COLUMN_CC ) return params[1][i];}
                            return null;})();
-function GetEMAIL_CC(){return EMAIL_CC;}
+*/
+function GetEMAIL_CC(){return enumParams(COLUMN_CC).join();}
 function GetEMAIL_CONTACT(){return enumParams(COLUMN_CONTACT).join();}
 function GetEMAIL_ADMIN(){return enumParams(COLUMN_EMAIL_ADMIN).join();}
 function GetEMAIL_NOTIFICATION(){return enumParams(COLUMN_NOTIFICATION).join();}
