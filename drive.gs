@@ -109,7 +109,77 @@ try{
       DriveApp.removeFile(file);
     }
  
+    
     return folder_dest.getUrl();
+}catch(e){treatmentException_(e)}   
+}
+
+ //\/\/\/\/\/\/BEGIN MANTIS 084
+/* fonction permettant de déplacer un fichiers(files) vers
+   le dossier drive (destination). La fonction permet de créer
+   le folder destination si celui-ci n'existe pas. Tous les fichiers
+   sources (IDs) seront ensuite effacés de la source DRIVE du user
+   files : Array ID drive file
+   destination: string define the name folder destination
+   // [in] : ID de fichier à déplacer
+   // [in] : (ID Folder destination
+   // [in] : (String) Name SubFolder destination
+   // [out] : ID fichier déplacé
+/***********************************/
+function saveFile(id,destination,subdestination){
+try{
+    var file, out, folder = DriveApp.getFolderById(destination);
+    
+
+    
+    /* Existance d'un sous dossier */
+    var sub_folder;
+    
+  if(subdestination===undefined){
+    sub_folder = '';
+  }else{
+    sub_folder= folder.getFoldersByName(subdestination);
+    if(!sub_folder.hasNext()){
+        sub_folder = folder.createFolder(subdestination);
+    }else sub_folder = sub_folder.next();
+    folder = sub_folder;
+  }
+  
+  
+  file = DriveApp.getFileById(id);
+  out = file.makeCopy(folder).getId();
+  
+  DriveApp.removeFile(file);
+  
+  Logger.log('saveFile( source:%s , drive destination:%s , subfolder:%s )= id out: %s ',id,destination,(subdestination==undefined || subdestination ),out);  
+  return out;
+}catch(e){treatmentException_(e)}   
+}
+ //\/\/\/\/\/\/END MANTIS 084
+
+/* fonction permettant de récupérer l'ID Google d'un folder
+   depuis la réference dossier AO
+   // [in] : référence du l'AO
+  
+   // [out] : ID du folder trouvé or null
+/***********************************/
+function getID_reference(reference,create){
+try{
+    var out,folder = DriveApp.getFolderById(ID_FOLDER_FILES);
+    
+    
+    var folder_dest = folder.getFoldersByName(reference);
+    
+    /* verification de l'existence du dossier destination */
+    if(!folder_dest.hasNext() ){
+       
+        out = (create!==undefined && create )?folder.createFolder(reference).getId():null;
+        
+       }else out = folder_dest.next().getId();
+    
+    Logger.log('getID_reference( id source: %s , boolean force create: %s )= id out: %s ',reference,(create!==undefined && create ),out);
+   
+    return out;
 }catch(e){treatmentException_(e)}   
 }
 
@@ -347,7 +417,7 @@ function make_copy_template(client, folder, editors,ref){
   var objet_log= new OLogger(row.log);
   
   objet.sheet.getRange(row.rowNumber,COLUMN_SHEET_LOG).setValue(objet_log.pushSession('Génération arborescence AVV','INFO',{
-                                                                                       Dossier_AVV:'<a target="_blank" href="'+destination.getUrl()+'">'+destination.getName()+'</a>',
+                                                                                       folder : new C_Url(destination.getId()),
                                                                                        Partage:editors,}))
               
   

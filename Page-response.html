@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- Appel de l'api google drive -->
 <script type="text/javascript" src="https://apis.google.com/js/api.js?onload=onApiLoad"></script>
-<link rel="stylesheet" href="<?!=PropertiesService.getScriptProperties().getProperty('ID_TEMPLATE_DEFAULT');?>">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.4/journal/bootstrap.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.3.2/css/bootstrap3/bootstrap-switch.min.css">
 
 
@@ -392,7 +392,13 @@ $(function(){
          google.script.run
          .withSuccessHandler(function(value){
              
-             message='<p> Votre demande a bien été complété et son traitement est en cours.</p>';
+             /*
+             DEBBUT MANTIS 0071
+             */
+             message='<p> Votre demande a bien été complétée et son traitement est en cours.</p>';
+             /*
+             FIN MATNIS 0071
+             */
              message+='<p> Un mail vient d\'être  envoyé à <b>'+value+'</b>, manager de Unit <b>'+$('#form_false option:selected').text()+'</b></p>';
              message+='<p>A bientôt,</p>';
              $('button[type="submit"]').button('end');
@@ -457,7 +463,7 @@ $(function(){
          google.script.run
          .withSuccessHandler(function(value){
              
-             message='<p> Votre demande a bien été complété et son traitement est en cours.</p>';
+             message='<p> Votre demande a bien été complétée et son traitement est en cours.</p>';
              message+='<p> Un mail vient d\'être  envoyé à <b>'+value+'</b></p>';
              message+='<p>A bientôt,</p>';
              $('button[type="submit"]').button('end');

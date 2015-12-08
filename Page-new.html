@@ -5,7 +5,7 @@
   <!--?!= include('bootstrap_block'); ?-->
   <!-- Appel de l'api google drive -->
   <script type="text/javascript" src="https://apis.google.com/js/api.js?onload=onApiLoad"></script>
-  <link rel="stylesheet" href="<?!=PropertiesService.getScriptProperties().getProperty('ID_TEMPLATE_DEFAULT');?>">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.4/journal/bootstrap.min.css">
   
   <!-- Optional theme -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.1/css/datepicker3.min.css">
@@ -125,9 +125,22 @@ $('div#add_concurrent').on('click', 'li span#btn_del' , function(){
      $(this).parent().parent().remove();
      });
      
+
+
+/*
+
+DEFINIR ICI SI LES CHAMPS SONT OBLIGATOIRES OU NON
+
+*/
 $('input[required],textarea[required],select[required]').each(function(index) {  
      
-     //$(this).removeAttr('required');
+     /*
+     PAS OBLIGATOIRE
+     */
+    //$(this).removeAttr('required');   
+    /*
+     OBLIGATOIRE
+     */
     $(this).parent().addClass('has-error');
 })
      
@@ -266,14 +279,14 @@ $('#techno').on('change', function (e) {
  $('#ModalPreview').on('show.bs.modal', function (e) {
   
   google.script.run
-       .withSuccessHandler(function(manager){$('#ModalPreview #dest').html(manager);})
+       .withSuccessHandler(function(manager){$('#ModalPreview #dest').val(manager);})
        .withFailureHandler(function(){console.log("failure collect...");})
        .GetManager($("#form_page1 #unit").val());
   
   google.script.run
        .withSuccessHandler(function(html){
               
-              $('#ModalPreview #cc').html(<?=EMAIL_CC?>);
+              $('#ModalPreview #cc').val(<?=GetEMAIL_CC()?>);
               $('#ModalPreview #objet').html('Dossier-'+$("#form_page1 #client").val()+'-'+$("#form_page1 #ao").val()+' pour le '+$("#form_page1 #date").val());
               $('#ModalPreview #modal_body_previsu').html(html.htmlBody);
               
@@ -302,7 +315,14 @@ $('#techno').on('change', function (e) {
        .withSuccessHandler(function(values){
        
          var message=''
-         message+='<p> Votre demande a bien été enregistré sous la référence '
+         /*
+         DEBUT MANTIS 0071
+         */
+         message+='<p> Votre demande a bien été enregistrée sous la référence '
+         /*
+         FIN MATNIS 0071
+         */
+         
          if(values.drive) message+='<a href="'+values.drive+'" target="#" style="color:inherit;"><b>'+values.id+'</b></a>'
          else message+='<b>'+values.id+'</b>'
          message+='</p>'

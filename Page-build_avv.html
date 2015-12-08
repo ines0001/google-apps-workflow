@@ -4,7 +4,7 @@
 <!--?!= include('bootstrap_block'); ?-->
 <!-- Appel de l'api google drive -->
 <script type="text/javascript" src="https://apis.google.com/js/api.js?onload=onApiLoad"></script>
-<link rel="stylesheet" href="<?!=PropertiesService.getScriptProperties().getProperty('ID_TEMPLATE_DEFAULT');?>">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.4/journal/bootstrap.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.3.2/css/bootstrap3/bootstrap-switch.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-bootstrap/0.5pre/css/custom-theme/jquery-ui-1.9.2.custom.css">
                              
@@ -154,14 +154,51 @@ function traitement_autorise(){
          add_mailing('Le Commercial',value.sale);
          $('[data-toggle="tooltip"]').tooltip();
          /*\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\
-         Vérifier le statut du dossier
-         SI statut<>GO alors Avertissement
-         SINON on active le bouton de création
+         Pas de contrôle sur le statut car doit pouvoir créer l'arbo à tout moment
+         par contre on va vérifier si une arborescence précédente a déjà été mise en place
+         pour cela recherche dans la TimeLine une opération= AVV avec 
+         soit une clé DOSSIER_AVV --> Ancien formatage
+         soit une clé ID --> Nouveau formatage
          \/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\*/
-         if(value.state!='GO'){
-               $('#error').html('<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span><b>  Information<p>La création de l\'arborescence avant-vente nécessite un passage du dossier au statut "<i><b>GO</b></i>"</p></b>');
-               $('#error').show();}
-         else{ $('fieldset').show();$('button[type="submit"]').removeAttr('disabled');}
+         var timeLinePartageDrive = getSession(value.historical,'AVV');
+         // Lecture de la propriété ID de l'objet TimeLine afin de récupérer l'ID de dossier AVV
+         var NAME,ID = getSessionKey(timeLinePartageDrive,'ID');
+         
+         if(!ID){
+           /* ID=null alors ANCIEN FORMAT de la serialisation clé(Dossier_AVV) et recherche via la regex suivante
+           id=(.*?)&  (Ex: <a target='_blank' href='https://docs.google.com/a/sqli.com/folderview?id=   0B0WdP5H8Zj_6ZVF6OTlBUmxZSEk   &usp=drivesdk'>20151022-TOTAL-RFP Specialiste</a>
+           */
+           var regex = /id=(.*?)&/g;
+           var value = getSessionKey(timeLinePartageDrive,'Dossier_AVV');
+           
+           if(value){
+             ID = regex.exec(value)[1];
+             // Recherche du nom également
+             regex = /<a.*?>(.*?)<\/a>/g;
+             NAME = regex.exec(value)[1];
+           }
+         }else
+           NAME = getSessionKey(timeLinePartageDrive,'NAME');
+         
+         
+         if(ID){
+               var message = '<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span><b>  Information</b><p>Une arborescence avant-vente existe déjà <b><a target="_blank" href="https://docs.google.com/a/sqli.com/folderview?id='+ID+'&usp=drivesdk">'+NAME+'</a></b></p>';
+               message+='<p>Souhaitez-vous malgré tout créer une nouvelle arborescence ?</p>';
+               message += '<p><button id="retry" type="button" class="btn btn-default btn-lg" >Nouvelle arborescence</button></p>';
+               
+               $('#error').html(message);
+               $('#error').show();
+               
+               $('#retry').click(function(){
+                 $('#retry').attr("disabled", "disabled");
+                 $('fieldset').show();
+                 $('button[type="submit"]').removeAttr('disabled');
+               
+               
+               });
+               
+         }else{ $('fieldset').show();
+                 $('button[type="submit"]').removeAttr('disabled');}
        })
        .withFailureHandler(function(e){foot_error(e);})
        .getInfoGeneric(  <?=reference?> );

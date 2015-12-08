@@ -87,8 +87,7 @@
              </div>
           
           </div>
-          
-          <?!=HtmlService.createHtmlOutputFromFile('contact').getContent(); ?>
+          <?!=HtmlService.createHtmlOutputFromFile('history-modal').getContent(); ?>
       
   </body>
   <?!= include('JSFonctions'); ?>
@@ -156,10 +155,19 @@
     // Graphic A
     var data = response.getDataTable();
     
-    //console.log(data);
+    console.log(data);
     
     // view number of values
     $('#num_'+this.page).html( data.getNumberOfRows())
+    
+    var stringFilter = new google.visualization.ControlWrapper({
+            'controlType': 'StringFilter',
+            'containerId': 'control1',
+            'options': {
+              'filterColumnIndex': 2,
+              'ui':{'cssClass':'form-group','label':'', },
+            }
+          });
     
        
     /*/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
@@ -209,7 +217,7 @@
          var link = data.getValue(i,i_url) , histo = data.getValue(i,i_log);
          var ref=data.getValue(i,i_reference);
          
-         html_msg='<div class="btn-group dropup dropup_element">';
+         html_msg='<div class="btn-group dropup">';
          html_msg+=(histo)?"<a href='#' data-reference='"+ref+"' data-url='"+histo+"' class='btn btn-info  btn-xs'>":'<a href="#" class="btn btn-info  btn-xs disabled">';
          html_msg+='<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>';
          html_msg+='<a href="#" class="btn btn-default btn-xs dropdown-toggle"  id="dropdownAction" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"> Plus ';
@@ -223,23 +231,12 @@
                  html_msg+='<a target="_blank" href="<?=ScriptApp.getService().getUrl()?>?page=response&type=expanded&ref='+ref+'"><span class="glyphicon glyphicon-share" aria-hidden="true"></span>&nbsp;Rediriger le dossier</a>';
                  html_msg+='<a target="_blank" href="<?=ScriptApp.getService().getUrl()?>?page=decision&result=go&ref='+ref+'"><span class="glyphicon glyphicon-ok-sign" aria-hidden="true"></span>&nbsp;Valider par un Go</a>';
                  html_msg+='<a target="_blank" href="<?=ScriptApp.getService().getUrl()?>?page=decision&result=nogo&ref='+ref+'"><span class="glyphicon glyphicon-remove-sign" aria-hidden="true"></span>&nbsp;Rejeter par un no Go</a>';
-                 if(isAdmin()) html_msg+='<a href="#" title="commentaire" data-ref="'+ref+'" data-info="'+data.getValue(i,1)+' : '+data.getValue(i,2)+'"><span class="glyphicon glyphicon-comment" aria-hidden="true"></span>&nbsp;Commenter</a>';
-             
                  break;
            
            case 'Page2':
                  var info = data.getValue(i,1)+' : '+data.getValue(i,2);
                  html_msg+='<a target="_blank" href="<?=ScriptApp.getService().getUrl()?>?page=validation&type=visa%20forfait&ref='+ref+'"><span class="glyphicon glyphicon-ok-sign" aria-hidden="true"></span>&nbsp;Valider Visa Forfait</a>';
                  html_msg+='<a target="_blank" href="<?=ScriptApp.getService().getUrl()?>?page=validation&type=dar&ref='+ref+'"><span class="glyphicon glyphicon-ok-sign" aria-hidden="true"></span>&nbsp;Valider le DAR</a>';
-                 if(isAdmin()) html_msg+='<a href="#" title="commentaire" data-ref="'+ref+'" data-info="'+data.getValue(i,1)+' : '+data.getValue(i,2)+'"><span class="glyphicon glyphicon-comment" aria-hidden="true"></span>&nbsp;Commenter</a>';
-             
-                 break;
-                 
-           case 'Page3':
-           case 'Page4':
-                 
-                 if(isAdmin()) html_msg+='<a href="#" title="commentaire" data-ref="'+ref+'" data-info="'+data.getValue(i,1)+' : '+data.getValue(i,2)+'"><span class="glyphicon glyphicon-comment" aria-hidden="true"></span>&nbsp;Commenter</a>';
-                 
                  break;
                  
            default:break;
@@ -301,47 +298,54 @@
       
      
           
-      // Define a table visualization
-      var chart = new google.visualization.Table(document.getElementById(this.id));
+          // Define a table visualization
+      var wrapper = new google.visualization.ChartWrapper({
+          'chartType': 'Table',
+          'containerId': this.id,
+          
+          });
+      
+      
+    
+      wrapper.setOptions(this.options);
       
       /*
       Handle Evenement Ready ControlWrapper
       Permet de prendre la main sur une mise en forme
       de la zone de recherche dans la barre Header
       */
-      var tempListener = google.visualization.events.addListener(chart, 'ready',function(){
-          console.log('ready event Table');
+      google.visualization.events.addListener(stringFilter, 'ready', function(){
+          console.log('ready event ControlWrapper');
+          $('#control1 input').addClass('form-control');
+          $('#control1 input').attr('placeholder','Rechercher');
+          //google.visualization.events.removeListener(tempListener);
+      
+      });
+      var tempListener = google.visualization.events.addListener(wrapper, 'ready',function(){
+          console.log('ready event ChartWrapper');
           eventListernerGoogleChart();
-         
+          google.visualization.events.addListener(wrapper.getChart(), 'sort', function (event) {
+              console.log('sort event Table');
+              eventListernerGoogleChart();
+          });
           google.visualization.events.removeListener(tempListener);
           
       });
       
-      google.visualization.events.addListener(chart, 'sort',function(){
-          console.log('sort event Table');
+      
+      google.visualization.events.addListener(stringFilter, 'statechange',function(){
+          console.log('statechange event ControlWrapper');
           eventListernerGoogleChart();
-         
-          //google.visualization.events.removeListener(tempListener1);
-          
+          //google.visualization.events.removeListener(tempListener);          
       });
       
-      chart.draw(view, this.options);
+      var dashboard = new google.visualization.Dashboard(document.getElementById('dashboard')).
+            // Configure the string filter to affect the table contents
+            bind(stringFilter, wrapper).
+            // Draw the dashboard
+            draw(view);
             
        //google.visualization.events.addListener(wrapper.getChart(), 'sort',eventListernerGoogleChart);
-       
-       /*
-       
-       REGLES D'AJUSTEMENT DES COLONNES
-       */
-       $('#'+this.id+'  .cssHeaderCell:contains("Code")').css('width', '10%');
-       $('#'+this.id+'  .cssHeaderCell:contains("Statut")').css('width', '8%');
-       $('#'+this.id+'  .cssHeaderCell:contains("Dossier")').css('width', '20%');
-       $('#'+this.id+'  .cssHeaderCell:contains("Emission")').css('width', '10%');
-       $('#'+this.id+'  .cssHeaderCell:contains("Remise")').css('width', '10%');
-       $('#'+this.id+'  .cssHeaderCell:contains("Actions")').css('width', '8%');
-       $('#'+this.id+'  .cssHeaderCell:contains("Date")').css('width', '7%');
-       $('#'+this.id+'  .cssHeaderCell:contains("vancement")').css('width', '7%');
-       $('.dropup_element').parents().css('overflow', 'visible');
    
   };
   
@@ -452,14 +456,10 @@ function eventListernerGoogleChart(){
    
     
     $('.dropdown-toggle').dropdown();
-    $('.dropup_element').parents().css('overflow', 'visible');
-    
-    $('.dropup_element:visible').addClass('dropup');
-    $('.dropup_element:visible:lt(3)').removeClass('dropup');
-    
-    console.log('call eventListernerGoogleChart');
+    $('.dropup').parents().css('overflow', 'visible');
+    console.log('call myReadyHandler');
    
-    $('#reporting a[data-url]:visible').click(function(){
+    $('a[data-url]').click(function(){
                 var log = JSON.parse($(this).attr('data-url')),
                     reference = $(this).attr('data-reference');
                 
@@ -481,17 +481,6 @@ function eventListernerGoogleChart(){
                 $('#historicalModal').modal();
                 }
               });
-              
-              
-    $('a[title="commentaire"]').click(function(){
-                
-                $('#commentModal #error_comment').html('');
-                $('#commentModal #title').html($(this).attr('data-info'));
-                $('#commentModal #reference_hide').val($(this).attr('data-ref'));
-                $('#commentModal #message-text').val('');
-                $('#commentModal').modal();
-                
-                })
      
      
 }
@@ -629,39 +618,12 @@ $(function(){
      mettre à jour le lien pour l'export du contenu du tableau vers le menu au moment du changement d'onglet
      attribut [data-link] de l'onglet recopié vers l'attribut href du lien id="link" du menu
      */
-     $('#reporting a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+     $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
        console.log('Changement activité:',$(e.target).attr('aria-controls'));
        var rlink =  $(e.target).attr('data-link');
        if (rlink) $('a[id="link"]').attr('href',rlink); // newly activated tab
        
-       refreshAllPage(); //On force le refresh des pages (mise à jour des status,dates,...)
-       
-     });
-     
-     /*
-       Traitement de la modal Commentaire
-     */
-     
-     $('#commentModal button').on('click',function(){ 
-       console.log('submit commentaire');
-       $('#commentModal #error_comment').html('');
-       var note = $('#commentModal #message-text').val(), reference=$('#commentModal #reference_hide').val();
-       var destinataires = $('#commentModal #recipient').val();
-       
-       /*
-       Contrôle sur les champs du formulaire
-       */
-       if(!note.match(/[a-zA-Z]/g)){
-         $('#commentModal #error_comment').html('Le champ commentaire doit contenir des caractères!');
-         return;
-       }
-       
-       /*** Appel serveur puor traitement ***/ 
-       google.script.run.withSuccessHandler()
-                   .withFailureHandler(function(e){foot_warning(e);})
-                   .onComment(reference,note,destinataires);
-       
-       $('#commentModal').modal('hide');
+       //refreshAllPage(); //On force le refresh des pages (mise à jour des status,dates,...)
        
      });
  

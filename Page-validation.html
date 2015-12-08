@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-
+<head>
 <meta name="google-site-verification" content="YyJGIV3p5TTgJUC1qaifBbeQNdWCfqz8bdRtwY87EnA" />
 <!--?!= include('bootstrap_block'); ?-->
 <!-- Appel de l'api google drive -->
@@ -30,102 +30,73 @@
   
   
 </style>
-
+</head>
 <body>
 
 <?!= HtmlService.createTemplateFromFile('Header').evaluate().setSandboxMode(HtmlService.SandboxMode.IFRAME).getContent(); ?> 
 
-<div class="container">  
+<div class="container-fluid">  
 
-<div class="jumbotron uppercase" style="display:true">
-       
-       <h2>récapitulatif pour le </h2>
-       <p>Recherche en cours...</p>
-       <div id="success" class="alert alert-success" role="alert" style="display:none"><p></p></div>
-</div>
-<div id="error_m" class="alert alert-warning" role="alert" style="display:none"></div>
+  <div class="jumbotron uppercase" style="display:true">
+         
+         <h2>récapitulatif decision </h2>
+         <p>Recherche en cours...</p>
+         <div id="success" class="alert alert-success" role="alert" style="display:none"><p></p></div>
+  </div>
+  <div id="error" class="alert alert-warning" role="alert" style="display:none"></div>
 
-
-
-<div class="row">
-<div class="col-md-offset-3 col-md-6">
-
-<div class="row">
-<form id="form_other" class="" > <!--form-horizontal-->
   <fieldset style="display:none">
+    <form id="form_other" class="well" > <!--form-horizontal-->
                  <input id="reference" value="<?=reference;?>" style="display:none">
-                 <input id="result" value="<?=result;?>" style="display:none">
+                 <input id="result" value="<?=type;?>" style="display:none">
                  <input id="client"  style="display:none">
                  <input id="dossier" style="display:none">
                  <input id="rp" style="display:none">
+                 <input id="view_id" style="display:none">
+                 <input id="folders_id" style="display:none">
                  
-                 <div id="form-group-go" class="clearfix">
-                 
-                  <section class="col-md-4" >
-                    <label class="control-label" for="">Date de Remise</label>
-                    <!----------------------------------------------
-                    Si on utilise <div class="input-group date"> alors
-                    L'event click sur le <span class="input-group-addon"> n'est
-                    pas catché
-                    ------------------------------------------------->
-                    <label class="input-group date">
-                      <input id="remise" data-format="datepicker" type="text" class="form-control" placeholder="choisir une date" required>
-                      <span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
-                    </label>
-                    <small class="help-block">Préciser de nouvelles dates si besoin</small>
-                  </section>
-                 
-                  <section class="col-md-4" >
-                    <label class="control-label" for="">Date du Visa Forfait</label>
-                    <label class="input-group date" id="datetimepicker_visa">
-                       <input id="visa" data-format="datepicker" type="text" class="form-control" placeholder="choisir une date" required>
+                <div class="clearfix form-group">
+                   
+                   <section class="col-md-4" >
+                     <label class="control-label" for="">Date de <?=type?> réalisé</label>
+                     <!----------------------------------------------
+                     Si on utilise <div class="input-group date"> alors
+                     L'event click sur le <span class="input-group-addon"> n'est
+                     pas catché
+                     ------------------------------------------------->
+                     <label class="input-group date">
+                       <input id="date_realise" data-format="datepicker" type="text" class="form-control" placeholder="choisir une date" required>
                        <span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
-                    </label>
-                    
-                    
-                    <small class="help-block"></small>
-                  </section>
+                     </label>
+                     <small class="help-block">Indiquer la date réelle</small>
+                   </section>
                  
-                  <section class="col-md-4" >
-                    <label class="control-label" for="">Date du DAR</label>
-                    <label class="input-group date">
-                      <input id="dar" data-format="datepicker" type="text" class="form-control" placeholder="choisir une date" required>
-                      <span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
-                    </label>
-                    <small class="help-block"></small>
-                  </section>
-                 
-                 
-                 </div> <!-- End form-group-go  -->
-                 
-                 <div class="clearfix" style="display:true">
-                   <section class="col-md-5">
-                   <label id="label-cr" class="control-label">Compte-rendu du </label>
-                 
+                   <section class="col-md-offset-1 col-md-6">
+                     <label id="label-cr" class="control-label">Compte-rendu du </label>
+                     
                      <div class="bootstrap-filestyle input-group">
                        <span class="group-span-filestyle " tabindex="0">
                          <button for="filestyle-0" class="btn btn-default" type="button">
-                          <span class="glyphicon glyphicon-folder-open">&nbsp;</span>
-                          <span class="buttonText">Sélectionner le fichier</span>
-                          <span id="badge_files" class="badge"></span>
+                           <span class="glyphicon glyphicon-folder-open">&nbsp;</span>
+                           <span class="buttonText">Sélectionner le fichier</span>
+                           <span id="badge_files" class="badge"></span>
                          </button>
-                        </span>
+                       </span>
                      </div>
-                     <input id="drive_id_files" style="display:none" >
+                     <input id="drive_id_files"  type="hidden" required>
                      <span id="error-mail" class="label label-warning"></span>
-                     <p id="name_file" class="form-control-static"></p>
-                   </section> 
+                     <span id="name_file" class="form-control-static"></span>
+                   </section>
+                   
+                   <section class="col-md-12">
+                      <legend>Texte de votre message qui sera envoyé aux participants</legend>
+                      <textarea id="commentaire" type="textarea" class="form-control" rows="7" ></textarea>
+                      <small id="help-textarea" class="help-block"></small>
+                   
+                   </section>
                  </div>
                  
-                 <div class="clearfix">
-                 <section class="col-md-12">   
-                   <label for="commentaire" class="control-label">Commentaire</label>
-                   <div>
-                      <textarea id="commentaire" type="textarea" class="form-control" rows="7" pattern="[A-Za-z]"></textarea>
-                   </div>
-                   <small id="help-textarea" class="help-block"></small>
-                 </section>  
-                 </div>      
+                     
                        
                  <div id="warning" class="alert alert-warning alert-dismissible fade in" role="alert" style="display:none">
                  <p></p>
@@ -137,13 +108,11 @@
                  </section>
                 </div>
                
-               
+        </form> <!--End Form Unit redispatch -->       
   </fieldset>                 
-</form> <!--End Form Unit redispatch -->
 
-                  
-</div>
-</div>
+
+ 
 </div>	<!--End Container -->
   <?!= HtmlService.createTemplateFromFile('Footer').evaluate().setSandboxMode(HtmlService.SandboxMode.IFRAME).getContent(); ?> 
 </body>
@@ -163,30 +132,21 @@ $.widget.bridge('uitooltip', $.ui.tooltip);
 <script  src="https://cdnjs.cloudflare.com/ajax/libs/jquery-dateFormat/1.0/jquery.dateFormat.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.3.2/js/bootstrap-switch.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.7.14/js/bootstrap-datetimepicker.min.js"></script>
-
+<?!= include('JSFonctions'); ?>
 <script>
 $(function(){
   console.log('Ready! : %s', <?=reference?>);
-  console.log('decision result! : %s', <?=result?>);
-  page_header('TRAITER GO/NOGO');
-  $('fieldset').hide();
-  
-          
+  console.log('decision result! : %s', <?=type?>);
+  page_header('VALIDER <?=type?>');
+ 
+
   $('input[data-format="datepicker"]').datepicker({
     language: "fr",
     format: 'dd/mm/yyyy',
     daysOfWeekDisabled: '0,6',
     
     });
-  /*\/\/\/\/\/\/\\/\/\/\\/\/\/\\/\/\/\
-  https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.7.14/js/bootstrap-datetimepicker.min.js
-    
-  $('#datetimepicker_visa').datetimepicker({toolbarPlacement: 'top'});
-  /\/\/\/\/\/\/\\/\/\/\\/\/\/\\/\/\/\*/
-  /*
-     Demande MANTIS 0045 : Rendre l'upload du fichier de CR du Go No Go NON OBLIGATOIRE, et le commentaire texte OBLIGATOIRE
-  */
-  //if(<?=result?>!='go') 
+  
   $('#commentaire').attr('required',true);
   
   $('input[required],textarea[required],select[required]').each(function(index) {  
@@ -200,22 +160,9 @@ $(function(){
   /*\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
   Initialiser les infos dans la bar nav
   \/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/*/
-  if(<?=result?>=='go') {
-                          $('.jumbotron h2').append('GO');
-                          $('#help-textarea').html('Si la décision du Go est délicate, il est indispensable de mener le Go sur base d\'une PP9 et d\'uploader le fichier de CR qui justifie la décision');
-                          $('#label-cr').append('Go');
-                         }
-  else {
-       $('.jumbotron h2').append('NO GO');
-       $('#help-textarea').html('Si la décision du No Go est délicate, il est indispensable de mener le No Go sur base d\'une PP9 et d\'uploader le fichier de CR qui justifie la décision');
-       $('#label-cr').append('No Go');
-       $('#form-group-go').hide();
-       $('#remise').removeAttr('required');
-       $('#dar').removeAttr('required');
-       $('#visa').removeAttr('required');
-       }
+  $('.jumbotron h2').append(<?=type?>);
+  $('#label-cr').append(<?=type?>);  // --------> DEMANDE DE JHOLVOET Compte-rendu du visa forfait (PP.10 rempli) en commentaire en dessous
   
-
   /*\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
   CALL GOOGLE PICKER UPLOAD FILES
   \/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/*/
@@ -224,7 +171,7 @@ $(function(){
      
      $('#error-mail').html('');
      google.script.run.withSuccessHandler(createPicker)
-        .withFailureHandler(function(e){$('#error_m').html('<h1>Erreur!</h1><br>'+e);$('#error_m').show();}).getOAuthToken();
+        .withFailureHandler(function(e){ foot_message(e);}).getOAuthToken();
  
     });
  
@@ -239,35 +186,56 @@ $(function(){
          $('.jumbotron p').html('Dossier :'+value.client+'-'+value.dossier+'<br><small>Responsable de proposition : '+value.rp
                   +'</small><br><small>Manager : '+value.manager+'</small>' )
          
+         /*
+           Vérification du status du dossier
+           ****JHOLVOET: SEULS LES CONTROLES SUR DOSSIER AVANT GO******
+         */
+         if( value.state=='EN COURS' || value.state=='EN ATTENTE' || value.state=='RELANCE'){
+           showError('Le dossier est toujours <b>EN ATTENTE</b>. Cette action sera possible dès que celui-ci sera <b>EN COURS</b> !');
+           return;
+           }
+         
+         
+         
+         /*
+           Extraire la dernière Timeline associé au dossier partagé AVV
+           
+         */
+         timeLinePartageDrive = getSession(value.historical,'AVV');
+         
+         // Récupère l'ID du dossier AVV si celui ci existe
+         id_folder_avv =  getPartageAVV();
+         
          $('form').show();
          $('#client').val(value.client);
          $('#dossier').val(value.dossier);
          $('#rp').val(value.rp);
+         // On renvoie dans le formulaire l'ID de l'arbo AVV trouvée
+         $('#folders_id').val(id_folder_avv);
          
          $('button[type="submit"]').removeAttr('disabled');
          $('fieldset').removeAttr('disabled');
          
-         $('#remise').datepicker('setDate', value.remise);
-         $('#dar').datepicker('setDate', value.dar);
-         $('#visa').datepicker('setDate', value.visa);
-         
-         switch(value.state){
-           case 'EN ATTENTE':
-           case 'RELANCE':$('#error_m').html('<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span> Le dossier n\'est toujours pas affect&eacute; à un responsable de proposition !');
-                          $('#error_m').show();
-                          break;
-           case 'GO':
-           case 'NOGO':$('#error_m').html('<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span> Le statut du dossier est: '+value.state);
-                       $('#error_m').show();
-                    
-                       break;
+         switch(<?=type?>){
+           case 'dar':
+               $('#date_realise').datepicker('setDate', value.dar);
+               $('#help-textarea').html(' Indiquer le valideur de l\'engagement, les conclusions du DAR et le plan d\'action préconisé en quelques lignes. Ce texte sera diffusé par mail aux participants');
+               break;
            
-           default: $('fieldset').show();
+           case 'visa forfait':
+               $('#date_realise').datepicker('setDate', value.visa);
+               $('#help-textarea').html('Copier ici la synthèse de la revue');
+               break;
+           default:
+               $('#error').html('<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span> Type de demande inconnue: '+<?=type?>);
+               $('#error').show();
+               return;
          
          }
-                            
+         $('fieldset').show();
+                        
        })
-       .withFailureHandler(function(e){$('#error_m').html('<h1>Erreur!</h1><br>'+e);$('#error_m').show();})
+       .withFailureHandler(function(e){foot_message(e);})
        .getInfoGeneric(  <?=reference?> );
   
   /*\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
@@ -277,39 +245,36 @@ $(function(){
   
      console.log(this);
      clear_alert();
+     
      $('button[type="submit"]').button('copy');
      $('#error-mail').html('');
      
      /*** Contrôle sur les dates ***/
-     var remise = $('#remise').datepicker('getDate');
-     var dar = $('#dar').datepicker('getDate');
-     var visa = $('#visa').datepicker('getDate');
-     if(<?=result?>=='go' && (remise<dar || dar<visa)) {
-         $('#warning p').html('<b>Attention!</b><br>Merci de vérifier la chronologie des dates proposées');
-         $('#warning').show();
-         $('button[type="submit"]').button('reset');
-         $('fieldset').removeAttr('disabled');
-         return false;}
-         
-     if(!$('#commentaire').val().match(/[a-zA-Z]/g)){
-       foot_error('Le champ commentaire doit contenir des caractères');
+     if( $('#date_realise').datepicker('getDate') > new Date() ){
+       foot_warning('La date de réalisation doit être antérieure à :'+ new Date());
        $('button[type="submit"]').button('reset');
-       return false;
-     }
-     
-     
+       $('fieldset').removeAttr('disabled');
+       return false;}
+
      /*** Contrôle si PJ présent ***/
      
-     /*  Demande MANTIS 0045 : Rendre l'upload du fichier de CR du Go No Go NON OBLIGATOIRE
-     
      if($('#drive_id_files').val()==''){
-        $('#error-mail').html('Fichier obligatoire !');
+        foot_warning('Référence fichier obligatoire !');
         $('button[type="submit"]').button('reset');
         $('fieldset').removeAttr('disabled');
         return false;}
-     */
-    
+        
+        
+     /**** Contrôle sur le champ commentaire ***/
+     if(!$('#commentaire').val().match(/[a-zA-Z]/g)){
+       foot_error('Le champ commentaire doit contenir des caractères');
+       $('button[type="submit"]').button('reset');
+       $('fieldset').removeAttr('disabled');
+       return false;
+     }
+     
      $('fieldset').attr('disabled','disabled');
+     
      google.script.run
        .withSuccessHandler(function(value){
            
@@ -320,23 +285,26 @@ $(function(){
            /*
            FIN MATNUS 0071
            */
-           message+=(<?=result?>=='go')?'Une invitation pour le DAR a été ajoutée dans votre agenda pour le <b>'+$.format.date($('#dar').datepicker('getDate'), 'dd/MM/yyyy')+'</b>.<br>':'';
-           message+=(<?=result?>=='go')?'Un demande de visa forfait a été faite pour le <b>'+$.format.date($('#visa').datepicker('getDate'), 'dd/MM/yyyy')+'</b>.<br>':'';
-           message+=(<?=result?>=='go')?'Une demande de création d\'arborescence Google Drive a été envoyée.<br>':''; 
-          
+           
+           clear_alert();
            $('#success p').html(message);
            $('#success').show();
            $('form').hide();
+           
+           message = '<h4>Désolé, l\'arboresence avant-vente associée à ce dossier n\'a pas été trouvé!.</h4><h4>Veuillez contacter le support ou faire une demande de création.</h4><br>';
+           message += '<p><button id="askAVV" type="button" class="btn btn-default btn-lg">Demande de création </button></p>';
+          
+           if(!id_folder_avv) showError(message);
+           $('#askAVV').on('click',CallServer_to_createAsk);
                             
        })
        .withFailureHandler(function(e){
-              $('#error_m').html('<h1>Erreur!</h1><br>'+e);
-              $('#error_m').show();
-              console.log('reset button');
+              foot_error(e);
               $('button[type="submit"]').button('reset');
               $('fieldset').removeAttr('disabled');
         })
-       .onValidateDecision(this);
+       .onValidateVisa(this);
+     
     return false;
   });
   
@@ -350,6 +318,9 @@ $(function(){
   var DEVELOPER_KEY = 'AIzaSyAAS7PLBfz4q4gZIkpQOVYLFT6X_gL0Ib4';
   var DIALOG_DIMENSIONS = {width: 600, height: 425};
   var pickerApiLoaded = false;
+  var timeLinePartageDrive = {};
+  var id_folder_avv;
+  var NAME,ID;
 
   /**
    * Loads the Google Picker API.
@@ -358,6 +329,44 @@ $(function(){
     pickerApiLoaded = true;
   }});
 
+  
+  /**
+  Fonction de d'appel Server GoogleApps pour:
+  Envoyer une demande de création d'arborescence AVV
+  Demande personnalisée
+  Si demande envoyée Alors confirmer que le mail est envoyé
+  Sinon message d'erreur type exception
+  **/
+  function CallServer_to_createAsk(){
+      
+     console.log('CallServer_to_createAsk...'); 
+     
+     google.script.run
+       .withSuccessHandler(function(value){
+           var message ='Une demande de création d\'arborescence Google Drive a été envoyée.<br>Vous recevrez prochainement une notification par mail d\'accès à votre dossier.';
+           
+           clear_alert();
+           hideError();
+           $('#success p').html(message);
+           $('#success').show();
+           $('form').hide();
+                            
+       })
+       .withFailureHandler(function(e){
+              foot_error(e);
+              $('button[type="submit"]').button('reset');
+              $('fieldset').removeAttr('disabled');
+        })
+       .onValidateCreateAsk({'id':<?=reference?>,
+                'reviewer':<?=Session.getActiveUser().getEmail()?>,
+                'ao':$('#dossier').val(),
+                'client':$('#client').val(),
+                'rp':$('#rp').val(),
+                'revue':<?=type?>,});
+  
+       
+  
+  }
   
 
   /**
@@ -371,30 +380,49 @@ $(function(){
   function createPicker(token) {
     console.log('createPicker');
     
-    if (pickerApiLoaded && token) {
-      var picker = new google.picker.PickerBuilder()
+    
+    
+    // On valide la présence du bon token 
+    if (pickerApiLoaded && token ) {
+      
+     
+      var DocsUpload = new google.picker.DocsUploadView();
+        
+      var pickerBuilder = new google.picker.PickerBuilder()
           // Instruct Picker to display only spreadsheets in Drive. For other
           // views, see https://developers.google.com/picker/docs/#otherviews
-          //.addView(google.picker.ViewId.SPREADSHEETS)
+          .addView(DocsUpload) 
+          //.addView(null)
+          //.addViewGroup(new google.picker.ViewGroup(docs).addLabel('ytrytryt'))
+          //.addView( docs) 
           // Hide the navigation panel so that Picker fills more of the dialog.
-          .enableFeature(google.picker.Feature.NAV_HIDDEN)
+          //.enableFeature(google.picker.Feature.NAV_HIDDEN)
           // Hide the title bar since an Apps Script dialog already has a title.
-          //.hideTitleBar()
-          .setTitle('Sélectionnez le compte-rendu du go-nogo')
+          .hideTitleBar()
+          .setTitle('Récupérer le fichier depuis votre PC')
           .enableFeature(google.picker.Feature.SIMPLE_UPLOAD_ENABLED)
           .setOAuthToken(token)
           .setDeveloperKey(DEVELOPER_KEY)
-          .addView(new google.picker.DocsUploadView())
+          
           .setOrigin('https://script.google.com')
           .setCallback(pickerCallback)
           // Instruct Picker to fill the dialog, minus 2 pixels for the border.
           //.setSize(DIALOG_DIMENSIONS.width - 2,
           //    DIALOG_DIMENSIONS.height - 2)
-          .build();
+      
+     
+      if(id_folder_avv){
+        pickerBuilder.addView(new google.picker.DocsView(google.picker.ViewId.FOLDERS).setParent(id_folder_avv))
+                             .setTitle('Récupérer le fichier soit depuis votre PC, soit depuis l\'arbo AVV GDrive');
+       
+      }
+      
+      var picker = pickerBuilder.build();
       picker.setVisible(true);
          
     } else {
-      showError('Unable to load the file picker.');
+      
+      foot_message('Impossible de charger la fenêtre de recherche.Merci de réessayer ou de contacter le support');
     }
   }
 
@@ -409,6 +437,8 @@ $(function(){
     var name=[],Ids=[],action = data[google.picker.Response.ACTION];
     if (action == google.picker.Action.PICKED) {
       
+      // On renvoie dans le formulaire le type de VIEW (upload/folders) ?
+      $('#view_id').val(data[google.picker.Response.VIEW][0]);
       var docs = data[google.picker.Response.DOCUMENTS];
       for(var index=0;index<docs.length;index++){
         Ids.push(docs[index][google.picker.Document.ID]);
@@ -418,9 +448,7 @@ $(function(){
         
 
       }
-      //var id = doc[google.picker.Document.ID];
-      //var url = doc[google.picker.Document.URL];
-      //var title = doc[google.picker.Document.NAME];
+  
       document.getElementById('badge_files').innerHTML =docs.length;
       document.getElementById('drive_id_files').value =Ids.join();
       document.getElementById('name_file').innerHTML =name.join('');
@@ -429,13 +457,49 @@ $(function(){
     }
   }
 
+  /*
+  Fonction assurant la recherche du dossier partagé AVV depuis
+  la TimeLine de la référence dossier
+  [out]: true si trouvé, false sinon  
+  
+  */
+  function getPartageAVV(){
+    // Lecture de la propriété ID de l'objet TimeLine afin de récupérer l'ID de dossier AVV
+    ID = getSessionKey(timeLinePartageDrive,'ID');
+    
+    
+    if(!ID){
+      /* ID=null alors ancien format de la serialisation clé(Dossier_AVV) et recherche via la regex suivante
+       id=(.*?)&  (Ex: <a target='_blank' href='https://docs.google.com/a/sqli.com/folderview?id=   0B0WdP5H8Zj_6ZVF6OTlBUmxZSEk   &usp=drivesdk'>20151022-TOTAL-RFP Specialiste</a>
+       */
+      var regex = /id=(.*?)&/g;
+      var value = getSessionKey(timeLinePartageDrive,'Dossier_AVV');
+      
+      if(value){
+        ID = regex.exec(value)[1];
+        // Recherche du nom également
+        regex = /<a.*?>(.*?)<\/a>/g;
+        NAME = regex.exec(value)[1];
+      }
+    }else
+      NAME = getSessionKey(timeLinePartageDrive,'NAME');
+  
+    return (ID);
+  }
+  
   /**
    * Displays an error message within the #result element.
    *
    * @param {string} message The error message to display.
    */
   function showError(message) {
-    document.getElementById('result').innerHTML = 'Error: ' + message;
+    $('#error').html(message).show();
+    $('form').hide();
+    
+  }
+  
+  function hideError() {
+     $('#error').hide();
   }
 </script>
 

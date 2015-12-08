@@ -2,7 +2,7 @@
 <html>
   <head>
     <base target="_top">
-    <link rel="stylesheet" href="<?!=PropertiesService.getScriptProperties().getProperty('ID_TEMPLATE_DEFAULT');?>">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.4/journal/bootstrap.min.css">
   </head>
   
   <style>
@@ -53,16 +53,44 @@
 
       <h1>Change Log</h1>
       
+      <p class="lead">2015 <small>Décembre</small></p>
+      <ul>
+        <li>Fonction d'ajout d'un commentaire sur un dossier depuis le menu du <code>Dashboard</code><small><kbd>[Mode administrateur]</kbd></small>.
+         Ces informations seront consultables par les tous les utilisateurs depuis la Timeline de suivi du dossier.</li>
+        <li>Pratique, désormais vous pouvez forcer la mise à jour des données accessibles depuis le <code>Dashboard</code> par simple changement d'onglet. Plus la peine de recharger la page entière.</li>
+        <li>Ajout du profil <small><kbd>[Reviewer]</kbd></small> destiné à la réalisation des VISA FORFAIT</li>
+        <li>Possibilité au Reviewer d'uploader le CR de son VISA FORFAIT via le menu <code>Valider Visa Forfait</code> depuis le <code>Dashboard</code>.</li>
+        <li>Possibilité au RP d'uploader son DAR via le menu <code>Valider le DAR</code> depuis le <code>Dashboard</code>
+          <ul>
+            <li>L'application pourra proposer automatiquement une demande de création d'arboresence avant-vente si celle-ci n'a pas été faite</li>
+            <li>Possibilité d'uploader un fichier depuis son disque local ou de récupérer le lien depuis son dossier avant-vente.</li>
+           
+          
+          </ul>
+        </li>
+        <li>Mise en place d'un nouveau templating de mailing permettant de:
+          <ul>
+            <li>Améliorer la visibilité des informations communiquées.</li>
+            <li>Améliorer la mise en page depuis son mobile <small><kbd>Responsive</kbd></small>.</li>
+            <li>Attacher directement les pièces jointes au mail et non plus uniquement des liens</li>
+          
+          </ul>
+        
+        </li>
+        <li>Nouveau templating global de l'application PP9-Web</li>
+        <li>Correction du menu tronqué sur les premières lignes depuis le <code>Dashboard</code>.</li>
+        
+      </ul>
       <p class="lead">2015 <small>Octobre</small></p>
       <ul>
-        <li>Accès aux fonctions des relances depuis la <code>Page de reporting</code><small><kbd>[Mode administrateur]</kbd>:</small>.</li>
+        <li>Accès aux fonctions des relances depuis le <code>Dashboard</code><small><kbd>[Mode administrateur]</kbd></small>.</li>
         <ul>
             <li>Permettre d'envoyer un mail de relance destiné au manager de Unit sur les dossiers au statut <code>En attente</code> au delà de 48h.</li>
             <li>Permettre d'envoyer un mail de relance destiné au responsable de proposition sur les dossiers au statut <code>Go no Go planifié </code>avec délai ouvré dépassé de 48h.</li> 
           
           </ul>
         <li>Fonction de synchronisation des statuts d'avancement CRM via un fichier d'import au format .xls.<small><kbd>[Mode administrateur ]</kbd></small></li>
-        <li>Enrichissement de la fenêtre de détail d'un dossier depuis la <code>page de reporting </code>:</li>
+        <li>Enrichissement de la fenêtre de détail d'un dossier depuis le <code>Dashboard </code>:</li>
           <ul>
             <li>Pouvoir consulter l'historique des opérations associées.</li>
             <li>Accéder au compte-rendus Go/ No Go directement depuis la page historique. </li>
@@ -74,13 +102,13 @@
       </ul>
       <p class="lead">2015 <small>Septembre</small></p>
       <ul>
-        <li>Gestion du profil Admin depuis la <code>Page de reporting</code>.</li>
-        <li>Permettre d'exporter au format .csv le contenu du tableau de consultation des dossiers depuis la<code>Page de reporting</code>.</li> 
+        <li>Gestion du profil Admin depuis le <code>Dashboard</code>.</li>
+        <li>Permettre d'exporter au format .csv le contenu du tableau de consultation des dossiers depuis le <code>Dashboard</code>.</li> 
         
       </ul>
       <p class="lead">2015 <small>Juillet</small></p>
       <ul>
-        <li>Ajout de la <code>page de reporting</code> pour le suivi de vos dossiers par statut.</li> 
+        <li>Ajout du <code>Dashboard</code> pour le suivi de vos dossiers par statut.</li> 
         <li>Modification du formulaire <code>de création d'un appel d'offre</code> : </li>
         <ul>
           <li>Ajout d'un champ obligatoire pour l'attribution de la techno principale.</li>

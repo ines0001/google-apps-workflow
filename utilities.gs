@@ -58,7 +58,48 @@ OLogger.prototype = {
     
   },
   
-
+  /*********************************************
+  Fonction permettant de lire la dernière opération 
+  <name> depuis l'objet TimeLine
+  
+  [in]: nom de l'opération
+  [out]: objet de l'opération, null sinon 
+  **********************************************/
+  getSession:function( name){
+    var session={};
+    var regex = new RegExp(name, "gi");
+    
+    
+    for(var i=this.length;i>0;i--) 
+      if (this.sessions[i-1].operation.match(regex)){
+        // match i-1 position trouvé
+        session = this.sessions[i-1];
+        break;
+      }
+    
+    
+    return session
+  },
+  
+  /*********************************************
+  Fonction permettant de lire l'ID du dossier rattaché à l'objet TimeLine
+  [in]: objet TimeLine
+  [in]: nom de l'opération
+  [out]: objet de l'opération, null sinon 
+  **********************************************/
+  getSessionKey:function ( obj,key){
+    var str=null;
+    for (var p in obj) {
+      if(typeof obj[p] == 'object') str = this.getSessionKey(obj[p],key);
+      if(str) break;
+      if(obj.hasOwnProperty(key)){
+        str = obj[key];
+        break;
+      }
+    }
+    return str;
+  
+  },
   
 }
 
@@ -74,17 +115,7 @@ function C_Url(ID) {
 }
 
 function utilities_testing(){
- var o = new OLogger();
- mon_url =  new C_Url('0BxTfS7jXR_FYUVd6dFBORzNTLTA');
- 
- var json = o.pushSession('Décision GO','GO',{client:'toto',nom:'info',cr:new C_Url('0BxTfS7jXR_FYUVd6dFBORzNTLTA')});
-
- var out = JSON.parse(json);
- 
- Logger.log( typeof out[0].comment.cr== 'object') // Renvoie TRUE
- 
- Logger.log(out[0].comment.cr.hasOwnProperty('URL'))
-  
+ Logger.log(currencyFormatDE(currencyFormatNum('898 789 €')));
  //Logger.log(o);
   
 }
@@ -276,12 +307,15 @@ function isDigit(char) {
 /**************************************************************************/
 function getDate(idate)
 {
+  
+
   if( (idate==undefined || idate.constructor!=Date) ) throw 'Error format date';
   var d = (idate==undefined || idate.constructor!=Date)?new Date():idate;
                        
-	var m = d.getUTCMonth()+1;          
-	var j = d.getUTCDate();                
-	var a = d.getUTCFullYear(); 
+	var m = d.getMonth()+1;          
+	var j = d.getDate(); 
+
+	var a = d.getFullYear(); 
 	var m_s = String(m);
 	var j_s = String(j);
 
@@ -324,6 +358,20 @@ function currencyFormatDE (num) {
        .toFixed(0) // always two decimal digits
        .replace(".", ",") // replace decimal point character with ,
        .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.") + " €" // use . as a separator
+}
+
+/*************************************************************
+/ currencyFormatNum : fonction convertissant une valeur monétaire
+/ sous la forme 1 234 567 89 € en valeur numérique
+
+/ [in]: string
+/ [in]: 
+/ [in]: 
+
+/ [out]: numeric
+/**************************************************************/
+function currencyFormatNum (v) {
+  return parseInt(v.replace(/[\s\€]/g,''),10);
 }
 
 

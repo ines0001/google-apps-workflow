@@ -1,3 +1,12 @@
+<style type="text/css">
+
+.no-border {
+    border: 0;
+    box-shadow: none; /* You may want to include this as bootstrap applies these styles too */
+}
+
+</style>
+
 <div class="modal fade" id="ModalPreview" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
@@ -6,19 +15,24 @@
         <h4 class="modal-title" id="exampleModalLabel">Nouveau message</h4>
       </div>
       <div class="modal-header">
-        <table style="width: 100%;">
-        <tr ><td style="width: 5%;">&Agrave;</td><td id="dest"></td></tr>
-        <tr ><td style="width: 5%;">CC</td><td id="cc"></td></tr>
-        </table>
-     
+        <div class="form-inline">
+          <label for="exampleInputName1" class="control-label">To</label>
+          <input id="dest" style="width: 90%;" type="text" name="exampleInputName1" class="form-control input-sm no-border" aria-label="Text input with multiple buttons">
+          
+        </div>
+        <div class="form-inline">
+          <label for="exampleInputName2" class="control-label">CC</label>
+          <input id="cc" style="width: 90%;" type="text" name="exampleInputName2" class="form-control input-sm no-border" aria-label="Text input with multiple buttons">
+          
+        </div>
       </div>
       <div class="modal-header">
-        <table style="width: 100%;">
-           <tr ><td id="objet"></td></tr>
-        </table>
-        
+        <div class="form-inline">
+          <label class="control-label">Objet</label>
+          <p id="objet" class="form-control-static"></p>
+          
+        </div>
       </div>
-      
       <div class="modal-body">
                 
         <div id="modal_body_previsu"></div>
