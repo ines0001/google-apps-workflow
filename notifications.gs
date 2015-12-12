@@ -143,7 +143,9 @@ function MailingAfterDAR(destinataire,option){
   
   var file = DriveApp.getFileById(option.attachements);
   
-  var content = option.content;
+  
+  var content ='<small>de '+Session.getActiveUser().getEmail()+':</small><br>'+option.content;
+  
   content+='<hr><a href="'+file.getUrl()+'">Accès au compte-rendu du DAR</a><br>';
   
   OtemplateMail.init('template_mail');
@@ -197,7 +199,8 @@ function MailingAfterVISA(destinataire,option){
   
   var file = DriveApp.getFileById(option.attachements);
   
-  var content = option.content;
+  var content ='<small>de '+Session.getActiveUser().getEmail()+':</small><br>'+option.content;
+  
   content+='<hr><a href="'+file.getUrl()+'">Accès au compte-rendu PP10</a><br>';
   
   OtemplateMail.init('template_mail');

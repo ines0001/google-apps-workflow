@@ -176,6 +176,7 @@
           if(data.getColumnLabel(i).toLowerCase().indexOf('avancement')!=-1) i_avancement_crm = i;
           
       }
+      
       var formatter = new google.visualization.PatternFormat('<span class="label label-info {0}" data-html="{0}">&nbsp;</span>');
       formatter.format(data, [i_statut],i_statut);
       
@@ -198,17 +199,18 @@
       formatter.format(data, [2],2);
       formatter.format(data, [3],3);
       formatter.format(data, [4],4);
-  
-  
+      
       /*/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
         Mise en forme de la colonne Action ( détail historique, lien folder google drive)
       /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\*/
       data.addColumn('string', 'Actions');
        
        for(var i=0;i<data.getNumberOfRows();i++){
-         var link = data.getValue(i,i_url) , histo = data.getValue(i,i_log);
-         var ref=data.getValue(i,i_reference);
-         
+
+         var link = (i_url==undefined)?null:data.getValue(i,i_url) , histo = (i_log==undefined)?null:data.getValue(i,i_log);
+         var ref=(i_reference==undefined)?null:data.getValue(i,i_reference);
+        
+        
          html_msg='<div class="btn-group dropup dropup_element">';
          html_msg+=(histo)?"<a href='#' data-reference='"+ref+"' data-url='"+histo+"' class='btn btn-info  btn-xs'>":'<a href="#" class="btn btn-info  btn-xs disabled">';
          html_msg+='<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>';
@@ -274,6 +276,11 @@
          data.setValue(i,data.getNumberOfColumns()-1, html_msg )
        }
   
+      /*/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
+        Mise en forme des titre des colonnes
+        Règle glyphicon
+      /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\*/
+      
       for(var index=0;index<data.getNumberOfColumns();index++){
       if(data.getColumnLabel(index).search('glyphicon')!=-1){
         //  label C "glyphicon-eye-open,Mon label personnalisé",

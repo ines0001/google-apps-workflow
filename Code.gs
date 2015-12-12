@@ -911,12 +911,19 @@ function onValidateVisa(form){
         */
        
         objet.sheet.getRange(row.rowNumber,COLUMN_SHEET_STATE).setValue(state.dar);
+        /*
+        Le champ est actuellement réservé pour le renseignement depuis le sheet
         objet.sheet.getRange(row.rowNumber,COLUMN_SHEET_COMMENT).setValue(form.commentaire);
+        */
         objet.sheet.getRange(row.rowNumber,COLUMN_SHEET_DAR_REEL).setValue(form.date_realise);
         objet.sheet.getRange(row.rowNumber,COLUMN_SHEET_LOG).setValue(objet_log.pushSession('Validation DAR',state.dar,{client:form.client,
                                                                                                                       dossier:form.dossier,
                                                                                                                       date_dar_reelle:form.date_realise,
+                                                                                                                      /*
+                                                                                                                      Le message doit être tronqué dans la timeline mais doit rester dans l'histo
                                                                                                                       synthèse:form.commentaire.substr(0,200)+'...',
+                                                                                                                      */
+                                                                                                                      synthèse:form.commentaire,
                                                                                                                       cr:new C_Url(file),}));
         /*
           Mail envoyé uniquement à paris.production
@@ -943,12 +950,19 @@ function onValidateVisa(form){
           COLUMN_SHEET_VISA_REEL
         */
         objet.sheet.getRange(row.rowNumber,COLUMN_SHEET_STATE).setValue(state.visaForfait);
+        /*
+        Le champ est actuellement réservé pour le renseignement depuis le sheet
         objet.sheet.getRange(row.rowNumber,COLUMN_SHEET_COMMENT).setValue(form.commentaire);
+        */
         objet.sheet.getRange(row.rowNumber,COLUMN_SHEET_VISA_REEL).setValue(form.date_realise);
         objet.sheet.getRange(row.rowNumber,COLUMN_SHEET_LOG).setValue(objet_log.pushSession('Validation Visa Forfait',state.visaForfait,{client:form.client,
                                                                                                                       dossier:form.dossier,
                                                                                                                       date_visa_reelle:form.date_realise,
+                                                                                                                      /*
+                                                                                                                      Le message doit être tronqué dans la timeline mais doit rester dans l'histo
                                                                                                                       synthèse:form.commentaire.substr(0,200)+'...',
+                                                                                                                      */
+                                                                                                                      synthèse:form.commentaire,
                                                                                                                       cr:new C_Url(file),}));
         
         /*

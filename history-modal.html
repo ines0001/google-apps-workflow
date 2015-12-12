@@ -68,13 +68,14 @@ $(function(){
   console.log('ready Modal History page');
   
   $('.collapse').on('shown.bs.collapse', function(){
+      console.log('collapse..');
       $(this).parent().find(".glyphicon-plus").removeClass("glyphicon-plus").addClass("glyphicon-minus");
      }).on('hidden.bs.collapse', function(){
       $(this).parent().find(".glyphicon-minus").removeClass("glyphicon-minus").addClass("glyphicon-plus");
    });
 
   $('#historicalModal').on('show.bs.modal', function (e) {
-      console.log('historicalModal show.bs.modal');
+      
       $('#collapseTwo').removeClass("in");
       $('#collapseTwo').parent().find(".glyphicon-minus").removeClass("glyphicon-minus").addClass("glyphicon-plus");
       $('#collapseOne').removeClass("in").addClass("in");

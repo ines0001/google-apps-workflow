@@ -257,10 +257,26 @@ un formatage html particulier
     
       for (var p in obj) {
             if(typeof obj[p] == 'object') str += objToString(obj[p]);
-            else {str += '<b>'+p + '</b> : ' + obj[p] + '<br>';}
+            else switch(p)
+            {
+            
+              case 'message':
+              case 'synthèse':str += '<b>'+p + '</b> : ' + obj[p].substr(0,200) +'...<br>';
+                              
+              
+                              break;
+            
+              default: str += '<b>'+p + '</b> : ' + obj[p] + '<br>';
+            }
+            
+            
           }
     }
     return str;
 }
+
+
+
+
 
 </script>
