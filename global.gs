@@ -267,6 +267,8 @@ SHEET_AO.prototype = {
 
 function global_testing() {
   try{
+  
+ 
   var sheet_objet = new SHEET_AO();
   var ref = 'I1431101804699';
   

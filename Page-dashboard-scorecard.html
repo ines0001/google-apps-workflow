@@ -1,0 +1,362 @@
+<head>
+
+    <?!= include('style-dashboard'); ?>
+    
+
+ </head>
+ <body>
+          <ul class="nav nav-tabs nav-pills nav-justified" role="tablist">
+            <li role="presentation" class="active">
+              <a href="#table_scorecard" aria-controls="table_scorecard" role="tab" data-toggle="tab" data-link="">
+                <h4>
+                  
+                    <span  class="glyphicon glyphicon-stats" aria-hidden="true"></span>
+                    &nbsp;SCORECARD&nbsp;AVANT-VENTE&nbsp;Enterprise&nbsp;SQLI&nbsp;
+                  
+                  <span id="title-tab-scorecard" class="text-info"></span>
+                </h4>
+              </a>
+            </li>
+            
+            
+          </ul>
+       
+          <!-- Tab panes -->
+          <div class="tab-content">
+             <div role="tabpanel" class="tab-pane fade in active" id="table_scorecard">  
+                <div id="id_scorecard"><br/><label>Recherche En cours. Merci de patientez...</label></div>
+          
+             </div>
+             
+              
+          
+          </div>
+          
+          <?!=HtmlService.createHtmlOutputFromFile('contact').getContent(); ?>
+          
+  </body>
+  <?!= include('JSFonctions'); ?>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>  
+
+<script>
+
+$(function(){
+  console.log('ready Page-dasboard-scorecard');
+
+  google.setOnLoadCallback(drawTableScoreCard);
+  
+  
+ 
+  
+
+});
+
+
+function drawTableScoreCard() {
+  var opts = {sendMethod: 'auto'}, set_query, query;
+  
+  try{
+  
+  /*enumParams('Dashboard table_scorecard')
+  values[0] : requete SQL lue depuis le GoogleSheet
+  values[1] : GLOBAL SCORECARD=valeur affiché dans le titre de la barre scorecard
+  values[2] : SEUIL COMPLIANCE=90 seuil sur le taux de compliance
+  values[n] : clé=valeur
+  ===========================================================*/
+  google.script.run
+  .withSuccessHandler(function(values){ 
+    var filter='.*';
+    
+    
+    
+    var param = values[1].split('=');
+    if(param[0]=='GLOBAL SCORECARD') $('#title-tab-scorecard').append(param[1])
+    
+    var param = values[2].split('=');
+    if(param[0]=='SEUIL COMPLIANCE') $compliance_threshold = (param[1])
+    
+    if(!isAdmin()) filter += <?=Session.getActiveUser().getEmail()?>+'.*';
+    
+    
+    set_query = encodeURIComponent(values[0].replace(/@user/g,filter));
+    query = new google.visualization.Query(
+    'https://spreadsheets.google.com/tq?tq='+set_query+'&key=<?=clsid?>&gid=2122602018',opts);
+    
+    query.send(handleQueryTableScoreCard);
+    
+    
+  
+  })
+  .withFailureHandler(function(e){console.log('Exception'+e.message)})
+  .enumParams('Dashboard table_scorecard');
+  
+  
+  
+  }catch(e){console.log(e)}
+  
+  
+};
+
+
+function handleQueryTableScoreCard(response) {
+  if (response.isError()) {
+    alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
+    return;
+  }
+  
+  
+  // Graphic A
+  var data = response.getDataTable();
+  
+ 
+  
+  var chart = new google.visualization.Table(document.getElementById('id_scorecard'));
+  var cssClassNames = {
+              
+                tableRow:'cssTableRow',
+                oddTableRow:'cssTableRow', 
+                selectedTableRow:'cssHoverRow', 
+                hoverTableRow:'cssHoverRow', 
+                 
+                headerCell:'cssHeaderCell',
+                tableCell:'cssCell',
+                rowNumberCell:'css8'
+                }
+                
+  var options = {
+    title: 'Dossiers en attente'
+    //,page:'enable'
+    //,pageSize: 12
+    ,allowHtml: true
+    //,showRowNumber: true
+    ,sortAscending:false
+
+    ,cssClassNames: cssClassNames
+    
+      
+  };
+  
+  /*/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
+  Identification des positions de colonnes présentes
+  /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/*/
+  var i_statut,i_url,i_log,i_datetime=[],i_reference,i_mail_pressenti,i_mail_affecte,i_dossier, i_client,formatter;
+  var i_date_gonogo, i_date_visa, i_date_dar, i_url_ao,i_compliance;
+  for(var i=0;i<data.getNumberOfColumns();i++){
+      if(data.getColumnLabel(i).toLowerCase()=='statut') i_statut = i;
+      if(data.getColumnLabel(i)=='log') i_log = i;
+      
+      if(data.getColumnLabel(i).toLowerCase()=='identifiant') i_reference = i;
+      if(data.getColumnLabel(i).toLowerCase()=='dossier') i_dossier = i;
+      if(data.getColumnLabel(i).toLowerCase()=='client') i_client = i;
+      if(data.getColumnLabel(i).toLowerCase().indexOf('date dar')!=-1) i_date_dar = i;
+      if(data.getColumnLabel(i).toLowerCase().indexOf('date visa')!=-1) i_date_visa = i;
+      if(data.getColumnLabel(i).toLowerCase().indexOf('date go')!=-1) i_date_gonogo = i;
+      if(data.getColumnLabel(i).toLowerCase()=='url_ao') i_url_ao = i;
+      if(data.getColumnLabel(i).toLowerCase().indexOf('compliance')!=-1) i_compliance = i;
+      
+      if(data. getColumnType(i)=='datetime'|| data.getColumnType(i)=='date') i_datetime.push(i);
+      
+  }
+  
+  /*/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
+  AJOUT DE COLONNES SPECIFIQUES
+  /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/*/
+  
+ 
+  data.addColumn('string', 'Actions');
+  
+  
+  /*/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
+  Mise en forme des colonnes datetime
+  /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/*/
+  var formatter_short = new google.visualization.DateFormat({pattern: 'dd/MM/yyyy'});
+  
+  i_datetime.forEach(function(element,index){formatter_short.format(data, element); })
+  
+  /*/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
+  Mise en forme du Status/Client/Dossier/Date emission+url ao
+  /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/*/
+  formatter = new google.visualization.PatternFormat('{1}-{0}');
+  formatter.format(data, [i_dossier,i_client]);
+  
+  formatter = new google.visualization.PatternFormat('<span class="label {0}" data-html="{0}">&nbsp;</span>');
+  formatter.format(data, [i_statut],i_statut);
+  
+  formatter = new google.visualization.PatternFormat('<a target="_blank" href="{1}" class="text-warning">{0}</a>');
+  formatter.format(data, [0,i_url_ao]);
+  
+  /*Mise en forme Arrow format tx de compliance
+  ----------------------------------------*/
+  
+  formatter = new google.visualization.ArrowFormat({base:$compliance_threshold,});
+  formatter.format(data, i_compliance); // Apply formatter to second column
+  
+  formatter = new google.visualization.NumberFormat({pattern:'#.#',suffix:'%',});
+  formatter.format(data, i_compliance); // Apply formatter to second column
+  
+  
+  
+  /*/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
+    Mise en forme de la colonne Action ( détail historique, lien folder google drive)
+  /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\*/
+   
+   for(var i=0;i<data.getNumberOfRows();i++){
+    
+     var ref=data.getValue(i,i_reference), info= data.getValue(i,1)+' : '+data.getValue(i,2);
+     var  histo = data.getValue(i,i_log);
+     
+     
+     html_msg='<div class="btn-group" role="group">';
+     html_msg+=(histo)?"<a href='#' data-reference='"+ref+"' data-url='"+histo+"' class='btn btn-info  btn-xs'>":'<a href="#" class="btn btn-info  btn-xs disabled">';
+     html_msg+='<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>';
+     html_msg+='</div>';
+     data.setValue(i,data.getNumberOfColumns()-1, html_msg );
+     
+     
+     /*On définit les liens URL d'accès au cr pour les différentes dates affichées
+      ===========================================================================*/
+     var obj = getHistoryKey(histo,'DAR');
+     if (data.getValue(i,i_date_dar)!=null && obj!==undefined && obj.hasOwnProperty('comment')) { obj = obj.comment; if(obj.hasOwnProperty('cr')){ obj = obj.cr; if(obj.hasOwnProperty('URL')){ data.setFormattedValue(i,i_date_dar,'<a target="_blank" href="'+obj.URL+'" class="text-warning">'+getDate(data.getValue(i,i_date_dar))+'</a>' );} }  }
+    
+     obj = getHistoryKey(histo,'VISA FORFAIT');
+     if (data.getValue(i,i_date_visa)!=null && obj!==undefined && obj.hasOwnProperty('comment') ) { obj = obj.comment; if(obj.hasOwnProperty('cr')){ obj = obj.cr; if(obj.hasOwnProperty('URL')){ data.setFormattedValue(i,i_date_visa,'<a target="_blank" href="'+obj.URL+'" class="text-warning">'+getDate(data.getValue(i,i_date_visa))+'</a>' );} }  }
+    
+     obj = getHistoryKey(histo,'GO');
+     
+     if(obj===undefined) obj = getHistoryKey(histo,'NOGO');
+     if (data.getValue(i,i_date_gonogo)!=null && obj!==undefined && obj.hasOwnProperty('comment') ) { obj = obj.comment; if(obj.hasOwnProperty('cr')){ obj = obj.cr; if(obj.hasOwnProperty('URL')){ data.setFormattedValue(i,i_date_gonogo,'<a target="_blank" href="'+obj.URL+'" class="text-warning">'+getDate(data.getValue(i,i_date_gonogo))+'</a>' );} }  }
+    
+     
+     /*On définit les liens URL d'accès au dossier AVV pour les différents dossiers 
+       affichées
+      ===========================================================================*/
+     obj = getSession(histo,'Génération arborescence AVV');
+     
+     if (obj!==undefined && obj.hasOwnProperty('comment') ) { 
+       obj = obj.comment; 
+       if(obj.hasOwnProperty('folder')){ 
+         obj = obj.folder; 
+         if(obj.hasOwnProperty('URL')){ 
+           data.setFormattedValue(i,i_dossier,'<a target="_blank" href="'+obj.URL+'" class="text-warning">'+data.getValue(i,i_client)+'-'+data.getValue(i,i_dossier)+'</a>' );}
+       }else if(obj.hasOwnProperty('Dossier_AVV')){
+           
+           /* ID=null alors ancien format de la serialisation clé(Dossier_AVV) et recherche via la regex suivante
+             id=(.*?)&  (Ex: <a target='_blank' href='https://docs.google.com/a/sqli.com/folderview?id=   0B0WdP5H8Zj_6ZVF6OTlBUmxZSEk   &usp=drivesdk'>20151022-TOTAL-RFP Specialiste</a>
+           */
+           var regex = /href=&apos;(.*?)&apos;/g;  // string issue de la TimeLine donc les ' sont remplacées par html &apos;
+           data.setFormattedValue(i,i_dossier,'<a target="_blank" href="'+regex.exec(obj.Dossier_AVV)[1]+'" class="text-warning">'+data.getValue(i,i_client)+'-'+data.getValue(i,i_dossier)+'</a>' );
+       
+       }
+     }
+    
+     
+   }
+
+ 
+  
+  
+  
+  for(var index=0;index<data.getNumberOfColumns();index++){
+    if(data.getColumnLabel(index).search('glyphicon')!=-1){
+      //  label C "glyphicon-eye-open,Mon label personnalisé",
+      var labels = data.getColumnLabel(index).split(','), label;
+      label = '<span class="glyphicon '+labels[0]+'" aria-hidden="true"></span>&nbsp;';
+      if(labels.length>1) label+= labels[1];
+      
+      data.setColumnLabel(index,label);
+      }
+    }
+  
+  /*\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
+  Si aucun élément dans la table alors afficher aucun dossier
+  /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\\*/
+  if(data.getNumberOfRows()==0) { data.addRow();/*data.setValue(0, i_statut, 'Aucun dossier')*/}
+
+
+  /*/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
+    Masquer les éventuelles colonnes pour le traitement des actions
+  /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\*/ 
+  var view = new google.visualization.DataView(data);
+  view.hideColumns([i_reference,i_log,i_client,i_url_ao]);
+
+
+  
+   /*
+   Handle Evenement Ready ControlWrapper
+   Permet de prendre la main sur une mise en forme
+   de la zone de recherche dans la barre Header
+   */
+   var tempListener = google.visualization.events.addListener(chart, 'ready',function(){
+     
+     
+     //console.log(chart.getImageURI());
+ 
+     myReadyHandlerScoreCard();
+     
+     google.visualization.events.removeListener(tempListener);
+   
+   });
+   
+   google.visualization.events.addListener(chart, 'sort',function(){
+     
+     myReadyHandlerScoreCard();
+     
+   });
+   
+  
+  
+  chart.draw(view, options);
+  $('[data-toggle="tooltip"]').tooltip();
+  /*
+  
+  REGLES D'AJUSTEMENT DES COLONNES
+  */
+  $('#id_scorecard  .cssHeaderCell:contains("Dossier")').css('width', '20%');
+  
+  
+  $('.dropdown').parents().css('overflow', 'visible');
+  
+  /*/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
+    Gestion des triggers Event du google Table (mise à jour action)
+  /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\*/
+  //google.visualization.events.addListener(chart, 'page', myReadyHandlerRelance);
+  //google.visualization.events.addListener(chart, 'sort', myReadyHandlerRelance);
+  
+  
+  
+};
+
+function myReadyHandlerScoreCard(){
+    /* mise en écoute sur les l'accès aux liens data-info
+       Ce handler est remit à jour à chaque réorganisation du tableau
+    */
+           
+    $('#id_scorecard a[data-url]').click(function(){
+                
+                var log = JSON.parse($(this).attr('data-url')),
+                    reference = $(this).attr('data-reference');
+                
+                if(log){ 
+                
+                var html='';
+                for(var i=0;i<log.length;i++){
+                html+=addtimeline(log[i]);
+                }
+                $('#historicalModal ul').html(html);
+                if(reference){
+                  google.script.run.withSuccessHandler(function(html){
+                    $('#historicalModal #gridpp9').html(html);
+                        
+                  })
+                  .withFailureHandler(function(e){console.log(e);foot_warning(e);})
+                  .GetGridPP9Html(reference);
+                }
+                $('#historicalModal').modal();
+                }
+                
+              });
+     
+     
+ }
+
+</script>

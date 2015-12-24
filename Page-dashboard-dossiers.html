@@ -1,0 +1,720 @@
+ <head>
+    <?!= include('style-bootstrap-timeline'); ?>
+    <?!= include('style-dashboard'); ?>
+    
+
+ </head>
+
+ <body>
+   
+     <div class="row container-fluid">
+       
+       
+       <ul class="nav nav-tabs nav-pills nav-justified" role="tablist">
+         <li role="presentation" class="active">
+           <a href="#table_synthese_en_cours" aria-controls="table_synthese_en_cours" role="tab" data-toggle="tab" data-link="">
+             <h4>
+             
+             <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+             &nbsp;EN ATTENTE&nbsp;
+             
+             <span id="num_Page1" class="badge"></span>
+             </h4>
+           </a>
+         </li>
+         <li role="presentation">
+           <a href="#table_synthese_inprogress" aria-controls="table_synthese_inprogress" role="tab" data-toggle="tab" data-link="">
+             <h4>
+             
+             <span class="glyphicon glyphicon-hourglass" aria-hidden="true"></span>
+             &nbsp;EN COURS&nbsp;
+             
+             <span id="num_Page2" class="badge"></span>
+             </h4>
+           </a>
+         </li>
+         <li role="presentation">
+           <a href="#table_synthese_finale" aria-controls="table_synthese_won_lost" role="tab" data-toggle="tab" data-link="">
+             <h4>
+             
+             <span class="glyphicon glyphicon-flag" aria-hidden="true"></span>
+             &nbsp;CLOS&nbsp;
+             
+             <span id="num_Page4" class="badge"></span>
+             </h4>
+           </a>
+         </li>
+         <li role="presentation">
+           <a href="#table_synthese_nogo" aria-controls="table_synthese_nogo" role="tab" data-toggle="tab" data-link="">
+             <h4>
+             
+             <span class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span>
+             &nbsp;NO GO&nbsp;
+             
+             <span id="num_Page3" class="badge"></span>
+             </h4>
+           </a>
+         </li>
+         <li role="presentation" class="dropdown">
+           <a class="dropdown-toggle bg-warning" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+           <h4><b>Action <span class="caret"></span></b></h4>
+           </a>
+             
+             <ul id="dropdown-menu-dossier" class="dropdown-menu">
+               <li><a id="link" href="#" ><h4><span class="glyphicon glyphicon-save" aria-hidden="true"></span>&nbsp;Exporter la page</h4></a></li>
+               <li><a id="refresh" href="#" ><h4><span class="glyphicon glyphicon-repeat" aria-hidden="true"></span>&nbsp;Rafraichir la page</h4></a></li>
+             </ul>
+         </li>
+         <li role="presentation" class="">
+            <a class="bg-success" href="<?=ScriptApp.getService().getUrl() + '?page=new' ?>" target="_blank" data-toggle="tooltip" data-placement="top" title="Pour créer une nouvelle demande, cliquer sur ce lien" role="button"><h4><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span><b>&nbsp;Nouvelle demande</b></h4></a>
+         </li>
+         
+       </ul>
+      </div>
+          <!-- Tab panes -->
+          <div id="dashboard" class="tab-content">
+            <div role="tabpanel" class="tab-pane fade in active" id="table_synthese_en_cours">  
+               <div id="id_table"><br/><label>Recherche En cours. Merci de patientez...</label></div>
+             </div>
+             <div role="tabpanel" class="tab-pane fade" id="table_synthese_inprogress">
+                <div id="id_table2"><br/><label>Recherche En cours. Merci de patientez...</label></div>
+             </div>
+              <div role="tabpanel" class="tab-pane fade" id="table_synthese_nogo">
+                <div id="id_table3"><br/><label>Recherche En cours. Merci de patientez...</label></div>
+             </div>
+             <div role="tabpanel" class="tab-pane fade" id="table_synthese_finale">
+                <div id="id_table4"><br/><label>Recherche En cours. Merci de patientez...</label></div>
+             </div>
+          
+          </div>
+          
+          <?!=HtmlService.createHtmlOutputFromFile('contact').getContent(); ?>
+      
+  </body>
+  <?!= include('JSFonctions'); ?>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>        
+  
+  <script>
+   google.load('visualization', '1', {packages: ['controls','table']});
+  
+  
+          
+  
+  /*
+  CONSTRUCTION CLASSPAGE
+  Instance lié à la gestion du contexte d'une page
+  */
+  var ClassPage = function(name,b,fct,identifier,identifier_tab){
+    this.page=name;
+    this.request = b;
+    this.id = identifier;
+    this.handleQuery = fct;
+    var cssClassNames = {
+                
+                tableRow:'cssTableRow',
+                oddTableRow:'cssTableRow', 
+                selectedTableRow:'cssHoverRow', 
+                hoverTableRow:'cssHoverRow', 
+                 
+                headerCell:'cssHeaderCell',
+                tableCell:'cssCell',
+                rowNumberCell:'css8'};
+                
+    this.options = {
+                title: name
+                //,page:'enable'
+                //,pageSize: 12
+                ,allowHtml: true
+                //,showRowNumber: true
+                ,sortAscending:false
+            
+                ,cssClassNames: cssClassNames
+        };
+  
+  }
+  
+  /* methodes de ClasseA 
+     Associe la requête au GoogleChart Table et envoie la requête à la Callback de fonction d'affichage
+  */
+  ClassPage.prototype.Query = function() {
+    var filter='.*';
+               
+    if(!isAdmin()) filter += <?=Session.getActiveUser().getEmail()?>+'.*';
+    
+    var set_query = encodeURIComponent(this.request.replace(/@user/g,filter));
+    var query = new google.visualization.Query(
+    'https://spreadsheets.google.com/tq?tq='+set_query+'&key=<?=clsid?>&gid=2122602018',{sendMethod: 'auto'});
+    
+    query.send(this.handleQuery);
+    
+    return this;
+  };
+  
+   
+  
+  ClassPage.prototype.Draw = function(response){
+    // Graphic A
+    var data = response.getDataTable();
+    
+    //console.log(data);
+    
+    // view number of values
+    $('#num_'+this.page).html( data.getNumberOfRows())
+    
+       
+    /*/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
+      Mise en forme de la colonne Statut
+    /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/*/
+      var i_statut,i_url,i_log,i_datetime=[],i_reference,i_avancement_crm,i_mail_pressenti,i_mail_affecte;
+      for(var i=0;i<data.getNumberOfColumns();i++){
+          if(data.getColumnLabel(i)=='Statut') i_statut = i;
+          if(data.getColumnLabel(i)=='url') i_url = i;
+          if(data.getColumnLabel(i)=='log') i_log = i;
+          if(data.getColumnLabel(i)=='Identifiant') i_reference = i;
+          if(data.getColumnType(i)=='datetime' || data.getColumnType(i)=='date') i_datetime.push(i);
+          if(data.getColumnLabel(i).match('Emission')) this.options.sortColumn = i;
+          if(data.getColumnLabel(i).toLowerCase().indexOf('avancement')!=-1) i_avancement_crm = i;
+          
+      }
+      
+      var formatter = new google.visualization.PatternFormat('<span class="label label-info {0}" data-html="{0}">&nbsp;</span>');
+      formatter.format(data, [i_statut],i_statut);
+      
+      formatter = new google.visualization.PatternFormat('<span class="label label-info">{0}</span>');
+      formatter.format(data, [i_avancement_crm],i_avancement_crm);
+      
+      
+      /*/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
+      Mise en forme des colonnes datetime
+      /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/*/
+      var formatter_short = new google.visualization.DateFormat({pattern: 'dd/MM/yyyy'});
+      i_datetime.forEach(function(element,index){formatter_short.format(data, element);})
+      
+      
+      /*
+      Mise en place des tooltip sur les champs string
+      */
+      formatter = new google.visualization.PatternFormat('<span  data-toggle="tooltip" data-placement="bottom" title="{0}">{0}</span>');
+      formatter.format(data, [1],1);
+      formatter.format(data, [2],2);
+      formatter.format(data, [3],3);
+      formatter.format(data, [4],4);
+      
+      /*/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
+        Mise en forme de la colonne Action ( détail historique, lien folder google drive)
+      /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\*/
+      data.addColumn('string', 'Actions');
+       
+       for(var i=0;i<data.getNumberOfRows();i++){
+
+         var link = (i_url==undefined)?null:data.getValue(i,i_url) , histo = (i_log==undefined)?null:data.getValue(i,i_log);
+         var ref=(i_reference==undefined)?null:data.getValue(i,i_reference);
+         
+        
+         html_msg='<div class="btn-group dropup dropup_element">';
+         html_msg+=(histo)?"<a href='#' data-reference='"+ref+"' data-url='"+histo+"' class='btn btn-info  btn-xs'>":'<a href="#" class="btn btn-info  btn-xs disabled">';
+         html_msg+='<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>';
+         html_msg+='<a href="#" class="btn btn-default btn-xs dropdown-toggle"  id="dropdownAction" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"> Plus ';
+         html_msg+='<span class="caret"></span></a>';
+         html_msg+='<ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownAction">';
+         html_msg+='<li>';
+         switch(this.page){
+           
+           case 'Page1':
+                 html_msg+='<a target="_blank" href="<?=ScriptApp.getService().getUrl()?>?page=response&ref='+ref+'"><span class="glyphicon glyphicon-check" aria-hidden="true"></span>&nbsp;Attribuer un RP</a>';
+                 html_msg+='<a target="_blank" href="<?=ScriptApp.getService().getUrl()?>?page=response&type=expanded&ref='+ref+'"><span class="glyphicon glyphicon-share" aria-hidden="true"></span>&nbsp;Rediriger le dossier</a>';
+                 html_msg+='<a target="_blank" href="<?=ScriptApp.getService().getUrl()?>?page=decision&result=go&ref='+ref+'"><span class="glyphicon glyphicon-ok-sign" aria-hidden="true"></span>&nbsp;Valider par un Go</a>';
+                 html_msg+='<a target="_blank" href="<?=ScriptApp.getService().getUrl()?>?page=decision&result=nogo&ref='+ref+'"><span class="glyphicon glyphicon-remove-sign" aria-hidden="true"></span>&nbsp;Rejeter par un no Go</a>';
+                 if(isAdmin()) html_msg+='<a href="#" title="commentaire" data-ref="'+ref+'" data-info="'+data.getValue(i,1)+' : '+data.getValue(i,2)+'"><span class="glyphicon glyphicon-comment" aria-hidden="true"></span>&nbsp;Commenter</a>';
+             
+                 break;
+           
+           case 'Page2':
+                 var info = data.getValue(i,1)+' : '+data.getValue(i,2);
+                 html_msg+='<a target="_blank" href="<?=ScriptApp.getService().getUrl()?>?page=validation&type=visa%20forfait&ref='+ref+'"><span class="glyphicon glyphicon-ok-sign" aria-hidden="true"></span>&nbsp;Valider Visa Forfait</a>';
+                 html_msg+='<a target="_blank" href="<?=ScriptApp.getService().getUrl()?>?page=validation&type=dar&ref='+ref+'"><span class="glyphicon glyphicon-ok-sign" aria-hidden="true"></span>&nbsp;Valider le DAR</a>';
+                 if(isAdmin()) html_msg+='<a href="#" title="commentaire" data-ref="'+ref+'" data-info="'+data.getValue(i,1)+' : '+data.getValue(i,2)+'"><span class="glyphicon glyphicon-comment" aria-hidden="true"></span>&nbsp;Commenter</a>';
+             
+                 break;
+                 
+           case 'Page3':
+           case 'Page4':
+                 
+                 if(isAdmin()) html_msg+='<a href="#" title="commentaire" data-ref="'+ref+'" data-info="'+data.getValue(i,1)+' : '+data.getValue(i,2)+'"><span class="glyphicon glyphicon-comment" aria-hidden="true"></span>&nbsp;Commenter</a>';
+                 
+                 break;
+                 
+           
+           
+           
+           default:break;
+         }
+         
+         html_msg+='</li>';
+         html_msg+='<li class="divider hidden-desktop"></li>'; 
+         html_msg+=(link)?'<li>':'<li class="disabled">';
+         html_msg+='<a href="'+link+'" target="_blank" title="'+link+'"><span class="glyphicon glyphicon-cloud" aria-hidden="true"></span>&nbsp;Accéder au dossier AO</a>';
+         switch(this.page){
+           case 'Page2':
+                 var obj = getHistoryKey(histo,'GO'),url_pj='',name_pj='';
+                 if (obj!==undefined && obj.hasOwnProperty('comment')) { obj = obj.comment; if(obj.hasOwnProperty('cr')){ obj = obj.cr; if(obj.hasOwnProperty('URL')){ url_pj = obj.URL, name_pj = obj.NAME } }  }
+       
+                 html_msg+=(url_pj)?'<li>':'<li class="disabled">';
+                 html_msg+='<a href="'+url_pj+'" target="_blank" title="'+name_pj+'"><span class="glyphicon glyphicon-link" aria-hidden="true"></span>&nbsp;Accéder au CR</a>';
+                 break;
+           case 'Page3':
+                 var obj = getHistoryKey(histo,'NOGO'),url_pj='',name_pj='';
+                 if (obj!==undefined && obj.hasOwnProperty('comment')) { obj = obj.comment; if(obj.hasOwnProperty('cr')){ obj = obj.cr; if(obj.hasOwnProperty('URL')){ url_pj = obj.URL, name_pj = obj.NAME } }  }
+       
+                 html_msg+=(url_pj)?'<li>':'<li class="disabled">';
+                 html_msg+='<a href="'+url_pj+'" target="_blank" title="'+name_pj+'"><span class="glyphicon glyphicon-link" aria-hidden="true"></span>&nbsp;Accéder au CR</a>';
+                 break;
+         
+         }
+         
+         html_msg+='</li>';
+         html_msg+='</ul>';
+         html_msg+='</div>';
+         
+         data.setValue(i,data.getNumberOfColumns()-1, html_msg )
+       }
+  
+      /*/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
+        Mise en forme des titre des colonnes
+        Règle glyphicon
+      /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\*/
+      
+      for(var index=0;index<data.getNumberOfColumns();index++){
+      if(data.getColumnLabel(index).search('glyphicon')!=-1){
+        //  label C "glyphicon-eye-open,Mon label personnalisé",
+        var labels = data.getColumnLabel(index).split(','), label;
+        label = '<span class="glyphicon '+labels[0]+'" aria-hidden="true"></span>&nbsp;';
+        if(labels.length>1) label+= labels[1];
+        
+        data.setColumnLabel(index,label);
+        }
+      }
+    
+      /*\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
+      Si aucun élément dans la table alors afficher aucun dossier
+      /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\\*/
+      if(data.getNumberOfRows()==0) { data.addRow();/*data.setValue(0, i_statut, 'Aucun dossier')*/}
+      
+      /*/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
+      Masquer les éventuelles colonnes pour le traitement des actions
+      /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\*/ 
+      var view = new google.visualization.DataView(data);
+      //view.hideColumns([data.getNumberOfColumns()-2]);
+      view.hideColumns([i_url,i_log,i_reference]);
+      
+      
+      
+     
+          
+      // Define a table visualization
+      var chart = new google.visualization.Table(document.getElementById(this.id));
+      
+      /*
+      Handle Evenement Ready ControlWrapper
+      Permet de prendre la main sur une mise en forme
+      de la zone de recherche dans la barre Header
+      */
+      var tempListener = google.visualization.events.addListener(chart, 'ready',function(){
+          console.log('eventListernerGoogleChart ready');
+          eventListernerGoogleChart();
+         
+          google.visualization.events.removeListener(tempListener);
+          
+      });
+      
+      google.visualization.events.addListener(chart, 'sort',function(){
+          console.log('sort event Table');
+          eventListernerGoogleChart();
+         
+          //google.visualization.events.removeListener(tempListener1);
+          
+      });
+      
+      chart.draw(view, this.options);
+            
+       //google.visualization.events.addListener(wrapper.getChart(), 'sort',eventListernerGoogleChart);
+       
+       /*
+       
+       REGLES D'AJUSTEMENT DES COLONNES
+       */
+       $('#'+this.id+'  .cssHeaderCell:contains("Code")').css('width', '10%');
+       $('#'+this.id+'  .cssHeaderCell:contains("Statut")').css('width', '8%');
+       $('#'+this.id+'  .cssHeaderCell:contains("Dossier")').css('width', '20%');
+       $('#'+this.id+'  .cssHeaderCell:contains("Emission")').css('width', '10%');
+       $('#'+this.id+'  .cssHeaderCell:contains("Remise")').css('width', '10%');
+       $('#'+this.id+'  .cssHeaderCell:contains("Actions")').css('width', '8%');
+       $('#'+this.id+'  .cssHeaderCell:contains("Date")').css('width', '7%');
+       $('#'+this.id+'  .cssHeaderCell:contains("vancement")').css('width', '7%');
+       $('.dropup_element').parents().css('overflow', 'visible');
+   
+  };
+  
+ 
+  
+  
+  
+  var page = [];
+  
+  function refreshAllPage(){
+    page.forEach(function(element){element.Query();})
+  }
+  
+  function drawTable() {
+     var opts = {sendMethod: 'auto'}, set_query, query;
+     google.script.run
+           .withSuccessHandler(function(values){ 
+              
+               page[0] = new ClassPage('Page1',values[0],handleQueryTable1,'id_table');
+               page[0].Query();
+               
+               page[1] = new ClassPage('Page2',values[1],handleQueryTable2,'id_table2');
+               page[1].Query();
+               
+               page[2] = new ClassPage('Page3',values[2],handleQueryTable3,'id_table3');
+               page[2].Query();
+               
+               page[3] = new ClassPage('Page4',values[3],handleQueryTable4,'id_table4');
+               page[3].Query();
+               
+             
+           
+           })
+           .withFailureHandler(function(e){console.log('Exception'+e.message)})
+           .enumParams('Dashboard table_synthese');
+           
+    };
+    
+/*
+CALLBACK DRAW GOOGLECHART TABLE
+  DOSSIER EN ATTENTE
+*/
+
+ function handleQueryTable1(response) {
+  if (response.isError()) {
+    alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
+    return;
+  }
+ 
+  page[0].Draw(response);
+  
+  
+}
+
+/*
+CALLBACK DRAW GOOGLECHART TABLE
+  DOSSIER EN COURS
+*/
+function handleQueryTable2(response) {
+  if (response.isError()) {
+    alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
+    return;
+  }
+  
+  page[1].Draw(response);
+  
+  
+  
+}
+
+/*
+CALLBACK DRAW GOOGLECHART TABLE
+  DOSSIER NOGO
+*/
+function handleQueryTable3(response) {
+  if (response.isError()) {
+    alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
+    return;
+  }
+  
+  page[2].Draw(response);
+  
+  
+  
+  
+}
+
+/*
+CALLBACK DRAW GOOGLECHART TABLE
+  DOSSIER CLOS
+*/
+function handleQueryTable4(response) {
+  if (response.isError()) {
+    alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
+    return;
+  }
+  
+  
+  page[3].Draw(response);
+  
+  
+}
+
+function eventListernerGoogleChart(){
+    /* mise en écoute sur les l'accès aux liens data-url
+       Ce handler est remit à jour à chaque réorganisation du tableau
+    */
+   
+    
+    $('.dropdown-toggle').dropdown();
+    $('.dropup_element').parents().css('overflow', 'visible');
+    
+    $('.dropup_element:visible').addClass('dropup');
+    $('.dropup_element:visible:lt(3)').removeClass('dropup');
+    
+    console.log('call eventListernerGoogleChart');
+   
+    $('#reporting a[data-url]:visible').click(function(){
+                var log = JSON.parse($(this).attr('data-url')),
+                    reference = $(this).attr('data-reference');
+                
+                if(log){ 
+                
+                var html='';
+                for(var i=0;i<log.length;i++){
+                html+=addtimeline(log[i]);
+                }
+                $('#historicalModal ul').html(html);
+                if(reference){
+                  google.script.run.withSuccessHandler(function(html){
+                    $('#historicalModal #gridpp9').html(html);
+                        
+                  })
+                  .withFailureHandler(function(e){console.log(e);foot_warning(e);})
+                  .GetGridPP9Html(reference);
+                }
+                $('#historicalModal').modal();
+                }
+              });
+              
+              
+    $('a[title="commentaire"]').click(function(){
+                
+                $('#commentModal #error_comment').html('');
+                $('#commentModal #title').html($(this).attr('data-info'));
+                $('#commentModal #reference_hide').val($(this).attr('data-ref'));
+                $('#commentModal #message-text').val('');
+                $('#commentModal').modal();
+                
+                })
+     
+     
+}
+
+ 
+  
+ </script>
+ <script type="text/javascript" src="https://apis.google.com/js/api.js?onload=onApiLoad"></script>
+ <script type="text/javascript">
+  // IMPORTANT: Replace the value for DEVELOPER_KEY with the API key obtained
+  // from the Google Developers Console.
+  var DEVELOPER_KEY = 'AIzaSyAAS7PLBfz4q4gZIkpQOVYLFT6X_gL0Ib4';
+  var DIALOG_DIMENSIONS = {width: 600, height: 425};
+  var pickerApiLoaded = false;
+
+  /**
+   * Loads the Google Picker API.
+   */
+  gapi.load('picker', {'callback': function() {
+    pickerApiLoaded = true;
+  }});
+
+  
+
+  /**
+   * Creates a Picker that can access the user's spreadsheets. This function
+   * uses advanced options to hide the Picker's left navigation panel and
+   * default title bar.
+   *
+   * @param {string} token An OAuth 2.0 access token that lets Picker access the
+   *     file type specified in the addView call.
+   */
+  function createPicker(token) {
+    console.log('createPicker');
+    
+    if (pickerApiLoaded && token) {
+      var picker = new google.picker.PickerBuilder()
+          // Instruct Picker to display only spreadsheets in Drive. For other
+          // views, see https://developers.google.com/picker/docs/#otherviews
+          //.addView(google.picker.ViewId.SPREADSHEETS)
+          // Hide the navigation panel so that Picker fills more of the dialog.
+          .enableFeature(google.picker.Feature.NAV_HIDDEN)
+          // Hide the title bar since an Apps Script dialog already has a title.
+          //.hideTitleBar()
+          .setTitle('Sélectionnez un fichier .xls')
+          .enableFeature(google.picker.Feature.SIMPLE_UPLOAD_ENABLED)
+          .setOAuthToken(token)
+          .setDeveloperKey(DEVELOPER_KEY)
+          .addView(new google.picker.DocsUploadView())
+          .setOrigin('https://script.google.com')
+          .setCallback(pickerCallback)
+          // Instruct Picker to fill the dialog, minus 2 pixels for the border.
+          //.setSize(DIALOG_DIMENSIONS.width - 2,
+          //    DIALOG_DIMENSIONS.height - 2)
+          .build();
+      picker.setVisible(true);
+      
+    } else {
+      showError('Unable to load the file picker.');
+    }
+  }
+
+  /**
+   * A callback function that extracts the chosen document's metadata from the
+   * response object. For details on the response object, see
+   * https://developers.google.com/picker/docs/result
+   *
+   * @param {object} data The response object.
+   */
+  function pickerCallback(data) {
+    var name=[],Ids=[],action = data[google.picker.Response.ACTION];
+    if (action == google.picker.Action.PICKED) {
+      
+      var docs = data[google.picker.Response.DOCUMENTS];
+      for(var index=0;index<docs.length;index++){
+        // Accès à l'id du fichier téléchargé à la racine du drive user
+        var id = docs[index][google.picker.Document.ID];
+        foot_message('Opération de synchronisation en cours...');
+        // Appel au traitement de concersion sur le fichier id 
+        google.script.run.withSuccessHandler(function(){foot_success('L\'opération de synchronisation s\'est déroulé avec succès');})
+        .withFailureHandler(function(e){console.log(e);foot_warning(e);})
+        .SynchronizeCRM(id);
+ 
+        
+      }
+      
+    } 
+  }
+
+  /**
+   * Displays an error message within the #result element.
+   *
+   * @param {string} message The error message to display.
+   */
+  function showError(message) {
+    document.getElementById('result').innerHTML = 'Error: ' + message;
+  }
+  
+  /**
+   * Permet d'initialiser les actions Admin du menu général du dashboard.
+   *
+   * @param : none.
+   */
+   function DropdownAdminMenu(){
+   
+      $('#dropdown-menu-dossier').append('<li role="separator" class="divider"></li>')
+                                .append('<li><a id="synchronize" href="#" ><h4><span class="glyphicon glyphicon-import" aria-hidden="true"></span>&nbsp;Synchroniser les statuts CRM</h4></a></li>');
+   
+   
+     /*\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
+     CALL GOOGLE PICKER UPLOAD FILES
+     \/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/*/
+     
+     $('a[id="synchronize"]').on('click',function(){
+         google.script.run.withSuccessHandler(createPicker)
+             .withFailureHandler(function(e){console.log(e);foot_error(e);}).getOAuthToken();
+     
+   });
+   
+   }
+</script>
+ 
+ 
+<script>
+$(function(){
+     console.log('ready Page-dashboard-dossiers');
+     setCallbackAdmin(DropdownAdminMenu);
+     google.setOnLoadCallback(drawTable);
+     exportLink();
+     EventRefreshMenu();
+     
+      
+     /*
+     CHANGEMENT D'ONGLET 
+     mettre à jour le lien pour l'export du contenu du tableau vers le menu au moment du changement d'onglet
+     attribut [data-link] de l'onglet recopié vers l'attribut href du lien id="link" du menu
+     */
+     $('#reporting a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+       console.log('Changement activité:',$(e.target).attr('aria-controls'));
+       var rlink =  $(e.target).attr('data-link');
+       if (rlink) $('a[id="link"]').attr('href',rlink); // newly activated tab
+       
+       refreshAllPage(); //On force le refresh des pages (mise à jour des status,dates,...)
+       
+     });
+     
+     /*
+       Traitement de la modal Commentaire
+     */
+     
+     $('#commentModal button').on('click',function(){ 
+       console.log('submit commentaire');
+       $('#commentModal #error_comment').html('');
+       var note = $('#commentModal #message-text').val(), reference=$('#commentModal #reference_hide').val();
+       var destinataires = $('#commentModal #recipient').val();
+       
+       /*
+       Contrôle sur les champs du formulaire
+       */
+       if(!note.match(/[a-zA-Z]/g)){
+         $('#commentModal #error_comment').html('Le champ commentaire doit contenir des caractères!');
+         return;
+       }
+       
+       /*** Appel serveur puor traitement ***/ 
+       google.script.run.withSuccessHandler()
+                   .withFailureHandler(function(e){foot_warning(e);})
+                   .onComment(reference,note,destinataires);
+       
+       $('#commentModal').modal('hide');
+       
+     });
+ 
+     
+     
+     
+});
+
+function EventRefreshMenu(){
+     $('#refresh').on('click',function(){
+         console.log('call refreshPage...');
+         refreshAllPage();
+     });
+  }
+  
+function exportLink(){
+    
+    google.script.run
+          .withSuccessHandler(function(values){ 
+              var filter='.*',j, queries=[];
+              
+              if(!isAdmin()) filter += <?=Session.getActiveUser().getEmail()?>+'.*';
+              
+              for( j in values ){
+              var set_query = encodeURIComponent(values[j].replace(/@user/g,filter));
+              var url = 'https://spreadsheets.google.com/tq?tqx=out:csv&tq='+set_query+'&key=<?=clsid?>&gid=2122602018';
+              queries.push(url);
+              }
+              
+              $('a[aria-controls="table_synthese_en_cours"]').attr('data-link',queries[0]);
+              $('a[aria-controls="table_synthese_inprogress"]').attr('data-link',queries[1]);
+              $('a[aria-controls="table_synthese_won_lost"]').attr('data-link',queries[3]);
+              $('a[aria-controls="table_synthese_nogo"]').attr('data-link',queries[2]);
+              
+              $('#link').attr('href',queries[0]); // on force le lien sur la page active
+              
+              //console.log($('li[role="presentation",class="active"]'));
+          
+          })
+          .withFailureHandler(function(e){console.log('Exception'+e.message)})
+          .enumParams('Dashboard table_export');
+          
+  }
+  
+  
+  </script>

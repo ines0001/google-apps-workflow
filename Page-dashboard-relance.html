@@ -217,6 +217,7 @@
    de la zone de recherche dans la barre Header
    */
    var tempListener = google.visualization.events.addListener(chart, 'ready',function(){
+     console.log('myReadyHandlerRelance ready')
      myReadyHandlerRelance();
      google.visualization.events.removeListener(tempListener);
    
@@ -476,6 +477,7 @@ $(function(){
   google.setOnLoadCallback(drawTableRelance);
   
   
+ 
    $('#relance a[data-toggle="tab"]').on('show.bs.tab', function (e) {
        console.log('Changement activité:',$(e.target).attr('aria-controls'));
        

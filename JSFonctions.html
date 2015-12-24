@@ -5,6 +5,8 @@ Auteur: EREMY
 Copyright 2015
 **********************************************/
 
+
+
 /*********************************************
 Objet destiné à la synchronisation des appels
 de fonctions sur condition admin = true
@@ -275,7 +277,36 @@ un formatage html particulier
     return str;
 }
 
+/**************************************************************************/
+// Convertion format date aaaa-mm-jj  jj/mm/aaaa
+/**************************************************************************/
+function getDate(idate)
+{
+  
 
+  if( (idate==undefined || idate.constructor!=Date) ) throw 'Error format date';
+  var d = (idate==undefined || idate.constructor!=Date)?new Date():idate;
+                       
+	var m = d.getMonth()+1;          
+	var j = d.getDate(); 
+
+	var a = d.getFullYear(); 
+	var m_s = String(m);
+	var j_s = String(j);
+
+	if (m_s.length == 1)
+	{
+		m_s = "0".concat(m_s);
+	}
+	
+	if (j_s.length == 1)
+	{
+		j_s = "0".concat(j_s);
+	}
+			
+	
+return ""+j_s+"/"+m_s+"/"+a+"";
+}
 
 
 

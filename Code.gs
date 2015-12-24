@@ -11,15 +11,20 @@ function doGet(request) {
                
                html = html.evaluate()
                         .setTitle('Saisie formulaire AO')
-                        .setSandboxMode(HtmlService.SandboxMode.IFRAME);break;
+                        .setSandboxMode(HtmlService.SandboxMode.IFRAME)
+                        .addMetaTag('viewport', 'width=device-width, initial-scale=1');break;
     
     
     case 'dashboard':html = HtmlService.createTemplateFromFile('Page-dashboard');
-                     html.duration = (duration)?duration:'40s';   
-                        html.clsid = CLSID;  
-                        html=html.evaluate()
-                        .setTitle('Reporting AO')
-                        .setSandboxMode(HtmlService.SandboxMode.IFRAME);break;                    
+      
+                      Logger.log('Logging page, current user:%s, is admin:%s',Session.getActiveUser().getEmail(),isAdmin());
+                      html.menu = (request.parameter.menu)?request.parameter.menu:'reporting';   
+                      html.duration = (duration)?duration:'40s';
+                      html.clsid = CLSID;  
+                      html=html.evaluate()
+                      .setTitle('Reporting AO')
+                      .setSandboxMode(HtmlService.SandboxMode.IFRAME)
+                      .addMetaTag('viewport', 'width=device-width, initial-scale=1');break;                    
                         
                         
     case 'response':html = HtmlService.createTemplateFromFile('Page-response');
@@ -28,7 +33,8 @@ function doGet(request) {
                     html.type= (request.parameter.type=='expanded')?request.parameter.type:'small';
                     html = html.evaluate()
                         .setTitle('Réponse formulaire AO')
-                        .setSandboxMode(HtmlService.SandboxMode.IFRAME);
+                        .setSandboxMode(HtmlService.SandboxMode.IFRAME)
+                        .addMetaTag('viewport', 'width=device-width, initial-scale=1');
                     
                         
                     break;
@@ -37,7 +43,8 @@ function doGet(request) {
                     
                     html = html.evaluate()
                                .setTitle('Relance formulaire AO')
-                               .setSandboxMode(HtmlService.SandboxMode.IFRAME);
+                               .setSandboxMode(HtmlService.SandboxMode.IFRAME)
+                               .addMetaTag('viewport', 'width=device-width, initial-scale=1');
       
       
                     break;
@@ -48,7 +55,8 @@ function doGet(request) {
                     html.reference = request.parameter.ref;
                     html = html.evaluate()
                                .setTitle('Decision formulaire AO')
-                               .setSandboxMode(HtmlService.SandboxMode.IFRAME);
+                               .setSandboxMode(HtmlService.SandboxMode.IFRAME)
+                               .addMetaTag('viewport', 'width=device-width, initial-scale=1');
       
       
                     break;
@@ -59,7 +67,8 @@ function doGet(request) {
                     html.reference = request.parameter.ref;
                     html = html.evaluate()
                                .setTitle('Validation revue interne')
-                               .setSandboxMode(HtmlService.SandboxMode.IFRAME);
+                               .setSandboxMode(HtmlService.SandboxMode.IFRAME)
+                               .addMetaTag('viewport', 'width=device-width, initial-scale=1');
       
       
                     break;
@@ -84,7 +93,8 @@ function doGet(request) {
                     html.reference = request.parameter.ref;
                     html = html.evaluate()
                                .setTitle('Building AVV')
-                               .setSandboxMode(HtmlService.SandboxMode.IFRAME);
+                               .setSandboxMode(HtmlService.SandboxMode.IFRAME)
+                               .addMetaTag('viewport', 'width=device-width, initial-scale=1');
       
       
                     break;
@@ -120,7 +130,8 @@ function doGet(request) {
             html.duration = (duration)?duration:'40s';
             html = html.evaluate()
                           .setTitle('Accueil formulaire AO')
-                          .setSandboxMode(HtmlService.SandboxMode.IFRAME);break;
+                          .setSandboxMode(HtmlService.SandboxMode.IFRAME)
+                          .addMetaTag('viewport', 'width=device-width, initial-scale=1');break;
  }
  
  return html;
@@ -152,7 +163,7 @@ function getInfoGeneric(ref){
   var row = objet.Info_A(ref);
   var row_b = objet.Info_B(ref);
   
-  if(__DEBUG__) Logger.log('getInfoGeneric: %s',JSON.stringify(objet,null,null));
+  //if(__DEBUG__) Logger.log('getInfoGeneric: %s',JSON.stringify(objet,null,null));
   
   if( row&&row_b) 
           return {sale:row.emetteur,
@@ -1331,7 +1342,7 @@ function isAdmin() {
   var ret=false,users = Get_ADMIN(), current_user = Session.getActiveUser().getEmail();
 
   ret= users.split(',').lastIndexOf(current_user)!=-1;
-  Logger.log('Logging page, current user:%s, is admin:%s',current_user,ret)
+  //Logger.log('Logging page, current user:%s, is admin:%s',current_user,ret)
   
   return ret;
 
