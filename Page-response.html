@@ -239,6 +239,8 @@
 $(function(){
   console.log('Ready!:%s',$('#select_response').data('param_type'));
   page_header('AFFECTER');
+  nav_add_menu('<li><a href="<?=ScriptApp.getService().getUrl() + '?page=dashboard' ?>" target="_top"><span  class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>&nbsp;Dasboard</a></li>');
+ 
   
   $('fieldset').hide();
   /*\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/

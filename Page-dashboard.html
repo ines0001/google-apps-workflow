@@ -35,12 +35,17 @@
 
 function switch_admin(){
   nav_swith_admin();
-  $('#activite').show();
+  $('nav li > a[data-page="relance"]').show();
+  $('nav li > a[data-page="scorecard"]').show(); 
 }
 
 
 $(function(){
     console.log('ready dashboard');
+    nav_add_menu('<li><a href="#"  data-page="reporting"><span  class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>&nbsp;Dashboard</a></li>'); //
+    nav_add_menu('<li><a href="#"  data-page="relance" style="display:none;"><span  class="glyphicon glyphicon-bullhorn" aria-hidden="true"></span>&nbsp;Relance</a></li>');
+    nav_add_menu('<li><a href="#"  data-page="scorecard" style="display:none;"><span  class="glyphicon glyphicon-stats" aria-hidden="true"></span>&nbsp;Score Card</a></li>');
+   
     setCallbackAdmin(switch_admin);
     callAdminFunctions();
          
@@ -54,22 +59,9 @@ $(function(){
   
   <div class="container-fluid" >
   
-  
-  
-    <div id="activite" class="row text-center" style="margin-bottom:10px;display:none;">
-      <label class="radio-inline">
-        <input type="radio" name="inlineRadioOptions" id="inlineRadio1" value="reporting" data-toggle="tooltip" data-placement="left" title="Vers le reporting" checked> REPORTING
-      </label>
-      <label class="radio-inline">
-        <input type="radio" name="inlineRadioOptions" id="inlineRadio2" value="relance" data-toggle="tooltip" data-placement="rigth" title="Vers les relances"> RELANCE
-      </label>
-    
-    </div>
-    
-    
     <div class="row" id="reporting" >
     
-      <?!= HtmlService.createTemplateFromFile('Page-dasboard-dossiers').evaluate().setSandboxMode(HtmlService.SandboxMode.IFRAME).getContent(); ?>
+      <?!= HtmlService.createTemplateFromFile('Page-dashboard-dossiers').evaluate().setSandboxMode(HtmlService.SandboxMode.IFRAME).getContent(); ?>
     </div>
     
     <div class="row" id="relance" style="display:none;">
@@ -77,6 +69,12 @@ $(function(){
     
     </div>
   
+    <div class="row" id="scorecard" style="display:none;">
+      <?!= HtmlService.createTemplateFromFile('Page-dashboard-scorecard').evaluate().setSandboxMode(HtmlService.SandboxMode.IFRAME).getContent(); ?>
+    
+    </div>
+  
+ 
   
   </div>
    <?!=HtmlService.createHtmlOutputFromFile('history-modal').getContent(); ?>
@@ -98,30 +96,42 @@ $(function(){
 $(function(){
  
     page_header('REPORTING');
+    
     footer_load_tickers('Informations accueil');
     
-    $('input').iCheck({
-    checkboxClass: 'icheckbox_square-grey',
-    radioClass: 'iradio_square-grey',
-    increaseArea: '20%' // optional
-    });
+    
+    
+    /*===============================
+      Init de la page d'appel
+      ?page=dashboard&menu=xxxxxx
+      reporting
+      relance
+      scorecard
+    ================================*/
+    ShowPage(<?=menu?>);
     
     
     
     //$('[data-toggle="tooltip"]').tooltip();
     
-    $('input[name="inlineRadioOptions"]').on('ifChecked', function(event){
-      $('#'+$(this).val()).show();
-      
+    $('nav li > a').on('click',function(event){
+       ShowPage($(this).data("page"));
     });
     
-    $('input[name="inlineRadioOptions"]').on('ifUnchecked', function(event){
-      $('#'+$(this).val()).hide();
-      
-    });
-   
+    
     
     
 });
+
+function ShowPage(p){
+  if (! ['reporting', 'relance', 'scorecard'].includes(p) ) p='reporting'
+  
+  $('#reporting').hide();
+  $('#relance').hide();
+  $('#scorecard').hide();
+  
+  $('#'+p).show();
+
+}
 </script>
     

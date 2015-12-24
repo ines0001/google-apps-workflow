@@ -169,6 +169,8 @@ $(function(){
   console.log('Ready! : %s', <?=reference?>);
   console.log('decision result! : %s', <?=result?>);
   page_header('TRAITER GO/NOGO');
+  nav_add_menu('<li><a href="<?=ScriptApp.getService().getUrl() + '?page=dashboard' ?>" target="_top"><span  class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>&nbsp;Dasboard</a></li>');
+ 
   $('fieldset').hide();
   
           
