@@ -267,13 +267,11 @@ function traitement_autorise(){
      console.log('submit');
      $('#warning').hide();
      $('#avancement').html('');
+     $('#error-mail').html('');
      $('button[type="submit"]').button('copy');
      $('fieldset').attr('disabled','disabled');
    
      var editors=[];
-      
-     
-     
      editors  = $('#groupe_mail li input').map(function() {return this.value;}).get();
      
   
@@ -343,7 +341,7 @@ $(function(){
        html+='<li style="list-style-type: none" >';
        html+='<div class="input-group">';
        html+='<span class="input-group-addon" data-toggle="tooltip" data-placement="left" title="'+title+'"><span class="glyphicon glyphicon-user" aria-hidden="true"></span></span>';
-       html+='<input id="partenaire" name="" class="form-control" placeholder="nom du partenaire" type="text" value="'+ressource+'">';
+       html+='<input id="partenaire" name="" class="form-control" placeholder="nom du partenaire" type="text" value="'+ressource+'" pattern="^[a-z0-9._-]+@[a-z0-9._-]{2,}\.[a-z]{2,4}">';
        html+='<span class="input-group-btn"><button id="btn_del" class="btn btn-default" type="button"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button></span>';
        html+='</div></li>';
        $('#groupe_mail').prepend(html);
