@@ -1,114 +1,163 @@
- <link rel="stylesheet" href="<?!=PropertiesService.getScriptProperties().getProperty('ID_TEMPLATE_DEFAULT');?>">
+<head>
+
+    <?!= include('style-dashboard'); ?>
+    <?!= include('style-keen-dashboards'); ?>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.4/journal/bootstrap.min.css">
+    
+    
+    
+
+ </head>
+ <body>
+          <ul class="nav nav-tabs nav-pills nav-justified" role="tablist">
+            <li role="presentation" class="active">
+              <a href="#stats" aria-controls="stats" role="tab" data-toggle="tab" data-link="">
+                <h4>
+                  
+                    <span  class="glyphicon glyphicon-stats" aria-hidden="true"></span>
+                    &nbsp;STATISTIQUES&nbsp;
+                  
+                  <span id="title-tab-stats" class="text-info" ></span>
+                </h4>
+              </a>
+            </li>
+            
+            
+          </ul>
+       
+          
+          <div class="container-fluid">
+
+    <div class="row">
+      <div class="col-sm-6">
+        <div class="chart-wrapper">
+          <div class="chart-title">
+            Cell Title
+          </div>
+          <div class="chart-stage">
+              <img data-src="holder.js/100%x120/white">
+          </div>
+          <div class="chart-notes">
+            Notes about this chart
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6">
+        <div class="chart-wrapper">
+          <div class="chart-title">
+            Cell Title
+          </div>
+          <div class="chart-stage">
+              <img data-src="holder.js/100%x120/white">
+          </div>
+          <div class="chart-notes">
+            Notes about this chart
+          </div>
+        </div>
+      </div>
 
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/iCheck/1.0.1/skins/square/red.css">
-<link rel="stylesheet" href="https://raw.githubusercontent.com/daneden/animate.css/master/animate.css">
-<?!= include('animate_css'); ?>
-<?!= include('style-pp9web'); ?>
-
-<style>
-
-
-
-
-
-[class*="__col-"] {
- background-color: lightgreen;
- border: 1px solid black;
- border-radius: 6px;
- <!--line-height: 40px;-->
- 
-
-}
-
-#header,#footer {
-  -webkit-animation-duration: 2s;
-  /*-webkit-animation-delay: 0s;*/
-  /*-webkit-animation-iteration-count: 1;*/
-}
-
-#logo{
-  -webkit-animation-duration: 1s;
-  /*-webkit-animation-delay: 0s;*/
-  /*-webkit-animation-iteration-count: 1;*/
-}
-
-#logo:hover{
-  -webkit-animation-play-state:running;
-  webkit-animation-iteration-count: 1;
-}
-
-
-</style>
-
-<body>
-
-<nav id="header" class="navbar navbar-default navbar-fixed-top animated bounceInDown">
-   
-    <!-- Brand and toggle get grouped for better mobile display -->
-    <div class="navbar-header">
-      <a class="" href="<?=ScriptApp.getService().getUrl()?>">
-      <img alt="Brand" style="background-color: white;" src="http://www.sqli-enterprise.com/files/2014/05/logo_sqli_entreprise_340x156_bg_transp1.png" height="50">
-      </a>
     </div>
 
-    <!-- Collect the nav links, forms, and other content for toggling -->
-    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-     
-      <p id="logo" class="nav navbar-nav navbar-brand "><span class="pp9-police pp9-border-plein">P</span><span class="pp9-police pp9-border-plein">P</span><span class="pp9-police pp9-border-creux">9</span><span class="pp9-police">{WEB}</span></p>
-      
-      <p class="nav navbar-nav navbar-brand"><span class="glyphicon glyphicon-user" aria-hidden="true"></span>&nbsp;<?=Session.getActiveUser().getEmail()?></p>
-      
-  
-      <p class="nav navbar-nav navbar-brand navbar-right " id="bs-example-navbar-collapse-1">Formulaire de suivi d'un nouvel appel d'offre : <span><b id="_page_"></b></span></p>
-      <p class="nav navbar-nav navbar-text navbar-right"><span id="integration"  class="label label-warning"></span></p>
-      <p class="nav navbar-nav navbar-text navbar-right"><span class="label label-danger" id="symbol_admin" ></span></p>
-      
-    </div><!-- /.navbar-collapse -->
-
-
-    
-  </nav>
-  
-<div class="container-fluid">
-
-
-
-</div>
-
-<nav id="footer" class="navbar navbar-default navbar-fixed-bottom animated bounceInUp">
-      <div class="">
-          <span class="navbar-text pull-left ">
-            <a target="_blank" href="<?=ScriptApp.getService().getUrl()?>?page=changelog" title="Change log">Releases</a>
-           </span>
-          
-          <span class="col-sm-9 animated slideInRight infinite">
-             <div id="foot_alert" class="">
-               </div>
-          </span>
-          <span class="col-sm-1 "></span>
-          <span id="contact" class="navbar-btn btn-danger btn" title="Prendre contact" >Contact</span>
+    <div class="row">
+      <div class="col-sm-6">
+        <div class="chart-wrapper">
+          <div class="chart-title">
+            Cell Title
+          </div>
+          <div class="chart-stage">
+            <img data-src="holder.js/100%x240/white">
+          </div>
+          <div class="chart-notes">
+            Notes about this chart
+          </div>
+        </div>
       </div>
-    </nav>
+      <div class="col-sm-6">
+        <div class="chart-wrapper">
+          <div class="chart-title">
+            Cell Title
+          </div>
+          <div class="chart-stage">
+            <img data-src="holder.js/100%x240/white">
+          </div>
+          <div class="chart-notes">
+            Notes about this chart
+          </div>
+        </div>
+      </div>
 
-</body>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-6 col-md-3">
+        <div class="chart-wrapper">
+          <div class="chart-title">
+            Cell Title
+          </div>
+          <div class="chart-stage">
+            <img data-src="holder.js/100%x120/white">
+          </div>
+          <div class="chart-notes">
+            Notes about this chart
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6 col-md-3">
+        <div class="chart-wrapper">
+          <div class="chart-title">
+            Cell Title
+          </div>
+          <div class="chart-stage">
+            <img data-src="holder.js/100%x120/white">
+          </div>
+          <div class="chart-notes">
+            Notes about this chart
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6 col-md-3">
+        <div class="chart-wrapper">
+          <div class="chart-title">
+            Cell Title
+          </div>
+          <div class="chart-stage">
+            <img data-src="holder.js/100%x120/white">
+          </div>
+          <div class="chart-notes">
+            Notes about this chart
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6 col-md-3">
+        <div class="chart-wrapper">
+          <div class="chart-title">
+            Cell Title
+          </div>
+          <div class="chart-stage">
+            <img data-src="holder.js/100%x120/white">
+          </div>
+          <div class="chart-notes">
+            Notes about this chart
+          </div>
+        </div>
+      </div>
+    </div>
 
 
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.4/js/bootstrap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/iCheck/1.0.1/icheck.min.js"></script>
 
-<script>
-// PARTIE JQUERY
-$(function(){
-  $('nav').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function(){
-    $('#logo').addClass('animated flip');
-    
-    
-  });
-  
-  
+    <hr>
 
-})
-</script>
- 
+    <p class="small text-muted">Built with &#9829; by <a href="https://keen.io">Keen IO</a></p>
+
+  </div>
+          
+          
+          <?!=HtmlService.createHtmlOutputFromFile('contact').getContent(); ?>
+          
+  </body>
+  <?!= include('JSFonctions'); ?>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+
+
