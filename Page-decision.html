@@ -35,7 +35,7 @@
 
 <?!= HtmlService.createTemplateFromFile('Header').evaluate().setSandboxMode(HtmlService.SandboxMode.IFRAME).getContent(); ?> 
 
-<div class="container">  
+<div class="container-fluid">  
 
 <div class="jumbotron uppercase" style="display:true">
        
@@ -43,15 +43,11 @@
        <p>Recherche en cours...</p>
        <div id="success" class="alert alert-success" role="alert" style="display:none"><p></p></div>
 </div>
-<div id="error_m" class="alert alert-warning" role="alert" style="display:none"></div>
+<div id="error_m" class="alert alert-warning alert-dismissible fade in" role="alert" style="display:none"></div>
 
 
 
-<div class="row">
-<div class="col-md-offset-3 col-md-6">
-
-<div class="row">
-<form id="form_other" class="" > <!--form-horizontal-->
+<form id="form_other" class="clearfix" > <!--form-horizontal-->
   <fieldset style="display:none">
                  <input id="reference" value="<?=reference;?>" style="display:none">
                  <input id="result" value="<?=result;?>" style="display:none">
@@ -59,48 +55,24 @@
                  <input id="dossier" style="display:none">
                  <input id="rp" style="display:none">
                  
-                 <div id="form-group-go" class="clearfix">
-                 
-                  <section class="col-md-4" >
-                    <label class="control-label" for="">Date de Remise</label>
-                    <!----------------------------------------------
-                    Si on utilise <div class="input-group date"> alors
-                    L'event click sur le <span class="input-group-addon"> n'est
-                    pas catché
-                    ------------------------------------------------->
-                    <label class="input-group date">
-                      <input id="remise" data-format="datepicker" type="text" class="form-control" placeholder="choisir une date" required>
-                      <span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
-                    </label>
-                    <small class="help-block">Préciser de nouvelles dates si besoin</small>
-                  </section>
-                 
-                  <section class="col-md-4" >
-                    <label class="control-label" for="">Date du Visa Forfait</label>
+                 <div class="col-sm-offset-1 col-sm-10" style="display:true">
+                   <div class="page-header" style="margin-top:0">
+                     <h2 id="label-cr">Information du </h2>
+                   </div>
+                   
+                   <section class="col-xs-12 col-md-6 col-lg-4" >
+                    <label class="control-label" for="">Date Réelle do go/nogo</label>
                     <label class="input-group date" id="datetimepicker_visa">
-                       <input id="visa" data-format="datepicker" type="text" class="form-control" placeholder="choisir une date" required>
+                       <input id="gonogo" data-format="datepicker" type="text" class="form-control" placeholder="choisir une date" required>
                        <span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
                     </label>
                     
                     
                     <small class="help-block"></small>
                   </section>
-                 
-                  <section class="col-md-4" >
-                    <label class="control-label" for="">Date du DAR</label>
-                    <label class="input-group date">
-                      <input id="dar" data-format="datepicker" type="text" class="form-control" placeholder="choisir une date" required>
-                      <span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
-                    </label>
-                    <small class="help-block"></small>
-                  </section>
-                 
-                 
-                 </div> <!-- End form-group-go  -->
-                 
-                 <div class="clearfix" style="display:true">
-                   <section class="col-md-5">
-                   <label id="label-cr" class="control-label">Compte-rendu du </label>
+                   
+                   <section class="col-xs-12 col-md-6 col-lg-6">
+                   <label class="control-label">Compte-rendu</label>
                  
                      <div class="bootstrap-filestyle input-group">
                        <span class="group-span-filestyle " tabindex="0">
@@ -114,36 +86,75 @@
                      <input id="drive_id_files" style="display:none" >
                      <span id="error-mail" class="label label-warning"></span>
                      <p id="name_file" class="form-control-static"></p>
-                   </section> 
+                   </section>
+                   
+                   <section class="col-sm-12">   
+                     <label for="commentaire" class="control-label">Commentaire</label>
+                       <div>
+                         <textarea id="commentaire" type="textarea" class="form-control" rows="7" pattern="[A-Za-z]"></textarea>
+                       </div>
+                     <small id="help-textarea" class="help-block"></small>
+                   </section>  
+                   
                  </div>
                  
-                 <div class="clearfix">
-                 <section class="col-md-12">   
-                   <label for="commentaire" class="control-label">Commentaire</label>
-                   <div>
-                      <textarea id="commentaire" type="textarea" class="form-control" rows="7" pattern="[A-Za-z]"></textarea>
-                   </div>
-                   <small id="help-textarea" class="help-block"></small>
-                 </section>  
-                 </div>      
-                       
-                 <div id="warning" class="alert alert-warning alert-dismissible fade in" role="alert" style="display:none">
-                 <p></p>
-                </div>
+                  <div id="form-group-go" class="col-sm-offset-1 col-sm-10  well">
+                  <div class="page-header" style="margin-top:0">
+                     <h2>Mise à jour des dates générales</h2>
+                   </div> 
+                  
+                  
+                  <section class="col-xs-12 col-md-6 col-lg-4" >
+                    <label class="control-label" for="">Date de Remise</label>
+                    <!----------------------------------------------
+                    Si on utilise <div class="input-group date"> alors
+                    L'event click sur le <span class="input-group-addon"> n'est
+                    pas catché
+                    ------------------------------------------------->
+                    <label class="input-group date">
+                      <input id="remise" data-format="datepicker" type="text" class="form-control" placeholder="choisir une date" required>
+                      <span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+                    </label>
+                    
+                  </section>
+                 
+                  <section class="col-xs-12 col-md-6 col-lg-4" >
+                    <label class="control-label" for="">Date du Visa Forfait</label>
+                    <label class="input-group date" id="datetimepicker_visa">
+                       <input id="visa" data-format="datepicker" type="text" class="form-control" placeholder="choisir une date" required>
+                       <span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+                    </label>
+                    
+                    
+                    <small class="help-block"></small>
+                  </section>
+                 
+                  <section class="col-xs-12 col-md-6 col-lg-4" >
+                    <label class="control-label" for="">Date du DAR</label>
+                    <label class="input-group date">
+                      <input id="dar" data-format="datepicker" type="text" class="form-control" placeholder="choisir une date" required>
+                      <span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+                    </label>
+                    <small class="help-block">Préciser de nouvelles dates si besoin</small>
+                  </section>
+                 
+                 
+                 </div> <!-- End form-group-go  -->
+                     
+                 
                 
                 <div class="clearfix">
-                 <section class="col-md-12">
+                 <section class="col-sm-offset-1 col-sm-10">
                     <button id="btn_val" class="pull-left btn btn-primary" type="submit" data-copy-text="mise à jour en cours...">Valider</button>
                  </section>
                 </div>
-               
+         
                
   </fieldset>                 
-</form> <!--End Form Unit redispatch -->
 
-                  
-</div>
-</div>
+ 
+  </form> <!--End Form Unit redispatch -->
+
 </div>	<!--End Container -->
   <?!= HtmlService.createTemplateFromFile('Footer').evaluate().setSandboxMode(HtmlService.SandboxMode.IFRAME).getContent(); ?> 
 </body>
@@ -215,6 +226,7 @@ $(function(){
        $('#remise').removeAttr('required');
        $('#dar').removeAttr('required');
        $('#visa').removeAttr('required');
+      
        }
   
 
@@ -252,6 +264,9 @@ $(function(){
          $('#remise').datepicker('setDate', value.remise);
          $('#dar').datepicker('setDate', value.dar);
          $('#visa').datepicker('setDate', value.visa);
+         $('#gonogo').datepicker('startDate', value.gonogo);
+         $('#gonogo').attr('placeholder',value.gonogo);
+         
          
          switch(value.state){
            case 'EN ATTENTE':
@@ -279,6 +294,7 @@ $(function(){
   
      console.log(this);
      clear_alert();
+     $('#error_m').hide();
      $('button[type="submit"]').button('copy');
      $('#error-mail').html('');
      
@@ -286,9 +302,11 @@ $(function(){
      var remise = $('#remise').datepicker('getDate');
      var dar = $('#dar').datepicker('getDate');
      var visa = $('#visa').datepicker('getDate');
-     if(<?=result?>=='go' && (remise<dar || dar<visa)) {
-         $('#warning p').html('<b>Attention!</b><br>Merci de vérifier la chronologie des dates proposées');
-         $('#warning').show();
+     var gonogo = $('#gonogo').datepicker('getDate');
+     
+     if(<?=result?>=='go' && (dar<gonogo  || remise<dar || dar<visa)) {
+         $('#error_m').html('<b>Attention!</b><br>Merci de vérifier la chronologie des dates proposées').show();
+   
          $('button[type="submit"]').button('reset');
          $('fieldset').removeAttr('disabled');
          return false;}

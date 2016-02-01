@@ -29,22 +29,26 @@
 
  <!-- jQuery -->
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 <script>
-
+google.charts.load('current', {packages: ['corechart','table']});
 
 
 function switch_admin(){
   nav_swith_admin();
   $('nav li > a[data-page="relance"]').show();
-  $('nav li > a[data-page="scorecard"]').show(); 
+  $('nav li > a[data-page="scorecard"]').show();
+  $('nav li > a[data-page="stats"]').show();
 }
 
 
 $(function(){
     console.log('ready dashboard');
+    
     nav_add_menu('<li><a href="#"  data-page="reporting"><span  class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>&nbsp;Dashboard</a></li>'); //
     nav_add_menu('<li><a href="#"  data-page="relance" style="display:none;"><span  class="glyphicon glyphicon-bullhorn" aria-hidden="true"></span>&nbsp;Relance</a></li>');
     nav_add_menu('<li><a href="#"  data-page="scorecard" style="display:none;"><span  class="glyphicon glyphicon-stats" aria-hidden="true"></span>&nbsp;Score Card</a></li>');
+    nav_add_menu('<li><a href="#"  data-page="stats" style="display:none;"><span  class="glyphicon glyphicon-stats" aria-hidden="true"></span>&nbsp;Statistiques</a></li>');
    
     setCallbackAdmin(switch_admin);
     callAdminFunctions();
@@ -59,18 +63,23 @@ $(function(){
   
   <div class="container-fluid" >
   
-    <div class="row" id="reporting" >
+    <div class="row page" id="reporting" >
     
       <?!= HtmlService.createTemplateFromFile('Page-dashboard-dossiers').evaluate().setSandboxMode(HtmlService.SandboxMode.IFRAME).getContent(); ?>
     </div>
     
-    <div class="row" id="relance" style="display:none;">
+    <div class="row page" id="relance" style="display:none;">
       <?!= HtmlService.createTemplateFromFile('Page-dashboard-relance').evaluate().setSandboxMode(HtmlService.SandboxMode.IFRAME).getContent(); ?>
     
     </div>
   
-    <div class="row" id="scorecard" style="display:none;">
+    <div class="row page" id="scorecard" style="display:none;">
       <?!= HtmlService.createTemplateFromFile('Page-dashboard-scorecard').evaluate().setSandboxMode(HtmlService.SandboxMode.IFRAME).getContent(); ?>
+    
+    </div>
+    
+    <div class="row page" id="stats" style="display:none;">
+      <?!= HtmlService.createTemplateFromFile('Page-dashboard-stats').evaluate().setSandboxMode(HtmlService.SandboxMode.IFRAME).getContent(); ?>
     
     </div>
   
@@ -116,21 +125,22 @@ $(function(){
     
     $('nav li > a').on('click',function(event){
        ShowPage($(this).data("page"));
-    });
-    
+       });
     
     
     
 });
 
 function ShowPage(p){
-  if (! ['reporting', 'relance', 'scorecard'].includes(p) ) p='reporting'
   
+  if (!~['reporting', 'relance', 'scorecard', 'stats'].indexOf(p) ) p='reporting'
   $('#reporting').hide();
   $('#relance').hide();
   $('#scorecard').hide();
+  $('#stats').hide();
   
-  $('#'+p).show();
+  $('#'+p).show().trigger('Event_menu', 'show page '+p);
+  
 
 }
 </script>

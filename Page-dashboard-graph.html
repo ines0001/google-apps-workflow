@@ -1,3 +1,32 @@
+<head>
+
+    <?!= include('style-dashboard'); ?>
+    
+
+ </head>
+ <body>
+        <div class="row">  
+          <div class="col-sm-12 col-md-6">
+            
+            <div  id="id_graph1" class="thumbnail"><br/><label>Graphique 2, patientez...</label></div>
+          </div>
+        </div>
+        <div class="row">  
+          <div class="col-sm-12 col-md-6">
+            
+            <div  id="id_graph2" class="thumbnail"><br/><label>Graphique 2, patientez...</label></div>
+          </div>
+        </div>  
+          
+          
+              
+                
+                
+            
+  </body>
+
+
+
 <!-- jQuery -->
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <script  src="https://cdnjs.cloudflare.com/ajax/libs/jquery-dateFormat/1.0/jquery.dateFormat.min.js"></script>
@@ -9,7 +38,18 @@
     <script>
     google.load("visualization", "1.1", {packages:['corechart','table']});
 
-function drawTable() {
+  $(function(){
+    console.log('ready Page-dasboard-graph testing');
+    
+    google.setOnLoadCallback(drawTableGraphique);
+  
+  
+  
+  
+  
+  });
+
+function drawTableGraphique() {
      var opts = {sendMethod: 'auto'}, set_query, query;
      
      
@@ -164,3 +204,5 @@ function handleQueryGraph2(response) {
   $('#value_bloc2').html('<h3>GO</br>'+parseInt((data.getValue(0,1)/sum)*100)+'%</h3>');    
  
   }
+  
+ </script>

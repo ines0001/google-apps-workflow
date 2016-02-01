@@ -1,0 +1,121 @@
+<head>
+
+    <?!= include('style-dashboard'); ?>
+    <script type="text/javascript">
+  google.load('visualization', '1.0');  // Note: No need to specify chart libraries.
+  //google.load('visualization', '1', {'packages':['corechart'], callback: drawVisualization});
+  
+  
+function drawVisualization() {
+      
+      google.visualization.drawChart({
+      "containerId": 'id_stats_xy',
+      "dataSourceUrl": 'https://docs.google.com/spreadsheets/d/1h3y9ferdQq8S6Xk48B01sEsEpC4czP4gdncB9l9AoJY/gviz/tq?sheet=requetes_testing&range=A1:B3',
+      "refreshInterval": 3,
+      "chartType": 'PieChart',
+      "options": {
+        
+        //title: 'Cumul des opportunités par mois en volumétrie budgétaire estimée',
+        titlePosition:'none',
+        titleTextStyle:{fontSize:13,bold:true,},
+        //hAxis:  {title: 'yyutuyt',gridlines: {count:9},textStyle:{color:'red',fontSize:10},viewWindowMode:'pretty',textPosition:'out'},
+        //vAxis:  {title: 'kjhkjh',gridlines: {count:10},textStyle:{color:'red',fontSize:10},viewWindowMode:'explicit',format: '#',},
+        legend: {position:'top'},
+        height: 500,
+        chartArea:{left:50,top:20,width:$('#id_stats_xy').width()-50,height:500-50},
+      }
+    });
+    
+    /*
+    
+     this.drawchart.options = {
+          pieHole: 0.6,
+          pieStartAngle: 90,
+          pieSliceText:'none',
+          
+          reverseCategories:true,
+          pieSliceTextStyle: {
+          color: 'black',
+          },
+          slices: {1: {color: 'gray'}, 2: {color: 'lightgrey'},0: {color: 'transparent'}},
+        
+        
+        }
+    
+    
+    */
+
+}
+  
+  
+</script>
+
+ </head>
+ <body>
+          <ul class="nav nav-tabs nav-pills nav-justified" role="tablist">
+            <li role="presentation" class="active">
+              <a href="#stats" aria-controls="stats" role="tab" data-toggle="tab" data-link="">
+                <h4>
+                  
+                    <span  class="glyphicon glyphicon-stats" aria-hidden="true"></span>
+                    &nbsp;STATISTIQUES&nbsp;
+                  
+                  <span id="title-tab-stats" class="text-info" ></span>
+                </h4>
+              </a>
+            </li>
+            
+            
+          </ul>
+       
+          <!-- Tab panes -->
+          <div class="tab-content">
+             <div role="tabpanel" class="tab-pane fade in active" id="stats">  
+                <div class="row">
+                  <div class="col-md-12 col-lg-6">
+                    <div class="caption text-center">
+                      <h3>Cumul des opportunités par mois en volumétrie budgétaire estimée</h3>
+                      <button class="btn btn-default">Refresh</button>
+                    </div>
+                    <div id="id_stats_xy" class=""><br/><label>Graphique 1, patientez...</label></div>
+                    
+                  </div>
+                 
+                </div>
+                
+                
+               
+          
+             </div>
+             
+              
+          
+          </div>
+          
+          <?!=HtmlService.createHtmlOutputFromFile('contact').getContent(); ?>
+          
+  </body>
+  <?!= include('JSFonctions'); ?>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+
+
+
+<script>
+
+$(function(){
+  console.log('ready Page-dasboard-statistiques');
+  $('button').on('click',function(event){
+       console.log('******drawVisualization:Click')
+       drawVisualization();
+    });
+   //google.setOnLoadCallback(drawVisualization);
+   
+   $('#stats').on('Event_stats',function(event,param){ drawVisualization();});
+ 
+});
+
+
+
+</script>
+

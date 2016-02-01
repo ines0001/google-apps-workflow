@@ -1,0 +1,237 @@
+<head>
+
+    <?!= include('style-dashboard'); ?>
+    <?!= include('style-keen-dashboards'); ?>
+    
+
+ </head>
+ <body >
+          <ul class="nav nav-tabs nav-pills nav-justified" role="tablist">
+            <li role="presentation" class="active">
+              <a href="#stats" aria-controls="stats" role="tab" data-toggle="tab" data-link="">
+                <h4>
+                  
+                    <span  class="glyphicon glyphicon-stats" aria-hidden="true"></span>
+                    &nbsp;STATISTIQUES&nbsp;
+                  
+                  <span id="title-tab-stats" class="text-info" ></span>
+                </h4>
+              </a>
+            </li>
+            
+            
+          </ul>
+       
+          <!-- Tab panes -->
+          <div class="tab-content">
+             <div role="tabpanel" class="tab-pane fade in active" id="stats">  
+                <div class="container-fluid" style="padding-top:10px;">
+                  
+                  <div class="row">
+                    <div class="col-sm-12 col-md-6 col-lg-4">
+                     <div class="chart-wrapper">
+                        <div id="id_title_0" class="chart-title">
+                          Cell Title
+                        </div>
+                        <div id="id_stats_0" class="chart-stage"></div>
+                        <div class="chart-notes">
+                          Notes about this chart
+                        </div>
+                      </div>  
+                    </div>
+                    
+                    <div class="col-sm-12 col-md-6 col-lg-4 ">
+                     <div class="chart-wrapper">
+                        <div id="id_title_1" class="chart-title">
+                          Cell Title
+                        </div>
+                        <div id="id_stats_1" class="chart-stage"></div>
+                        <div class="chart-notes">
+                          Notes about this chart
+                        </div>
+                      </div>  
+                    </div>
+                    
+                    <div class="col-sm-12 col-md-6 col-lg-4 ">
+                     <div class="chart-wrapper">
+                        <div id="id_title_2" class="chart-title">
+                          Cell Title
+                        </div>
+                        <div id="id_stats_2" class="chart-stage"></div>
+                        <div class="chart-notes">
+                          Notes about this chart
+                        </div>
+                      </div>  
+                    </div>
+                    
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-12 col-md-6">
+                      
+                      <div id="id_stats_2" class=""><br/><label>Graphique 1, patientez...</label></div>
+                      
+                    </div>
+                    <div class="col-sm-12 col-md-6">
+                      
+                      <div  id="id_stats_3" class=""><br/><label>Graphique 2, patientez...</label></div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-12 col-md-6">
+                      
+                      <div id="id_stats_4" class=""><br/><label>Graphique 1, patientez...</label></div>
+                      
+                    </div>
+                    <div class="col-sm-12 col-md-6">
+                      
+                      <div  id="id_stats_5" class=""><br/><label>Graphique 2, patientez...</label></div>
+                    </div>
+                  </div>
+                </div>  <!-- Bootstrap container-fluid CSS -->
+             </div> <!-- Bootstrap tabpanel role CSS -->
+          
+          </div> <!-- Bootstrap tab-content CSS -->
+          
+          <?!=HtmlService.createHtmlOutputFromFile('contact').getContent(); ?>
+          
+  </body>
+  <?!= include('JSFonctions'); ?>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+
+<script type="text/javascript">
+  
+  
+  function Charts_pp9(id,title,datasource,chartype,vAxisTitle,hAxisTitle) {
+    this.title = title;
+    this.error = false;
+    this.drawchart = {
+      "containerId": 'id_stats_'+id,
+      "dataSourceUrl": datasource,
+      "refreshInterval": 3,
+      "chartType": chartype,
+      "options": {
+        
+        //title: title,
+        titlePosition:'top',
+        titleTextStyle:{fontSize:22,italic:true,},
+        hAxis:  {gridlines: {count:9},textStyle:{color:'red',fontSize:10},viewWindowMode:'pretty',textPosition:'out'},
+        vAxis:  {title: vAxisTitle,gridlines: {count:10},textStyle:{color:'red',fontSize:10},viewWindowMode:'explicit',format: '#',},
+        legend: {position:'top'},
+        height: 250,
+        chartArea:{left:30,top:15,width:$('#id_stats_'+id).width()-10,height:'86%'},
+      }
+    };
+    
+    
+    switch(chartype){
+      case 'ComboChart':
+        
+        $.extend(this.drawchart, { 
+          "view": {"columns": [0, 1,
+                        { calc: "stringify",
+                         sourceColumn: 1,
+                         type: "string",
+                         role: "annotation",
+                         //properties:{ stemColor: 'white', textStyle: { fontSize: 16 }}
+                         },
+                         
+                         
+                         2,
+                         { calc: "stringify",
+                         sourceColumn: 2,
+                         type: "string",
+                         role: "annotation" }]},
+        
+        
+        });
+        
+        $.extend(this.drawchart.options,{
+          series: {0:{type:'line',color:'blue',pointShape :'circle',pointSize :10},1: {type: 'bars',color:'skyblue',pointShape :'circle'}}
+        
+        });
+        $.extend(this.drawchart.options.hAxis,{viewWindow : {min:'2015.00',max:'2015.13'}})
+      
+        break;
+      
+      case 'BubbleChart': 
+        $.extend(this.drawchart.options,{
+          bubble: {textStyle: {fontSize: 11,auraColor: 'none',}},
+          
+        });
+        $.extend(this.drawchart.options.hAxis,{viewWindow : {min:'2015.00',max:'2015.13'}})
+        
+        break;
+        
+      case 'PieChart':
+        
+        $.extend(this.drawchart.options,{
+          pieHole: 0.45,
+          pieStartAngle: 90,
+          //pieSliceText:'none',
+          legend: {position:'labeled',textStyle:{ color: 'red',fontSize:14,bold:true},alignment:'start',maxLines:2,},
+          reverseCategories:true,
+          /*
+          pieSliceTextStyle: {
+            color: 'black',
+            fontSize:22,bold:true,
+          },
+          */
+          slices: {0: {color: 'lightgrey'}, 1: {color: 'green'}},
+        
+        
+        });
+        
+        break;
+      default: this.error = true;
+      }
+     
+  };
+  
+  
+  function drawVisualization() {
+      var charts = [];
+      google.script.run
+      .withSuccessHandler(function(values){ 
+        
+        values.forEach(function(element, value){
+        
+          if( typeof(element) === 'string' || element instanceof String ){
+            var o = JSON.parse(element);
+            
+            charts.push( new Charts_pp9(value,o.title, o.dataSource,o.chartType,o.vAxisTitle,o.hAxisTitle));
+          
+          }
+        });
+        
+        charts.forEach(function(element, value){
+          if( !element.error ) {
+            $('#id_title_'+value).html(element.title);
+            google.visualization.drawChart(element.drawchart);
+            }
+        
+        });
+      
+      })
+      .withFailureHandler(function(e){console.log('Exception'+e.message)})
+      .enumParams('Dashboard Charts');
+     
+     
+  }
+  
+  
+</script>
+
+<script>
+
+$(function(){
+  console.log('ready Page-dasboard-statistiques');
+  
+  $('#stats').on('Event_menu',function(event,param){ drawVisualization();});
+ 
+});
+
+
+
+</script>
+

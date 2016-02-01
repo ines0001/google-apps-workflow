@@ -20,36 +20,40 @@
 
 <?!= HtmlService.createTemplateFromFile('Header').evaluate().setSandboxMode(HtmlService.SandboxMode.IFRAME).getContent(); ?>
 
-<div class="container">  
+<div class="container-fluid">  
 <div id="success" class="alert alert-success" role="alert" style="display:none"></div>
 <div id="error" class="alert alert-warning" role="alert" style="display:none"></div>
 
-<div class="row">
-<div class="col-md-offset-2 col-md-6">
 
-<div class="row">
    <fieldset style="display:none">
-      <form id="form_other" class="form-horizontal" style="display:true"  > <!--form-horizontal-->
+      <form id="form_other" class="clearfix form-horizontal" style="display:true"  > <!--form-horizontal-->
   
                  <?var ref=reference;?>
+                 
+                 <div class="page-header col-md-offset-1 col-md-9 col-md-offset-2" style="margin-top:0">
+                   <h2 id="label-cr">Définir le dossier sous Drive AVV</h2>
+                 </div>
+                 
+                   
                  <div class="form-group" style="display:true" >
-                   <label class="col-sm-3 control-label" required data-toggle="tooltip" data-placement="left" title="Saisir un nom de client unique.Une aide contextuel affiche les répertoires existants via les premières lettres tapées.">Dossier client à créer</label>
-                   <div class="col-md-9">
+                   <label class="col-md-3 control-label" required data-toggle="tooltip" data-placement="left" title="Saisir un nom de client unique.Une aide contextuel affiche les répertoires existants via les premières lettres tapées.">Dossier client à créer</label>
+                   <div class="col-md-5">
                        <input id="drive-client" class="ui-autocomplete-input form-control" type="text" style="display:true" required>
                        <small id="client" class="help-block"></small>
                    </div>
                  </div>
                  
                  <div class="form-group" style="display:true" >
-                   <label class="col-sm-3 control-label" required data-toggle="tooltip" data-placement="left" title="Saisir un nom de dossier unique.Une aide contextuel affiche les répertoires existants associés au client.">Sous dossier client à créer</label>
-                   <div class="col-md-9">
+                   <label class="col-md-3 control-label" required data-toggle="tooltip" data-placement="left" title="Saisir un nom de dossier unique.Une aide contextuel affiche les répertoires existants associés au client.">Sous dossier client à créer</label>
+                   <div class="col-md-5">
                        <input id="drive-dossier" class="form-control" type="text" style="display:true" required>
                        <small id="dossier" class="help-block"></small>
                    </div>
                  </div>
                  
                  <div class="form-group" style="display:true">
-                   <div class="col-md-offset-3 col-md-9 ">
+                   <label class="col-md-3 control-label" required data-toggle="tooltip" data-placement="left" title="Nom du répertoire sous le dossier Drive AVV.">AVV_TRAVAIL</label>
+                   <div class="col-md-5 ">
                       <div class="input-group">
                        <span class="input-group-addon" id="basic-addon1" required data-toggle="tooltip" data-placement="left" title="Format dossier créé sous Google Drive"><span class="glyphicon glyphicon-hdd" aria-hidden="true"></span></span>
                        <label id="folder"  class="form-control" ></label>
@@ -59,15 +63,18 @@
                    </div>
                  </div>
                 
+                <div class="page-header  col-md-offset-1 col-md-9 col-md-offset-2" style="margin-top:0">
+                  <h2 id="label-cr">Groupe de partage</h2>
+                </div>
                                   
                  <div class="form-group">
-                   <label class="col-sm-12 col-md-3 control-label" for="">Groupe de partage:</label>
-                   <div class=" col-md-9">
+                   <label class="col-md-3 control-label" for="">Ajoutez un email:</label>
+                   <div class=" col-md-5">
                      <div class="input-group">
                        <span class="input-group-addon" id="basic-addon1"><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span></span>
-                       <input id="mailing" type="text" class="form-control" placeholder="login@sqli.com" pattern="^[a-z0-9._-]+@[a-z0-9._-]{2,}\.[a-z]{2,4}">
+                       <input id="mailing" type="text" class="form-control" placeholder="login@sqli.com" pattern="^([a-z0-9._-]+@[a-z0-9._-]{2,}\.[a-z]{2,4})*$">
                        <span class="input-group-btn">
-                        <button id="partage" class="btn btn-default" type="button">Partage</button>
+                        <button id="partage" class="btn btn-default" type="button">Partager</button>
                        </span>
                      </div>
                      <span id="error-mail" class="label label-warning"></span>
@@ -77,12 +84,12 @@
                    </div>
                  </div>
                  
-                 <div id="warning" class="alert alert-info alert-dismissible fade in" role="alert" style="display:none">
+                 <div id="warning" class="alert alert-info alert-dismissible fade in " role="alert" style="display:none">
                    <div id="message"></div>
                  </div>
                  
                 
-                <div class="alert alert-warning alert-dismissible fade in" role="alert" >
+                <div class="alert alert-warning alert-dismissible fade in  col-md-offset-1 col-md-9" role="alert" >
                   <h4 >Attention!</h4>
                   <p>A partir de cette étape vous allez initialiser l'arborescence de travail pour la phase d'avant-vente. Merci de confirmer cette action</p>
                   <p id="avancement"></p>
@@ -98,8 +105,7 @@
 
                   
 </div>
-</div>
-</div>
+
   <?!= HtmlService.createTemplateFromFile('Footer').evaluate().setSandboxMode(HtmlService.SandboxMode.IFRAME).getContent(); ?>
 </body>
 			  
@@ -341,7 +347,7 @@ $(function(){
        html+='<li style="list-style-type: none" >';
        html+='<div class="input-group">';
        html+='<span class="input-group-addon" data-toggle="tooltip" data-placement="left" title="'+title+'"><span class="glyphicon glyphicon-user" aria-hidden="true"></span></span>';
-       html+='<input id="partenaire" name="" class="form-control" placeholder="nom du partenaire" type="text" value="'+ressource+'" pattern="^[a-z0-9._-]+@[a-z0-9._-]{2,}\.[a-z]{2,4}">';
+       html+='<input id="partenaire" name="" class="form-control" placeholder="nom du partenaire" type="text" value="'+ressource+'" pattern="^([a-z0-9._-]+@[a-z0-9._-]{2,}\.[a-z]{2,4})*$">';
        html+='<span class="input-group-btn"><button id="btn_del" class="btn btn-default" type="button"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button></span>';
        html+='</div></li>';
        $('#groupe_mail').prepend(html);

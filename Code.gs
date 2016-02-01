@@ -72,11 +72,12 @@ function doGet(request) {
       
       
                     break;
+    
     /*
-    case 'testing':html = HtmlService.createTemplateFromFile('Page-home');
+    case 'testing':html = HtmlService.createTemplateFromFile('testing');
                     html.reference = request.parameter.ref;
                     html.duration = '40s';
-                    
+                    html.clsid = CLSID;  
                     
                     html.ticker = enumParams('Informations flash')
                     
@@ -87,7 +88,7 @@ function doGet(request) {
       
                     break;
       
-    */  
+    */
     case 'build_avv':html = HtmlService.createTemplateFromFile('Page-build_avv');
                     html.duration = (duration)?duration:'40s';
                     html.reference = request.parameter.ref;
@@ -175,6 +176,8 @@ function getInfoGeneric(ref){
                           rp:row.rp,
                           dar:(row.dateDarPlanifie===undefined )?'':Utilities.formatDate(row.dateDarPlanifie, "GMT+02:00", "dd/MM/yyyy"),
                           visa:(row.dateVisaForfaitPrvu===undefined )?'':Utilities.formatDate(row.dateVisaForfaitPrvu, "GMT+02:00", "dd/MM/yyyy"),
+                          gonogo:(row.dateGoNogo===undefined )?'':Utilities.formatDate(row.dateGoNogo, "GMT+02:00", "dd/MM/yyyy"),
+                          
                           state:row.statut,
                           historical:row.log,};
   else throw new Error('Aucun dossier associé avec la référence suivante : '+ref);
@@ -473,6 +476,25 @@ function save_form(form,mail,filesID){
   
    
   range_source.copyTo(range_dest);
+  
+  /*=====================================
+    Champ url, log ne permet pas de recopier la
+    totalité de du masque. Par conséquent l'
+    opération est faite en    2 temps.
+  =======================================*/
+  var range_dest = SpreadsheetApp.openById(CLSID)
+                         .getSheetByName(SHEET_O_AVV)
+                         .getRange(lastRow,27, 1, 6);
+  
+  var range_source = SpreadsheetApp.openById(CLSID)
+                         .getSheetByName(SHEET_O_MASQUE_ROW)
+                         .getRange(2, 27, 1, 6);
+  
+  
+   
+  range_source.copyTo(range_dest);
+  
+  
   SpreadsheetApp.flush();
   
   /*\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
@@ -708,6 +730,7 @@ function onValidateDecision(form){
   switch(form.result){
     case 'go' :
       objet.sheet.getRange(row.rowNumber,COLUMN_SHEET_STATE).setValue(state.go);
+      objet.sheet.getRange(row.rowNumber,COLUMN_SHEET_DATE_GONOGO).setValue(form.gonogo);
       objet.sheet.getRange(row.rowNumber,COLUMN_SHEET_VISA).setValue(form.visa);
       objet.sheet.getRange(row.rowNumber,COLUMN_SHEET_DAR_PLAN).setValue(form.dar);
       /*
@@ -718,6 +741,7 @@ function onValidateDecision(form){
       objet.sheet.getRange(row.rowNumber,COLUMN_SHEET_LOG).setValue(objet_log.pushSession('Décision GO',state.go,{client:form.client,
                                                                                                            dossier:form.dossier,
                                                                                                            responsable: form.rp,
+                                                                                                           go:form.gonogo,
                                                                                                            remise:form.remise,
                                                                                                            visa:form.visa,
                                                                                                            dar:form.dar,
@@ -757,9 +781,11 @@ function onValidateDecision(form){
       break;
     case 'nogo':
       objet.sheet.getRange(row.rowNumber,COLUMN_SHEET_STATE).setValue(state.nogo);
+      objet.sheet.getRange(row.rowNumber,COLUMN_SHEET_DATE_GONOGO).setValue(form.gonogo);
       objet.sheet.getRange(row.rowNumber,COLUMN_SHEET_COMMENT_NOGO).setValue(form.commentaire);
       objet.sheet.getRange(row.rowNumber,COLUMN_SHEET_LOG).setValue(objet_log.pushSession('Décision NOGO',state.nogo,{client:form.client,
                                                                                                            dossier:form.dossier,
+                                                                                                           nogo:form.gonogo,
                                                                                                            synthèse:form.commentaire,
                                                                                                            cr:new C_Url(id_file),}));
       break;

@@ -116,6 +116,7 @@ function C_Url(ID) {
 
 function utilities_testing(){
  Logger.log(currencyFormatDE(currencyFormatNum('898 789 €')));
+ Logger.log(CheckEmail('eremy@sqli.com,'));
  //Logger.log(o);
   
 }
@@ -373,6 +374,12 @@ function currencyFormatDE (num) {
 function currencyFormatNum (v) {
   return parseInt(v.replace(/[\s\€]/g,''),10);
 }
+
+function CheckEmail(email){
+     var reg = new RegExp('^[a-z0-9]+([_|\.|-]{1}[a-z0-9]+)*@[a-z0-9]+([_|\.|-]{1}[a-z0-9]+)*[\.]{1}[a-z]{2,6}$', 'i');
+     if(reg.test(email)) return(true);
+     else return(false);
+  }
 
 
 
