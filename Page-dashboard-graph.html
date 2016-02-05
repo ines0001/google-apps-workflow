@@ -55,28 +55,29 @@ function drawTableGraphique() {
      
      google.script.run
                 .withSuccessHandler(function(values){ 
-                 
-                   set_query = encodeURIComponent(values[1]);
+                   console.log(values)
+                   set_query = encodeURIComponent(values[0]);
                    console.log(set_query);
                    query = new google.visualization.Query(
                    'https://spreadsheets.google.com/tq?tq='+set_query+'&key=<?=clsid?>&gid=2122602018',opts);
                   
                    query.send(handleQueryGraph1);
                    
+                   /*
                    set_query = encodeURIComponent(values[2]);
                    console.log(set_query);
                    query = new google.visualization.Query(
                    'https://spreadsheets.google.com/tq?tq='+set_query+'&key=<?=clsid?>&gid=2122602018',opts);
                   
                    query.send(handleQueryGraph2);
-                   
+                   */
                    
                    
                 })
                 .withFailureHandler(function(e){
                   console.log('Exception'+e.message);     
                 })
-                .enumParams('Dashboard table_synthese');
+                .enumParams('Requetes test');
      
       
     };
@@ -114,7 +115,7 @@ function handleQueryGraph1(response) {
                trigger:'both',
                selected: { color: '#3bc', opacity: 0.8 },
                },
-    
+    height: 250,
     vAxis: {
       viewWindowMode:'maximized',
       gridlines: {

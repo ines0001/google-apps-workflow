@@ -73,8 +73,8 @@ function doGet(request) {
       
                     break;
     
-    /*
-    case 'testing':html = HtmlService.createTemplateFromFile('testing');
+    
+    case 'testing':html = HtmlService.createTemplateFromFile('Page-dashboard-graph');
                     html.reference = request.parameter.ref;
                     html.duration = '40s';
                     html.clsid = CLSID;  
@@ -88,7 +88,7 @@ function doGet(request) {
       
                     break;
       
-    */
+    
     case 'build_avv':html = HtmlService.createTemplateFromFile('Page-build_avv');
                     html.duration = (duration)?duration:'40s';
                     html.reference = request.parameter.ref;

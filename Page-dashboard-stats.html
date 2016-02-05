@@ -29,11 +29,11 @@
                   
                   <div class="row">
                     <div class="col-sm-12 col-md-6 col-lg-4">
-                     <div class="chart-wrapper">
-                        <div id="id_title_0" class="chart-title">
+                     <div id="id_0" class="chart-wrapper hide">
+                        <div  class="chart-title">
                           Cell Title
                         </div>
-                        <div id="id_stats_0" class="chart-stage"></div>
+                        <div class="chart-stage"></div>
                         <div class="chart-notes">
                           Notes about this chart
                         </div>
@@ -41,11 +41,11 @@
                     </div>
                     
                     <div class="col-sm-12 col-md-6 col-lg-4 ">
-                     <div class="chart-wrapper">
-                        <div id="id_title_1" class="chart-title">
+                     <div id="id_1"  class="chart-wrapper hide">
+                        <div class="chart-title">
                           Cell Title
                         </div>
-                        <div id="id_stats_1" class="chart-stage"></div>
+                        <div class="chart-stage"></div>
                         <div class="chart-notes">
                           Notes about this chart
                         </div>
@@ -53,11 +53,11 @@
                     </div>
                     
                     <div class="col-sm-12 col-md-6 col-lg-4 ">
-                     <div class="chart-wrapper">
-                        <div id="id_title_2" class="chart-title">
+                     <div id="id_2"  class="chart-wrapper hide">
+                        <div class="chart-title">
                           Cell Title
                         </div>
-                        <div id="id_stats_2" class="chart-stage"></div>
+                        <div class="chart-stage"></div>
                         <div class="chart-notes">
                           Notes about this chart
                         </div>
@@ -66,27 +66,46 @@
                     
                   </div>
                   <div class="row">
-                    <div class="col-sm-12 col-md-6">
-                      
-                      <div id="id_stats_2" class=""><br/><label>Graphique 1, patientez...</label></div>
-                      
-                    </div>
-                    <div class="col-sm-12 col-md-6">
-                      
-                      <div  id="id_stats_3" class=""><br/><label>Graphique 2, patientez...</label></div>
+                    <div class="col-sm-12 ">
+                     <div id="id_3" class="chart-wrapper hide">
+                        <div  class="chart-title">
+                          Cell Title
+                        </div>
+                        <div class="chart-stage"></div>
+                        <div class="chart-notes">
+                          Notes about this chart
+                        </div>
+                      </div>  
                     </div>
                   </div>
+                  
                   <div class="row">
-                    <div class="col-sm-12 col-md-6">
-                      
-                      <div id="id_stats_4" class=""><br/><label>Graphique 1, patientez...</label></div>
-                      
+                    <div class="col-sm-12 col-md-6 col-lg-4">
+                     <div id="id_4" class="chart-wrapper hide">
+                        <div  class="chart-title">
+                          Cell Title
+                        </div>
+                        <div class="chart-stage"></div>
+                        <div class="chart-notes">
+                          Notes about this chart
+                        </div>
+                      </div>  
                     </div>
-                    <div class="col-sm-12 col-md-6">
-                      
-                      <div  id="id_stats_5" class=""><br/><label>Graphique 2, patientez...</label></div>
+                    
+                    <div class="col-sm-12 col-md-6 col-lg-8">
+                     <div id="id_5" class="chart-wrapper hide">
+                        <div  class="chart-title">
+                          Cell Title
+                        </div>
+                        <div class="chart-stage"></div>
+                        <div class="chart-notes">
+                          Notes about this chart
+                        </div>
+                      </div>  
                     </div>
-                  </div>
+                    
+                  </div>  
+                 
                 </div>  <!-- Bootstrap container-fluid CSS -->
              </div> <!-- Bootstrap tabpanel role CSS -->
           
@@ -101,14 +120,20 @@
 
 <script type="text/javascript">
   
+  function mystringify(dataTable, rowNum){
+    return Math.floor(dataTable.getValue(rowNum, 1) * 2);
+  }
   
-  function Charts_pp9(id,title,datasource,chartype,vAxisTitle,hAxisTitle) {
+  function Charts_pp9(id,title,datasource,chartype,vAxisTitle,hAxisTitle,notes) {
     this.title = title;
+    this.notes = notes;
     this.error = false;
+    $('#id_'+id).removeClass('hide');
+    console.log('Constructeur Charts_pp9');
     this.drawchart = {
-      "containerId": 'id_stats_'+id,
+      "containerId": 'id_'+id+'_chart',
       "dataSourceUrl": datasource,
-      "refreshInterval": 3,
+      "refreshInterval": 7,
       "chartType": chartype,
       "options": {
         
@@ -116,10 +141,10 @@
         titlePosition:'top',
         titleTextStyle:{fontSize:22,italic:true,},
         hAxis:  {gridlines: {count:9},textStyle:{color:'red',fontSize:10},viewWindowMode:'pretty',textPosition:'out'},
-        vAxis:  {title: vAxisTitle,gridlines: {count:10},textStyle:{color:'red',fontSize:10},viewWindowMode:'explicit',format: '#',},
+        vAxis:  {title: vAxisTitle,gridlines: {count:0},textStyle:{color:'red',fontSize:10},viewWindowMode:'explicit',format: '#',},
         legend: {position:'top'},
         height: 250,
-        chartArea:{left:30,top:15,width:$('#id_stats_'+id).width()-10,height:'86%'},
+        chartArea:{left:30,top:15,width:$('#id_'+id+'_chart').width()-10,height:'86%'},
       }
     };
     
@@ -147,6 +172,20 @@
         });
         
         $.extend(this.drawchart.options,{
+          crosshair: {orientation:'vertical',
+               color:'red', 
+               opacity:0.5,
+               trigger:'focus',
+               orientation: 'vertical',
+               //focused: { color: '#3bc', opacity: 0.8 },
+               },
+        });
+        
+        $.extend(this.drawchart.options,{
+          focusTarget:'category',
+        });
+        
+        $.extend(this.drawchart.options,{
           series: {0:{type:'line',color:'blue',pointShape :'circle',pointSize :10},1: {type: 'bars',color:'skyblue',pointShape :'circle'}}
         
         });
@@ -167,10 +206,12 @@
         
         $.extend(this.drawchart.options,{
           pieHole: 0.45,
+          sliceVisibilityThreshold: .04,
           pieStartAngle: 90,
           //pieSliceText:'none',
           legend: {position:'labeled',textStyle:{ color: 'red',fontSize:14,bold:true},alignment:'start',maxLines:2,},
           reverseCategories:true,
+          pieSliceText: 'value',
           /*
           pieSliceTextStyle: {
             color: 'black',
@@ -178,15 +219,92 @@
           },
           */
           slices: {0: {color: 'lightgrey'}, 1: {color: 'green'}},
+          pieResidueSliceColor: 'darkgray',
+          pieSliceTextStyle: {color: 'white', fontName: 'Times-Roman', fontSize: 18},
         
         
         });
         
+        $.extend(this.drawchart, { 
+          "view": {"columns": [0, 1,
+                        { calc: "stringify",
+                         sourceColumn: 1,
+                         type: "string",
+                         role: "annotationText",
+                         //properties:{ stemColor: 'white', textStyle: { fontSize: 16 }}
+                         }
+            ]},
+       });
+        
+        
+        break;
+        
+        
+      case 'LineChart':
+        $.extend(this.drawchart, { 
+          "view": {"columns": [0, 3,
+                        { calc: function(dataTable, rowNum){return parseFloat(dataTable.getValue(rowNum, 3)).toFixed(1).toString();},
+                         sourceColumn: 3,
+                         type: "string",
+                         role: "tooltip",
+                         //properties:{ stemColor: 'white', textStyle: { fontSize: 16 }}
+                         },
+                         { calc: function(dataTable, rowNum){
+                             if( rowNum == dataTable.getNumberOfRows()-1 ) 
+                               return parseFloat(dataTable.getValue(rowNum, 3)).toFixed(1).toString();
+                             },
+                         sourceColumn: 3,
+                         type: "string",
+                         role: "annotation",
+                         //properties:{ stemColor: 'white', textStyle: { fontSize: 16 }}
+                         },
+                         
+                        ]},
+        
+        
+        });
+           
+        $.extend(this.drawchart.options,{
+          series: {0:{color:'blue',pointShape :'circle',pointSize :3},},
+          annotations: {
+            textStyle: {
+              fontName: 'Times-Roman',
+              fontSize: 22,
+              bold: true,
+              italic: true,
+              // The color of the text.
+              color: '#871b47',
+              // The transparency of the text.
+              opacity: 0.8
+            }
+          }
+        
+        });
+        
+        $.extend(this.drawchart.options,{
+          crosshair: {orientation:'vertical',
+               color:'red', 
+               opacity:0.5,
+               trigger:'focus',
+               orientation: 'vertical',
+               //focused: { color: '#3bc', opacity: 0.8 },
+               },
+        });
+        
+        $.extend(this.drawchart.options,{
+          focusTarget:'category',
+        });
+        
+        $.extend(this.drawchart.options,{
+          tooltip: {isHtml: true},
+          
+        });
         break;
       default: this.error = true;
       }
      
   };
+  
   
   
   function drawVisualization() {
@@ -199,14 +317,16 @@
           if( typeof(element) === 'string' || element instanceof String ){
             var o = JSON.parse(element);
             
-            charts.push( new Charts_pp9(value,o.title, o.dataSource,o.chartType,o.vAxisTitle,o.hAxisTitle));
+            charts.push( new Charts_pp9(value,o.title, o.dataSource,o.chartType,o.vAxisTitle,o.hAxisTitle,o.notes));
           
           }
         });
         
         charts.forEach(function(element, value){
           if( !element.error ) {
-            $('#id_title_'+value).html(element.title);
+            $('#id_'+value+'_title').html(element.title);
+            $('#id_'+value+'_notes').html(element.notes);
+            
             google.visualization.drawChart(element.drawchart);
             }
         
@@ -226,6 +346,17 @@
 
 $(function(){
   console.log('ready Page-dasboard-statistiques');
+  
+  $('div[class="chart-title"]').each(function(index){
+               $(this).attr('id',$(this).parent().attr("id")+'_title');
+               });
+  $('div[class="chart-stage"]').each(function(index){
+               $(this).attr('id',$(this).parent().attr("id")+'_chart');
+               });
+  $('div[class="chart-notes"]').each(function(index){
+               $(this).attr('id',$(this).parent().attr("id")+'_notes');
+               });
+  console.log('function JQuery')
   
   $('#stats').on('Event_menu',function(event,param){ drawVisualization();});
  
