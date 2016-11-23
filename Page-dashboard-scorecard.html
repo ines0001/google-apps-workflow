@@ -43,7 +43,7 @@
 
 $(function(){
   console.log('ready Page-dasboard-scorecard');
-
+ 
   //google.setOnLoadCallback(drawTableScoreCard);
   google.charts.setOnLoadCallback(drawTableScoreCard);
   
@@ -79,12 +79,25 @@ function drawTableScoreCard() {
     
     if(!isAdmin()) filter += <?=Session.getActiveUser().getEmail()?>+'.*';
     
+    /*Obtain the Token  AOuth2
+    Google Sheets requires end-user credentials to access private spreadsheets 
+    via the Google Visualization API ("/tq requests").
+    */
+    google.script.run.withSuccessHandler(function(token){
     
-    set_query = encodeURIComponent(values[0].replace(/@user/g,filter));
-    query = new google.visualization.Query(
-    'https://spreadsheets.google.com/tq?tq='+set_query+'&key=<?=clsid?>&gid=2122602018',opts);
+        var tqUrl = 'https://spreadsheets.google.com/tq?tq='+encodeURIComponent(values[0].replace(/@user/g,filter))+
+        '&key=<?=clsid?>'+
+        '&gid=2122602018'+
+        '&access_token=' + encodeURIComponent(token);
+      
+        query = new google.visualization.Query(tqUrl,opts);
+        query.send(handleQueryTableScoreCard);
+        
+     })
+     .withFailureHandler(function(e){console.log(e)})
+     .getOAuthToken();
     
-    query.send(handleQueryTableScoreCard);
+    
     
     
   
