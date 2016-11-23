@@ -109,7 +109,7 @@ function testingMail(){
   
                       htmlBody: OtemplateMail.getContent(),
                       //cc: 'eremy@sqli.com',
-                      //noReply:true,
+                      noReply:true,
                       //from:alias,
                       
                      };

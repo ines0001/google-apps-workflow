@@ -57,7 +57,7 @@
                  
                 <div class="clearfix form-group">
                    
-                   <section class="col-md-4" >
+                   <section class="col-xs-12 col-sm-6 col-md-4 col-lg-3" >
                      <label class="control-label" for="">Date de <?=type?> réalisé</label>
                      <!----------------------------------------------
                      Si on utilise <div class="input-group date"> alors
@@ -65,13 +65,50 @@
                      pas catché
                      ------------------------------------------------->
                      <label class="input-group date">
-                       <input id="date_realise" data-format="datepicker" type="text" class="form-control" placeholder="choisir une date" required>
                        <span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+                       <input id="date_realise" data-format="datepicker" type="text" class="form-control" placeholder="choisir une date" required>
                      </label>
                      <small class="help-block">Indiquer la date réelle</small>
                    </section>
                  
-                   <section class="col-md-offset-1 col-md-6">
+                   <section class="col-xs-12 col-sm-6 col-md-3 col-lg-2">
+                     <label class="control-label" data-toggle="tooltip" data-placement="top" title="Marge en %" >*Marge vendue1:</label>
+                     <div class="input-group">
+                       <span class="input-group-addon" ><b>%</b></span>
+                       <input id="budget" name="" class="form-control" placeholder="Ex: 500 000" type="text" data-thousands=" " data-precision="0" data-suffix= ' %' required>
+                     
+                     </div>
+                   </section>
+                   
+                   <section class="col-xs-12 col-sm-6 col-md-3 col-lg-2">
+                     <label class="control-label" data-toggle="tooltip" data-placement="top" title="Marge en %" >*Marge vendue2:</label>
+                     <div class="input-group">
+                       <span class="input-group-addon" ><b>%</b></span>
+                       <input id="budget" name="" class="form-control" placeholder="Ex: 500 000" type="text" data-thousands=" " data-precision="0" data-suffix= ' %' required>
+                     
+                     </div>
+                   </section>
+                   
+                   <section class="col-xs-12 col-sm-6 col-md-3 col-lg-2">
+                     <label class="control-label" data-toggle="tooltip" data-placement="top" title="Marge en %" >*Marge vendue3:</label>
+                     <div class="input-group">
+                       <span class="input-group-addon" ><b>%</b></span>
+                       <input id="budget" name="" class="form-control" placeholder="Ex: 500 000" type="text" data-thousands=" " data-precision="0" data-suffix= ' %' required>
+                     
+                     </div>
+                   </section>
+                   
+                  
+                   
+                   <section class="col-md-12">
+                      <legend>Texte de votre message qui sera envoyé aux participants</legend>
+                      <textarea id="commentaire" type="textarea" class="form-control" rows="7" ></textarea>
+                      <small id="help-textarea" class="help-block"></small>
+                   
+                   </section>
+                   
+                   
+                   <section class="col-md-3">
                      <label id="label-cr" class="control-label">Compte-rendu du </label>
                      
                      <div class="bootstrap-filestyle input-group">
@@ -88,12 +125,6 @@
                      <span id="name_file" class="form-control-static"></span>
                    </section>
                    
-                   <section class="col-md-12">
-                      <legend>Texte de votre message qui sera envoyé aux participants</legend>
-                      <textarea id="commentaire" type="textarea" class="form-control" rows="7" ></textarea>
-                      <small id="help-textarea" class="help-block"></small>
-                   
-                   </section>
                  </div>
                  
                      

@@ -2,6 +2,9 @@ function doGet(request) {
   
   var html=null, duration=PropertiesService.getScriptProperties().getProperty('ID_DURATION');
   
+  // E.REMY Google Analytics
+  strActionName = request.parameter.page;
+  // E.REMY Google Analytics
   
   switch(request.parameter.page){
   

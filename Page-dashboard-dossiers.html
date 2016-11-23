@@ -159,6 +159,10 @@
     var data = response.getDataTable();
     
     //console.log(data);
+    /******************
+    Insertion d'une colonne rappel de l'état
+    *******************/
+    data.insertColumn(0, 'number');
     
     // view number of values
     $('#num_'+this.page).html( data.getNumberOfRows())
@@ -168,6 +172,7 @@
       Mise en forme de la colonne Statut
     /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/*/
       var i_statut,i_url,i_log,i_datetime=[],i_reference,i_avancement_crm,i_mail_pressenti,i_mail_affecte;
+      var i_dossier, i_client;
       for(var i=0;i<data.getNumberOfColumns();i++){
           if(data.getColumnLabel(i)=='Statut') i_statut = i;
           if(data.getColumnLabel(i)=='url') i_url = i;
@@ -176,14 +181,24 @@
           if(data.getColumnType(i)=='datetime' || data.getColumnType(i)=='date') i_datetime.push(i);
           if(data.getColumnLabel(i).match('Emission')) this.options.sortColumn = i;
           if(data.getColumnLabel(i).toLowerCase().indexOf('avancement')!=-1) i_avancement_crm = i;
+          if(data.getColumnLabel(i).toLowerCase().match('dossier')) i_dossier = i;
+          if(data.getColumnLabel(i).toLowerCase().match('client')) i_client = i;
           
       }
       
-      var formatter = new google.visualization.PatternFormat('<span class="label label-info {0}" data-html="{0}">&nbsp;</span>');
+      
+      var formatter = new google.visualization.PatternFormat('<span data-html="{0}"></span>');
+      formatter.format(data, [i_statut],0);
+      
+      formatter = new google.visualization.PatternFormat('<span class="label label-info statut {0}" data-html="{0}">&nbsp;</span>');
       formatter.format(data, [i_statut],i_statut);
       
       formatter = new google.visualization.PatternFormat('<span class="label label-info">{0}</span>');
       formatter.format(data, [i_avancement_crm],i_avancement_crm);
+      
+      formatter = new google.visualization.PatternFormat('<span class=""><h4 class="">{1}</h4><p class="">{0}</p></span>');
+      formatter.format(data, [i_dossier,i_client],i_client);
+      
       
       
       /*/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
@@ -197,14 +212,17 @@
       Mise en place des tooltip sur les champs string
       */
       formatter = new google.visualization.PatternFormat('<span  data-toggle="tooltip" data-placement="bottom" title="{0}">{0}</span>');
-      formatter.format(data, [1],1);
+      formatter.format(data, [i_reference],i_reference);
+      /*
       formatter.format(data, [2],2);
       formatter.format(data, [3],3);
       formatter.format(data, [4],4);
+      */
       
       /*/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
         Mise en forme de la colonne Action ( détail historique, lien folder google drive)
       /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\*/
+      
       data.addColumn('string', 'Actions');
        
        for(var i=0;i<data.getNumberOfRows();i++){
@@ -345,8 +363,9 @@
        
        REGLES D'AJUSTEMENT DES COLONNES
        */
+       $('#'+this.id+'  .cssHeaderCell:first').css('width', '1%');
        $('#'+this.id+'  .cssHeaderCell:contains("Code")').css('width', '10%');
-       $('#'+this.id+'  .cssHeaderCell:contains("Statut")').css('width', '8%');
+       $('#'+this.id+'  .cssHeaderCell:contains("Statut")').css('width', '7%');
        $('#'+this.id+'  .cssHeaderCell:contains("Dossier")').css('width', '20%');
        $('#'+this.id+'  .cssHeaderCell:contains("Emission")').css('width', '10%');
        $('#'+this.id+'  .cssHeaderCell:contains("Remise")').css('width', '10%');
@@ -354,7 +373,16 @@
        $('#'+this.id+'  .cssHeaderCell:contains("Date")').css('width', '7%');
        $('#'+this.id+'  .cssHeaderCell:contains("vancement")').css('width', '7%');
        $('.dropup_element').parents().css('overflow', 'visible');
-   
+       
+       
+       
+       $('#'+this.id+'  td span:not(".statut")').each(function() {
+         var element = $( this );
+         element.parents('td').addClass( element.data( "html" ) );
+         });
+      
+       
+       
   };
   
  
@@ -710,7 +738,7 @@ function exportLink(){
               
               $('#link').attr('href',queries[0]); // on force le lien sur la page active
               
-              //console.log($('li[role="presentation",class="active"]'));
+              console.log(queries);
           
           })
           .withFailureHandler(function(e){console.log('Exception'+e.message)})

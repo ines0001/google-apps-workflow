@@ -78,6 +78,7 @@
     
 	}
     
+     /*td[class="EN ATTENTE"]:nth-child(1){ background-color: hsl(150, 50%, 50%); }*/
     
     .pp9-police{
   
@@ -209,7 +210,7 @@
     color: blue;
     background-color: transparent;
     }
-  .GO::before{
+  .statut.GO::before{
     content: attr(data-html);
     }
   
@@ -217,7 +218,7 @@
   .NOGO{
     background-color: black;
     }
-  .NOGO::before{
+  .statut.NOGO::before{
     content: attr(data-html);
     }
   
@@ -225,7 +226,7 @@
     background-color: black;
    
   }
-  .ABD::before {
+  .statut.ABD::before {
     content: attr(data-html);
     }
   
@@ -236,7 +237,7 @@
     
     }
   
-  .EN.ATTENTE::before{
+  .statut.EN.ATTENTE::before{
     content: attr(data-html);
     }
   
@@ -246,14 +247,14 @@
     color: green;
     }
   
-  .EN.COURS::before{
+  .statut.EN.COURS::before{
     content: "GO / NO GO Planifié";
     }
   
   .VISA.FORFAIT{
     background-color: DarkOrange;
     }
-  .VISA.FORFAIT::before{
+  .statut.VISA.FORFAIT::before{
     content:"Visa Forfait"
   }
   
@@ -261,28 +262,28 @@
     background-color: green;
     
     }
-  .DAR::before {
+  .statut.DAR::before {
     content: "DAR réalisé";
     }
     
   .WON{
     background-color: green;
     }
-  .WON::before {
+  .statut.WON::before {
     content: attr(data-html);
     }
   
   .LOST{
     background-color:red;
     }
-  .LOST::before {
+  .statut.LOST::before {
     content: attr(data-html);
     }
   
   .RELANCE{
     background-color: #ec971f;
     }
-  .RELANCE::before {
+  .statut.RELANCE::before {
     content: attr(data-html);
     }
     
@@ -290,7 +291,7 @@
   .TRAITE{
     background-color: #5e5e5e;
     }  
-  .TRAITE::before {
+  .statut.TRAITE::before {
     content: attr(data-html);
     }
   
@@ -299,7 +300,7 @@
     background-color: #5e5e5e;
     }    
 
-  .INFO::before {
+  .statut.INFO::before {
     content: attr(data-html);
     }    
 

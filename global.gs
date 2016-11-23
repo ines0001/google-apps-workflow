@@ -16,6 +16,10 @@ Menu Fichier/Gérer les versions depuis le projet google script apps
 var __PROD__  = false;
 var __DEBUG__ = (__PROD__)?false:true;
 
+// S.VIOT Google Analytics
+var strActionName;
+// S.VIOT Google Analytics
+
 var ID_CLSID_PROD = '1h3y9ferdQq8S6Xk48B01sEsEpC4czP4gdncB9l9AoJY';
 //var CLSID =     '1B7TBEOMVfg1kiPGrlW3dY5wWpYdmqOLwDi985L7sKo0';
 var ID_CLSID_DEV ='1B7TBEOMVfg1kiPGrlW3dY5wWpYdmqOLwDi985L7sKo0';
@@ -270,7 +274,7 @@ function global_testing() {
   
  
   var sheet_objet = new SHEET_AO();
-  var ref = 'I1431101804699';
+  var ref = 'I1463994123692';
   
   var out = sheet_objet.Info_A(ref);
   var out_json;
