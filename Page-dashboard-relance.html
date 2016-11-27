@@ -56,26 +56,29 @@
      var opts = {sendMethod: 'auto'}, set_query, query;
      
      try{
-     
+  
      google.script.run
            .withSuccessHandler(function(values){ 
              var filter='.*';
              
              if(!isAdmin()) filter += <?=Session.getActiveUser().getEmail()?>+'.*';
-             
-             
-             set_query = encodeURIComponent(values[0].replace(/@user/g,filter));
-             query = new google.visualization.Query(
-             'https://spreadsheets.google.com/tq?tq='+set_query+'&key=<?=clsid?>&gid=2122602018',opts);
-             
-             query.send(handleQueryTableRelance1);
-             
-             set_query = encodeURIComponent(values[1].replace(/@user/g,filter));
-             query = new google.visualization.Query(
-             'https://spreadsheets.google.com/tq?tq='+set_query+'&key=<?=clsid?>&gid=2122602018',opts);
-             
-             query.send(handleQueryTableRelance2);
-             
+              
+                 var tqUrl = 'https://spreadsheets.google.com/tq?tq='+encodeURIComponent(values[0].replace(/@user/g,filter))+
+                 '&key=<?=clsid?>'+
+                 '&gid=2122602018'+
+                 '&access_token=' + encodeURIComponent($.g_token_owner);
+                 
+                 query = new google.visualization.Query(tqUrl,opts);
+                 query.send(handleQueryTableRelance1);
+                 
+                 tqUrl = 'https://spreadsheets.google.com/tq?tq='+encodeURIComponent(values[1].replace(/@user/g,filter))+
+                 '&key=<?=clsid?>'+
+                 '&gid=2122602018'+
+                 '&access_token=' + encodeURIComponent($.g_token_owner);
+                 
+                 query = new google.visualization.Query(tqUrl,opts);
+                 query.send(handleQueryTableRelance2);
+                         
            })
            .withFailureHandler(function(e){console.log('Exception'+e.message)})
            .enumParams('Dashboard table_relance');
@@ -474,8 +477,8 @@ function myReadyHandlerRelance(){
 
 $(function(){
   console.log('ready Page-dasboard-relance');
-
-  google.setOnLoadCallback(drawTableRelance);
+  
+  //google.setOnLoadCallback(drawTableRelance);
   
   
  
@@ -519,9 +522,6 @@ $(function(){
      
   });
   
-  
-  
-
 });
   
   

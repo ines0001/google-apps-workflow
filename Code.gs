@@ -82,7 +82,7 @@ function doGet(request) {
                     html.duration = '40s';
                     html.clsid = CLSID;  
                     
-                    html.ticker = enumParams('Informations flash')
+                    html.ticker = ('Informations flash')
                     
                     html = html.evaluate()
                                .setTitle('Testing formulaire AO')

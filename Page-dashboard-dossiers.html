@@ -1,4 +1,4 @@
- <head>
+<head>
     <?!= include('style-bootstrap-timeline'); ?>
     <?!= include('style-dashboard'); ?>
     
@@ -92,12 +92,10 @@
       
   </body>
   <?!= include('JSFonctions'); ?>
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
- 
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>        
   
   <script>
-   //google.load('visualization', '1', {packages: ['controls','table']});
-   
+   google.load('visualization', '1', {packages: ['controls','table']});
   
   
           
@@ -106,10 +104,11 @@
   CONSTRUCTION CLASSPAGE
   Instance lié à la gestion du contexte d'une page
   */
-  var ClassPage = function(name,b,fct,identifier,identifier_tab){
+  var ClassPage = function(name,b,fct,identifier,Oauth2_token){
     this.page=name;
     this.request = b;
     this.id = identifier;
+    this.token=Oauth2_token;
     this.handleQuery = fct;
     var cssClassNames = {
                 
@@ -143,12 +142,14 @@
                
     if(!isAdmin()) filter += <?=Session.getActiveUser().getEmail()?>+'.*';
     
-    var set_query = encodeURIComponent(this.request.replace(/@user/g,filter));
-    var query = new google.visualization.Query(
-    'https://spreadsheets.google.com/tq?tq='+set_query+'&key=<?=clsid?>&gid=2122602018',{sendMethod: 'auto'});
+    var tqUrl = 'https://spreadsheets.google.com/tq?tq='+encodeURIComponent(this.request.replace(/@user/g,filter))+
+    '&key=<?=clsid?>'+
+    '&gid=2122602018'+
+    '&access_token=' + encodeURIComponent(this.token);
     
+    query = new google.visualization.Query(tqUrl,{sendMethod: 'auto'});
     query.send(this.handleQuery);
-    
+   
     return this;
   };
   
@@ -159,10 +160,6 @@
     var data = response.getDataTable();
     
     //console.log(data);
-    /******************
-    Insertion d'une colonne rappel de l'état
-    *******************/
-    data.insertColumn(0, 'number');
     
     // view number of values
     $('#num_'+this.page).html( data.getNumberOfRows())
@@ -171,34 +168,23 @@
     /*/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
       Mise en forme de la colonne Statut
     /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/*/
-      var i_statut,i_url,i_log,i_datetime=[],i_reference,i_avancement_crm,i_mail_pressenti,i_mail_affecte;
-      var i_dossier, i_client;
+      var i_statut,i_url,i_log,i_datetime=[],i_reference,i_avancement_crm;
       for(var i=0;i<data.getNumberOfColumns();i++){
           if(data.getColumnLabel(i)=='Statut') i_statut = i;
           if(data.getColumnLabel(i)=='url') i_url = i;
           if(data.getColumnLabel(i)=='log') i_log = i;
           if(data.getColumnLabel(i)=='Identifiant') i_reference = i;
-          if(data.getColumnType(i)=='datetime' || data.getColumnType(i)=='date') i_datetime.push(i);
+          if(data. getColumnType(i)=='datetime') i_datetime.push(i);
           if(data.getColumnLabel(i).match('Emission')) this.options.sortColumn = i;
           if(data.getColumnLabel(i).toLowerCase().indexOf('avancement')!=-1) i_avancement_crm = i;
-          if(data.getColumnLabel(i).toLowerCase().match('dossier')) i_dossier = i;
-          if(data.getColumnLabel(i).toLowerCase().match('client')) i_client = i;
           
       }
       
-      
-      var formatter = new google.visualization.PatternFormat('<span data-html="{0}"></span>');
-      formatter.format(data, [i_statut],0);
-      
-      formatter = new google.visualization.PatternFormat('<span class="label label-info statut {0}" data-html="{0}">&nbsp;</span>');
+      var formatter = new google.visualization.PatternFormat('<span class="label label-info {0}" data-html="{0}">&nbsp;</span>');
       formatter.format(data, [i_statut],i_statut);
       
       formatter = new google.visualization.PatternFormat('<span class="label label-info">{0}</span>');
       formatter.format(data, [i_avancement_crm],i_avancement_crm);
-      
-      formatter = new google.visualization.PatternFormat('<span class=""><h4 class="">{1}</h4><p class="">{0}</p></span>');
-      formatter.format(data, [i_dossier,i_client],i_client);
-      
       
       
       /*/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
@@ -212,24 +198,21 @@
       Mise en place des tooltip sur les champs string
       */
       formatter = new google.visualization.PatternFormat('<span  data-toggle="tooltip" data-placement="bottom" title="{0}">{0}</span>');
-      formatter.format(data, [i_reference],i_reference);
-      /*
+      formatter.format(data, [1],1);
       formatter.format(data, [2],2);
       formatter.format(data, [3],3);
       formatter.format(data, [4],4);
-      */
       
       /*/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
         Mise en forme de la colonne Action ( détail historique, lien folder google drive)
       /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\*/
-      
       data.addColumn('string', 'Actions');
        
        for(var i=0;i<data.getNumberOfRows();i++){
 
          var link = (i_url==undefined)?null:data.getValue(i,i_url) , histo = (i_log==undefined)?null:data.getValue(i,i_log);
          var ref=(i_reference==undefined)?null:data.getValue(i,i_reference);
-         
+        
         
          html_msg='<div class="btn-group dropup dropup_element">';
          html_msg+=(histo)?"<a href='#' data-reference='"+ref+"' data-url='"+histo+"' class='btn btn-info  btn-xs'>":'<a href="#" class="btn btn-info  btn-xs disabled">';
@@ -264,9 +247,6 @@
                  
                  break;
                  
-           
-           
-           
            default:break;
          }
          
@@ -340,7 +320,7 @@
       de la zone de recherche dans la barre Header
       */
       var tempListener = google.visualization.events.addListener(chart, 'ready',function(){
-          console.log('eventListernerGoogleChart ready');
+          console.log('ready event Table');
           eventListernerGoogleChart();
          
           google.visualization.events.removeListener(tempListener);
@@ -363,9 +343,8 @@
        
        REGLES D'AJUSTEMENT DES COLONNES
        */
-       $('#'+this.id+'  .cssHeaderCell:first').css('width', '1%');
        $('#'+this.id+'  .cssHeaderCell:contains("Code")').css('width', '10%');
-       $('#'+this.id+'  .cssHeaderCell:contains("Statut")').css('width', '7%');
+       $('#'+this.id+'  .cssHeaderCell:contains("Statut")').css('width', '8%');
        $('#'+this.id+'  .cssHeaderCell:contains("Dossier")').css('width', '20%');
        $('#'+this.id+'  .cssHeaderCell:contains("Emission")').css('width', '10%');
        $('#'+this.id+'  .cssHeaderCell:contains("Remise")').css('width', '10%');
@@ -373,16 +352,7 @@
        $('#'+this.id+'  .cssHeaderCell:contains("Date")').css('width', '7%');
        $('#'+this.id+'  .cssHeaderCell:contains("vancement")').css('width', '7%');
        $('.dropup_element').parents().css('overflow', 'visible');
-       
-       
-       
-       $('#'+this.id+'  td span:not(".statut")').each(function() {
-         var element = $( this );
-         element.parents('td').addClass( element.data( "html" ) );
-         });
-      
-       
-       
+   
   };
   
  
@@ -395,25 +365,25 @@
     page.forEach(function(element){element.Query();})
   }
   
-  function drawTable() {
+  function drawTableDossiers() {
      var opts = {sendMethod: 'auto'}, set_query, query;
+     
      google.script.run
            .withSuccessHandler(function(values){ 
               
-               page[0] = new ClassPage('Page1',values[0],handleQueryTable1,'id_table');
-               page[0].Query();
-               
-               page[1] = new ClassPage('Page2',values[1],handleQueryTable2,'id_table2');
-               page[1].Query();
-               
-               page[2] = new ClassPage('Page3',values[2],handleQueryTable3,'id_table3');
-               page[2].Query();
-               
-               page[3] = new ClassPage('Page4',values[3],handleQueryTable4,'id_table4');
-               page[3].Query();
-               
+              page[0] = new ClassPage('Page1',values[0],handleQueryTable1,'id_table',$.g_token_owner);
+              page[0].Query();
+              
+              page[1] = new ClassPage('Page2',values[1],handleQueryTable2,'id_table2',$.g_token_owner);
+              page[1].Query();
+              
+              page[2] = new ClassPage('Page3',values[2],handleQueryTable3,'id_table3',$.g_token_owner);
+              page[2].Query();
+              
+              page[3] = new ClassPage('Page4',values[3],handleQueryTable4,'id_table4',$.g_token_owner);
+              page[3].Query();
              
-           
+             
            })
            .withFailureHandler(function(e){console.log('Exception'+e.message)})
            .enumParams('Dashboard table_synthese');
@@ -656,10 +626,13 @@ function eventListernerGoogleChart(){
  
  
 <script>
+
 $(function(){
-     console.log('ready Page-dashboard-dossiers');
+     console.log('ready Page-dasboard-dossiers');
+     
+  
      setCallbackAdmin(DropdownAdminMenu);
-     google.setOnLoadCallback(drawTable);
+     //google.setOnLoadCallback(drawTable);
      exportLink();
      EventRefreshMenu();
      
@@ -705,9 +678,6 @@ $(function(){
        
      });
  
-     
-     
-     
 });
 
 function EventRefreshMenu(){
@@ -738,7 +708,7 @@ function exportLink(){
               
               $('#link').attr('href',queries[0]); // on force le lien sur la page active
               
-              console.log(queries);
+              //console.log($('li[role="presentation",class="active"]'));
           
           })
           .withFailureHandler(function(e){console.log('Exception'+e.message)})

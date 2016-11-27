@@ -12,10 +12,11 @@
   <!-- /.container-fluid -->
    
     <div id="footer" class="navbar navbar-default navbar-fixed-bottom">
-      <div class="">
-          <span class="navbar-text pull-left ">
-            <a target="_blank" href="<?=ScriptApp.getService().getUrl()?>?page=changelog" title="Change log">Releases</a>
-           </span>
+      <div class="container">
+          
+          <p class="navbar-btn pull-left">
+            <a class="btn-info btn pull-left" target="_blank" href="<?=ScriptApp.getService().getUrl()?>?page=changelog" title="Release Notes">Release Notes</a>
+           </p>
           
           <span class="nav navbar-nav col-sm-9 hidden-xs hidden-sm">
              <div id="foot_alert" class="ticker-wrap">
@@ -24,7 +25,7 @@
           </span>
           
           
-          <span id="contact" class="navbar-btn btn-danger btn pull-right" title="Prendre contact" >Contact</span>
+          <p id="contact" class="navbar-btn btn-danger btn pull-right" title="Prendre contact" >Contact</p>
       </div>
     </div>
     

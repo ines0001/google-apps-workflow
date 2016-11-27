@@ -45,10 +45,8 @@ $(function(){
   console.log('ready Page-dasboard-scorecard');
  
   //google.setOnLoadCallback(drawTableScoreCard);
-  google.charts.setOnLoadCallback(drawTableScoreCard);
+  //google.charts.setOnLoadCallback(drawTableScoreCard);
   
-  
- 
   
 
 });
@@ -79,25 +77,14 @@ function drawTableScoreCard() {
     
     if(!isAdmin()) filter += <?=Session.getActiveUser().getEmail()?>+'.*';
     
-    /*Obtain the Token  AOuth2
-    Google Sheets requires end-user credentials to access private spreadsheets 
-    via the Google Visualization API ("/tq requests").
-    */
-    google.script.run.withSuccessHandler(function(token){
     
-        var tqUrl = 'https://spreadsheets.google.com/tq?tq='+encodeURIComponent(values[0].replace(/@user/g,filter))+
-        '&key=<?=clsid?>'+
-        '&gid=2122602018'+
-        '&access_token=' + encodeURIComponent(token);
-      
-        query = new google.visualization.Query(tqUrl,opts);
-        query.send(handleQueryTableScoreCard);
-        
-     })
-     .withFailureHandler(function(e){console.log(e)})
-     .getOAuthToken();
+    var tqUrl = 'https://spreadsheets.google.com/tq?tq='+encodeURIComponent(values[0].replace(/@user/g,filter))+
+    '&key=<?=clsid?>'+
+    '&gid=2122602018'+
+    '&access_token=' + encodeURIComponent($.g_token_owner);
     
-    
+    query = new google.visualization.Query(tqUrl,opts);
+    query.send(handleQueryTableScoreCard);
     
     
   

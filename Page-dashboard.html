@@ -31,7 +31,7 @@
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 <script>
-google.charts.load('current', {packages: ['corechart','table','calendar','timeline'], 'language': 'fr',});
+google.charts.load('current', {packages: ['corechart','table']});
 
 
 function switch_admin(){
@@ -101,35 +101,50 @@ $(function(){
 
     
 <script>
-    
+$.g_token_owner ="";
+
 $(function(){
  
     page_header('REPORTING');
     
-    footer_load_tickers('Informations accueil');
+    //footer_load_tickers('Informations accueil');
     
-    
-    
-    /*===============================
-      Init de la page d'appel
-      ?page=dashboard&menu=xxxxxx
-      reporting
-      relance
-      scorecard
-    ================================*/
-    ShowPage(<?=menu?>);
-    
-    
-    
-    //$('[data-toggle="tooltip"]').tooltip();
-    
-    $('nav li > a').on('click',function(event){
+    /*Obtain the Token  AOuth2
+    Google Sheets requires end-user credentials to access private spreadsheets 
+    via the Google Visualization API ("/tq requests").
+    */
+    google.script.run.withSuccessHandler(SaveOAuthToken)
+     .withFailureHandler(function(e){console.log(e)})
+     .getOAuthToken();
+   
+     /*===============================
+     Init de la page d'appel
+     ?page=dashboard&menu=xxxxxx
+     reporting
+     relance
+     scorecard
+     ================================*/
+     ShowPage(<?=menu?>);
+     
+     //$('[data-toggle="tooltip"]').tooltip();
+     
+     $('nav li > a').on('click',function(event){
        ShowPage($(this).data("page"));
-       });
-    
-    
+     });
     
 });
+
+
+function SaveOAuthToken(token){
+  $.g_token_owner = token;
+  
+  // Start All callback draw function 
+  google.charts.setOnLoadCallback(drawTableScoreCard);
+  google.charts.setOnLoadCallback(drawTableRelance);
+  google.charts.setOnLoadCallback(drawTableDossiers);
+  
+
+}
 
 function ShowPage(p){
   
@@ -144,4 +159,3 @@ function ShowPage(p){
 
 }
 </script>
-    
